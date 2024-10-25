@@ -47,6 +47,4 @@
 	<li>Each folder name is <strong>unique</strong>.</li>
 </ul>
 
-<h2>Solution</a></h2>
-
 
