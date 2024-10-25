@@ -45,3 +45,5 @@ Solution: https://leetcode.com/problems/remove-sub-folders-from-the-filesystem/s
 	<li><code>folder[i]</code> always starts with the character <code>&#39;/&#39;</code>.</li>
 	<li>Each folder name is <strong>unique</strong>.</li>
 </ul>
+
+<h2>Solution</a></h2>
