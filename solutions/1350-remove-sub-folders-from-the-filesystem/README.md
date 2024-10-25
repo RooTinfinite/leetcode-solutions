@@ -1,5 +1,5 @@
-<h2>Solution</a></h2>
- https://leetcode.com/problems/remove-sub-folders-from-the-filesystem/solutions/5964641/explained-step-by-step-beats-100-working-24-10-2024/
+<h2><a href=" https://leetcode.com/problems/remove-sub-folders-from-the-filesystem/solutions/5964641/explained-step-by-step-beats-100-working-24-10-2024/">Solution</a></h2>
+
 
 
 <h2><a href="https://leetcode.com/problems/remove-sub-folders-from-the-filesystem">Remove Sub-Folders from the Filesystem</a></h2> <img src='https://img.shields.io/badge/Difficulty-Medium-orange' alt='Difficulty: Medium' /><hr><p>Given a list of folders <code>folder</code>, return <em>the folders after removing all <strong>sub-folders</strong> in those folders</em>. You may return the answer in <strong>any order</strong>.</p>
