@@ -1,51 +1,61 @@
 class Solution {
 public:
-    vector<int>dfsTree;
-    int d[300005];
-    int st[300005];
-    int en[300005];
-    void dfs(TreeNode *root, int dep) {
-        if(root == NULL) {
+    // Arrays to store heights of leaf nodes and other node information
+    int heights[50000],len=0;  // heights stores leaf node heights, len tracks number of leaves
+    int d[100001],l[100001],r[100001];  // d:depth, l:left index, r:right index for each node
+
+    // DFS traversal to process the tree
+    void search(TreeNode *p,int h){
+        int left,right;
+        d[p->val] = h;  // Store current node's depth
+
+        // If leaf node found
+        if (!p->left && !p->right){
+            heights[len] = h;    // Store leaf height
+            l[p->val] = r[p->val] = len;  // Both left and right indices same for leaf
+            len++;  // Increment leaf counter
             return;
         }
 
-        d[root->val] = dep;
-        st[root->val] = (int)dfsTree.size();
-        dfsTree.push_back(root->val);
-        dfs(root->left,dep+1);
-        dfs(root->right,dep+1);
-        en[root->val] = (int)dfsTree.size();
-        dfsTree.push_back(root->val);
-
+        l[p->val] = len;  // Store left index for current node
+        
+        // Recursively process left and right subtrees
+        if (p->left) search(p->left,h+1);
+        if (p->right) search(p->right,h+1);
+        
+        r[p->val] = len-1;  // Store right index for current node
     }
+
     vector<int> treeQueries(TreeNode* root, vector<int>& queries) {
-        vector<int>pref;
-        vector<int>suf;
-        dfs(root,0);
-        int n = (int)dfsTree.size();
-        for(int i = 0 ; i < n ; i++) {
-            pref.push_back(d[dfsTree[i]]);
-            suf.push_back(pref.back());
+        // Optimization for I/O operations
+        ios_base::sync_with_stdio(false);
+        cin.tie(nullptr);
+        cout.tie(nullptr);
+
+        search(root,0);  // Process the tree starting from root
+        
+        int n = len;  // Total number of leaf nodes
+        int maxl[n],maxr[n];  // Arrays to store max heights from left and right
+        maxl[0] = maxr[n-1] = 0;  // Initialize boundaries
+        
+        // Build prefix and suffix maximum arrays
+        for (int i=1;i<n;i++){
+            maxl[i] = max(maxl[i-1],heights[i-1]);  // Max height from left
+            maxr[n-i-1] = max(maxr[n-i],heights[n-i]);  // Max height from right
         }
-        for(int i = 1 ; i < n ; i++) {
-            pref[i] = max(pref[i],pref[i-1]);
+
+        vector<int> ret;  // Result vector
+        int k = queries.size();
+        
+        // Process each query
+        for (int i=0;i<k;i++){
+            // Find maximum height excluding current node's subtree
+            int maxxl = maxl[l[queries[i]]];  // Max height to the left
+            int maxxr = maxr[r[queries[i]]];  // Max height to the right
+            // Result is max of (max left height, max right height, current depth-1)
+            ret.push_back(max(max(maxxl,maxxr),d[queries[i]]-1));
         }
-        for(int i = n-2 ; i >= 0 ; i--) {
-            suf[i] = max(suf[i],suf[i+1]);
-        }
-        vector<int>ans;
-        for(auto &x : queries) {
-            int ST = st[x];
-            int EN = en[x];
-            int res = 0;
-            if(ST-1 >= 0) {
-                res = max(res,pref[ST-1]);
-            }
-            if(EN+1 < n) {
-                res = max(res,suf[EN+1]);
-            }
-            ans.push_back(res);
-        }
-        return ans;
+        
+        return ret;
     }
 };
