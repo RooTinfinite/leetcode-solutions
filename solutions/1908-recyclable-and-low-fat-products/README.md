@@ -94,7 +94,3 @@ This specifies the table from which to retrieve the data. In this case, the tabl
 The WHERE clause is used to filter records based on specified conditions. Here, it filters the rows to include only those where the low_fats column has a value of 'Y' (indicating the product is low in fats) and the recyclable column also has a value of 'Y' (indicating the product is recyclable).
 The AND operator ensures that both conditions must be true for a row to be included in the result set.
 
-![image.png](https://assets.leetcode.com/users/images/cdbcac52-b5c7-45e2-823e-87b59d33a741_1727295353.7574322.png)
-
-
-
