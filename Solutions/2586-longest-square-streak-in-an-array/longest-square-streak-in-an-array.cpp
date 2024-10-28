@@ -1,41 +1,36 @@
 class Solution {
 public:
     int longestSquareStreak(vector<int>& nums) {
-        // Size of input array and variable to track maximum value
-        int n = nums.size(), mx = 0;
-
-        // Create DP array to store streak lengths
-        // Size 100001 because constraints mention nums[i] <= 10^5
-        int dp[100001];
-        memset(dp, 0, sizeof(dp));
-
-        // Mark all numbers present in input array with 1
-        // and track the maximum value
-        for(int i = 0; i < n; i++){
-            dp[nums[i]] = 1;
-            mx = max(mx, nums[i]);
+        // Convert nums to a sorted set to remove duplicates and have ordered numbers
+        set<long long> num_set;
+        for (int num : nums) {
+            num_set.insert(num);
         }
-
-        // Initialize answer as -1 (for when no streak exists)
-        int ans = -1;
-
-        // Check each number from 2 up to the maximum value found
-        for(int i = 2; i <= mx; i++){
-            // If current number exists in our array AND
-            // it's a perfect square (by checking if sqrt(i) * sqrt(i) equals i)
-            if(dp[i] && (int)sqrt(i) * (int)sqrt(i) == i){
-                // Add the streak length of its square root to current streak
-                dp[i] = dp[i] + dp[(int)sqrt(i)];
-                // Update answer with maximum streak found
-                ans = max(ans, dp[i]);
+        
+        // Track the maximum streak length found
+        int max_length = 0;
+        
+        // Iterate through each number in sorted order
+        for (long long num : num_set) {
+            // Initialize streak length for current number
+            int length = 0;
+            // Start with current number
+            long long current = num;
+            
+            // Keep squaring the number while it exists in our set
+            while (num_set.find(current) != num_set.end()) {
+                length++;
+                if (current > 100000) break; // Prevent overflow
+                current = current * current;
+            }
+            
+            // Only update max_length if we found a streak of length > 1
+            if (length > 1) {
+                max_length = max(max_length, length);
             }
         }
-
-        // If longest streak is 1, it's not valid (need at least 2 numbers)
-        if(ans == 1){
-            return -1;
-        }
-
-        return ans;
+        
+        // Return max_length if we found a valid streak, otherwise return -1
+        return max_length > 1 ? max_length : -1;
     }
 };
