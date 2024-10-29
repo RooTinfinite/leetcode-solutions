@@ -1,7 +1,7 @@
 impl Solution {
     pub fn max_moves(grid: Vec<Vec<i32>>) -> i32 {
-        let m = grid.len();    // number of rows
-        let n = grid[0].len(); // number of columns
+        let m = grid.len();    
+        let n = grid[0].len(); 
         
         let mut res = 0;
         let mut dp = vec![0; m];
@@ -14,17 +14,14 @@ impl Solution {
                 let mut cur = -1;
                 let next_left_top = dp[i];
                 
-                // Check move from top-left cell
                 if i > 0 && left_top != -1 && grid[i][j] > grid[i - 1][j - 1] {
                     cur = cur.max(left_top + 1);
                 }
                 
-                // Check move from direct left cell
                 if dp[i] != -1 && grid[i][j] > grid[i][j - 1] {
                     cur = cur.max(dp[i] + 1);
                 }
                 
-                // Check move from bottom-left cell
                 if i + 1 < m && dp[i + 1] != -1 && grid[i][j] > grid[i + 1][j - 1] {
                     cur = cur.max(dp[i + 1] + 1);
                 }
