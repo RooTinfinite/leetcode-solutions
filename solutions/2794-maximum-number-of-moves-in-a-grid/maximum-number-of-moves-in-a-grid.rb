@@ -1,7 +1,7 @@
 class Solution
   def max_moves(grid)
-    m = grid.length     # number of rows
-    n = grid[0].length  # number of columns
+    m = grid.length 
+    n = grid[0].length 
     
     res = 0
     dp = Array.new(m, 0)
@@ -14,17 +14,14 @@ class Solution
         cur = -1
         nxt_left_top = dp[i]
         
-        # Check move from top-left cell
         if i - 1 >= 0 && left_top != -1 && grid[i][j] > grid[i-1][j-1]
           cur = [cur, left_top + 1].max
         end
         
-        # Check move from direct left cell
         if dp[i] != -1 && grid[i][j] > grid[i][j-1]
           cur = [cur, dp[i] + 1].max
         end
         
-        # Check move from bottom-left cell
         if i + 1 < m && dp[i+1] != -1 && grid[i][j] > grid[i+1][j-1]
           cur = [cur, dp[i+1] + 1].max
         end
@@ -42,7 +39,6 @@ class Solution
   end
 end
 
-# Create an instance and call the method
 def max_moves(grid)
   Solution.new.max_moves(grid)
 end
