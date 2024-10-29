@@ -1,43 +1,38 @@
 class Solution {
 public:
-   int f(vector<vector<int>>& grid, int i, int j, int m, int n, int moves,vector<vector<int>> &dp) {
-        if (j == n - 1)
-            return moves;
-
-        
-        if (i < 0 || i >= m || j >= n)
-            return 0;
-        if(dp[i][j]!=-1)return dp[i][j];
-        int dUp = 0;
-        int front = 0;
-        int dDown = 0;
-
-        
-        if (i - 1 >= 0 && j + 1 < n && grid[i - 1][j + 1] > grid[i][j]) {
-            dUp = f(grid, i - 1, j + 1, m, n, moves + 1,dp);
-        }
-
-        if (j + 1 < n && grid[i][j + 1] > grid[i][j]) {
-            front = f(grid, i, j + 1, m, n, moves + 1,dp);
-        }
-
-        if (i + 1 < m && j + 1 < n && grid[i + 1][j + 1] > grid[i][j]) {
-            dDown = f(grid, i + 1, j + 1, m, n, moves + 1,dp);
-        }
-
-        return dp[i][j]=max({ dUp, front, dDown,moves});
-    }
-
     int maxMoves(vector<vector<int>>& grid) {
-        int maxiMoves = INT_MIN; 
-        int m = grid.size();
-        int n = grid[0].size();
-        vector<vector<int>> dp(m,vector<int>(n,-1));
-        
-        for (int i = 0; i < m; i++) {
-            maxiMoves = max(maxiMoves, f(grid, i, 0, m, n, 0,dp));
+        int m = grid.size(), n = grid[0].size();
+
+        int res = 0;
+        vector<int> dp(m);
+
+        for (int j = 1; j < n; ++j) {
+            int leftTop = 0;  // 1
+            bool found = false;
+            
+            for (int i = 0; i < m; ++i) {
+                int cur = -1;
+                int nxtLeftTop = dp[i];
+
+                if (i - 1 >= 0 && leftTop != -1 && grid[i][j] > grid[i - 1][j - 1]) {
+                    cur = max(cur, leftTop + 1);
+                }
+                if (dp[i] != -1 && grid[i][j] > grid[i][j - 1]) {
+                    cur = max(cur, dp[i] + 1);
+                }
+                if (i + 1 < m && dp[i + 1] != -1 && grid[i][j] > grid[i + 1][j - 1]) {
+                    cur = max(cur, dp[i + 1] + 1);
+                }
+                
+                dp[i] = cur;
+                found = found || (dp[i] != -1);
+                
+                leftTop = nxtLeftTop;
+            }
+            if (!found) break;
+            res = j;
         }
 
-        return maxiMoves == INT_MIN ? 0 : maxiMoves; 
+        return res;
     }
 };
