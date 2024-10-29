@@ -2,37 +2,23 @@ class Solution {
 public:
     int maxMoves(vector<vector<int>>& grid) {
         int m = grid.size(), n = grid[0].size();
-
-        int res = 0;
-        vector<int> dp(m);
-
-        for (int j = 1; j < n; ++j) {
-            int leftTop = 0;
-            bool found = false;
-            
-            for (int i = 0; i < m; ++i) {
-                int cur = -1;
-                int nxtLeftTop = dp[i];
-
-                if (i - 1 >= 0 && leftTop != -1 && grid[i][j] > grid[i - 1][j - 1]) {
-                    cur = max(cur, leftTop + 1);
-                }
-                if (dp[i] != -1 && grid[i][j] > grid[i][j - 1]) {
-                    cur = max(cur, dp[i] + 1);
-                }
-                if (i + 1 < m && dp[i + 1] != -1 && grid[i][j] > grid[i + 1][j - 1]) {
-                    cur = max(cur, dp[i + 1] + 1);
-                }
-                
-                dp[i] = cur;
-                found = found || (dp[i] != -1);
-                
-                leftTop = nxtLeftTop;
+        int ans =0;
+        function<void(int,int)> dfs = [&] (int i, int j){
+            ans = max(ans,j);
+            if (ans == n-1){
+                return;
             }
-            if (!found) break;
-            res = j;
+            // i-1， i， i + 1
+            for (int k = max(i-1,0); k< min(i+2,m);++k) {
+                if (grid[k][j+1] > grid[i][j]) {
+                    dfs(k,j+1);
+                }
+            }
+            grid[i][j] =0;
+        };
+        for (int i=0; i< m; ++i) {
+            dfs(i,0);
         }
-
-        return res;
+        return ans;
     }
 };
