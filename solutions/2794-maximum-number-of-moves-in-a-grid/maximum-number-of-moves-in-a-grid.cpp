@@ -7,7 +7,7 @@ public:
         vector<int> dp(m);
 
         for (int j = 1; j < n; ++j) {
-            int leftTop = 0;  // 1
+            int leftTop = 0;
             bool found = false;
             
             for (int i = 0; i < m; ++i) {
