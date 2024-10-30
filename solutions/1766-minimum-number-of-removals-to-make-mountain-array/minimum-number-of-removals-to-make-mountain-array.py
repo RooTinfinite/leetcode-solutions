@@ -1,25 +1,34 @@
 class Solution:
     def minimumMountainRemovals(self, nums: List[int]) -> int:
-        n = len(nums)
-        t, suf = [], [0] * n
-        for i in range(n - 1, 0, -1):
-            p = bisect_left(t, nums[i])
-            if p < len(t):
-                suf[i] = p
-                t[p] = nums[i]
-            else:
-                suf[i] = len(t)
-                t.append(nums[i])
-        t, pre, res = [], 0, 0
-        for i, x in enumerate(nums):
-            p = bisect_left(t, x)
-            if p < len(t):
-                pre = p
-                t[p] = x
-            else:
-                pre = len(t)
-                t.append(x)
-            if pre >= 1 and suf[i] >= 1:
-                res = max(res, pre + suf[i] + 1)
-        return n - res
+        def lisLength(v):
+            lis = [v[0]]
+            lisLen = [1] * len(v)
+            
+            for i in range(1, len(v)):
+                if v[i] > lis[-1]:
+                    lis.append(v[i])
+                else:
+                    index = bisect.bisect_left(lis, v[i])
+                    lis[index] = v[i]
+                lisLen[i] = len(lis)
+            return lisLen
         
+        n = len(nums)
+        
+        # Get LIS lengths from left to right
+        lis = lisLength(nums)
+        
+        # Get LIS lengths from right to left
+        nums.reverse()
+        lds = lisLength(nums)
+        lds.reverse()
+        nums.reverse()
+        
+        removals = float('inf')
+        
+        # Check each potential peak
+        for i in range(n):
+            if lis[i] > 1 and lds[i] > 1:
+                removals = min(removals, n + 1 - lis[i] - lds[i])
+        
+        return removals
