@@ -1,3 +1,5 @@
+// JavaScript
+
 var minimumTotalDistance = function(robot, factory) {
     // Sort positions
     robot.sort((a, b) => a - b);
