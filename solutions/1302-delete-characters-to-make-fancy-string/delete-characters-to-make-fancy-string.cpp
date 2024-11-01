@@ -1,14 +1,22 @@
 class Solution {
 public:
     string makeFancyString(string s) {
-    if(s.length()<3) {
-        return s;
+        if (s.length() < 3) return s;
+        
+        string result;
+        result.reserve(s.length()); // Pre-allocate memory
+        
+        // Add first two characters
+        result.push_back(s[0]);
+        result.push_back(s[1]);
+        
+        // Check for three consecutive characters
+        for (int i = 2; i < s.length(); i++) {
+            if (s[i] != s[i-1] || s[i] != s[i-2]) {
+                result.push_back(s[i]);
+            }
+        }
+        
+        return result;
     }
-    int j = 2;
-    for (int i = 2; i < s.size(); ++i)
-        if (s[i] != s[j - 1] || s[i] != s[j - 2])
-            s[j++] = s[i];
-    s.resize(j);
-    return s;
-}
 };
