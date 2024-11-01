@@ -1,19 +1,14 @@
 class Solution {
 public:
     string makeFancyString(string s) {
-        string ans = "";
-        ans.push_back(s[0]);
-        int n = s.size(),cnt = 1;
-        for(int i=1;i<n;i++){
-            if(s[i] == ans.back()){
-                cnt++;
-                if(cnt < 3)ans.push_back(s[i]);
-            }
-            else{
-                cnt = 1;
-                ans.push_back(s[i]);
-            }
-        }
-        return ans;
+    if(s.length()<3) {
+        return s;
     }
+    int j = 2;
+    for (int i = 2; i < s.size(); ++i)
+        if (s[i] != s[j - 1] || s[i] != s[j - 2])
+            s[j++] = s[i];
+    s.resize(j);
+    return s;
+}
 };
