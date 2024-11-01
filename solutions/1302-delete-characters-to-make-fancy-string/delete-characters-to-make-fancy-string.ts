@@ -1,13 +1,16 @@
-function makeFancyString(s: string): string {
+function makeFancyString(s) {
+    // Convert string to array since strings are immutable in JavaScript
+    let chars = s.split('');
+    
     // Return original string if length is less than 3
-    if (s.length < 3) {
+    if (chars.length < 3) {
         return s;
     }
-
-    // Convert string to array for easier manipulation
-    const chars = s.split('');
+    
+    // j keeps track of the position where we'll place
+    // the next valid character
     let j = 2;
-
+    
     // Iterate through string starting from index 2
     for (let i = 2; i < chars.length; i++) {
         // Add current character if it's different from
@@ -16,7 +19,8 @@ function makeFancyString(s: string): string {
             chars[j++] = chars[i];
         }
     }
-
-    // Return the fancy string by joining the first j characters
+    
+    // Return the fancy string by joining the array
+    // and slicing to the correct length
     return chars.slice(0, j).join('');
 }
