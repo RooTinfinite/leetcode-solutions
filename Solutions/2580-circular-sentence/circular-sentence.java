@@ -1,15 +1,19 @@
 class Solution {
-    public boolean isCircularSentence(String sentence) {
-        int n = sentence.length();
-        
-        if (sentence.charAt(0) != sentence.charAt(n-1)) return false;
-        
-        for (int i = 1; i < n-1; i++) {
-            if (sentence.charAt(i) == ' ') {
-                if (sentence.charAt(i-1) != sentence.charAt(i+1)) return false;
+    public boolean isCircularSentence(String s) {
+        if (s.charAt(0) != s.charAt(s.length() - 1))
+            return false;
+
+        int k = s.indexOf(" ");
+        if (k == -1)
+            return true;
+
+        while (k != -1) {
+            if (s.charAt(k - 1) != s.charAt(k + 1)) {
+                return false;
             }
+
+            k = s.indexOf(" ", k+1);
         }
-        
         return true;
     }
 }
