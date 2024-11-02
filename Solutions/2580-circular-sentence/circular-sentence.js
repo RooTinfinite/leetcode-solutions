@@ -1,3 +1,7 @@
+/**
+ * @param {string} sentence
+ * @return {boolean}
+ */
 var isCircularSentence = function(sentence) {
     // Get the length of the sentence
     const n = sentence.length;
