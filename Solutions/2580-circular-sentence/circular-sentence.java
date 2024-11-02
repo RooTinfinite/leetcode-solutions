@@ -1,18 +1,19 @@
 class Solution {
-    public boolean isCircularSentence(String s) {
-        if (s.charAt(0) != s.charAt(s.length() - 1))
+    public boolean isCircularSentence(String sentence) {
+         // Get the length of the sentence
+        if (sentence.charAt(0) != sentence.charAt(sentence.length() - 1))
             return false;
 
-        int k = s.indexOf(" ");
+        int k = sentence.indexOf(" ");
         if (k == -1)
             return true;
 
         while (k != -1) {
-            if (s.charAt(k - 1) != s.charAt(k + 1)) {
+            if (sentence.charAt(k - 1) != sentence.charAt(k + 1)) {
                 return false;
             }
 
-            k = s.indexOf(" ", k+1);
+            k = sentence.indexOf(" ", k+1);
         }
         return true;
     }
