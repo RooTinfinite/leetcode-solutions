@@ -1,29 +1,41 @@
 class Solution {
 public:
     bool rotateString(string s, string goal) {
-        int n=s.length();
-        int m=goal.length();
+        // Get lengths of both strings
+        int n = s.length();
+        int m = goal.length();
 
-        if(n!=m){
+        // If lengths are different, rotation is impossible
+        if(n != m) {
             return false;
         }
-        int i=0;
 
-        while(i<n){
+        // Counter for number of rotations
+        int i = 0;
 
-            if(s==goal){
+        // Try all possible rotations
+        while(i < n) {
+            // If current string matches goal, we found a valid rotation
+            if(s == goal) {
                 return true;
             }
 
-            char a=s[0];
-            for( int j=0; j<n-1; j++){
-                s[j]=s[j+1];
+            // Perform one left rotation:
+            // 1. Store first character
+            char a = s[0];
+            
+            // 2. Shift all characters to the left by one position
+            for(int j = 0; j < n-1; j++) {
+                s[j] = s[j+1];
             }
-            s[n-1]=a;
+            
+            // 3. Place the first character at the end
+            s[n-1] = a;
+            
             i++;
-
         }
+
+        // If we tried all rotations and found no match, return false
         return false;
-        
     }
 };
