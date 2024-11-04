@@ -1,19 +1,28 @@
 class Solution {
 public:
-    string compressedString(string s) {
-        string a="";
-        int i = 0,n=s.size();
-        while(i<n){
-            int j = i+1;
-            while(j<n and (j-i)<9 and s[j]==s[i]){
-                j++;
+    string compressedString(string word) {
+        string temp;
+        char last=word[0];
+        int cnt=1;
+        for(int i=1; i<word.size(); i++){
+            if(last==word[i]){
+                if(cnt<9){
+                    ++cnt;
+                    continue;
+                }else{
+                    temp.push_back(cnt+'0');
+                    temp.push_back(last);
+                    cnt=1;
+                }
+            }else{
+                temp.push_back(cnt+'0');
+                temp.push_back(last);
+                cnt=1;
+                last=word[i];
             }
-            int ct = j-i;
-            char c = ct+'0';
-            a+=c;
-            a+=s[i];
-            i=j;
         }
-        return a;
+        temp.push_back(cnt+'0');
+        temp.push_back(last);
+        return temp;
     }
 };
