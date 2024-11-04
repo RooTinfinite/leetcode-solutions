@@ -1,38 +1,26 @@
 class Solution {
     public String compressedString(String word) {
-        // Handle empty string case
-        if (word.isEmpty()) {
-            return "";
-        }
-        
-        // Initialize result StringBuilder
-        StringBuilder comp = new StringBuilder();
-        
-        // Initialize counter and first character
-        int cnt = 1;
-        char ch = word.charAt(0);
-        
-        // Iterate through string starting from second character
-        for (int i = 1; i < word.length(); i++) {
-            // If current character matches previous and count < 9
-            // increment counter
-            if (word.charAt(i) == ch && cnt < 9) {
-                cnt++;
+        StringBuilder sb=new StringBuilder();
+        int count=0,j=0;
+        for(int i=0;i<word.length();++i){
+            j=i;
+            char c=word.charAt(i);
+            while(j<word.length() && word.charAt(j)==c){
+                ++count;
+                ++j;
             }
-            // If character changes or count reaches 9
-            // append count and character to result
-            else {
-                comp.append(cnt);    // Convert count to string and append
-                comp.append(ch);     // Append the character
-                ch = word.charAt(i); // Update current character
-                cnt = 1;            // Reset counter for new character
+            while(count>9){
+                sb.append('9');
+                sb.append(c);
+                count-=9;
+
             }
+            sb.append((char)(count+'0'));
+            sb.append(c);
+            count=0;
+            i=j-1;
+
         }
-        
-        // Handle the last group of characters
-        comp.append(cnt);    // Append final count
-        comp.append(ch);     // Append final character
-        
-        return comp.toString();
+        return sb.toString();
     }
 }
