@@ -4,22 +4,26 @@ public:
         if (word.empty()) return "";
         
         string comp;
-        comp.reserve(word.length()); // Pre-allocate memory
+        comp.reserve(word.size() * 2);  // Maximum possible size
         
-        int count = 1;
-        char current = word[0];
+        char ch = word[0];
+        int cnt = 1;
         
-        for (size_t i = 1; i < word.length(); ++i) {
-            if (word[i] == current && count < 9) {
-                count++;
+        #pragma unroll
+        for (int i = 1; i < word.size(); ++i) {
+            if (word[i] == ch && cnt < 9) {
+                ++cnt;
             } else {
-                comp += to_string(count) + current;
-                current = word[i];
-                count = 1;
+                comp += (cnt + '0');
+                comp += ch;
+                ch = word[i];
+                cnt = 1;
             }
         }
         
-        comp += to_string(count) + current;
+        comp += (cnt + '0');
+        comp += ch;
+        
         return comp;
     }
 };
