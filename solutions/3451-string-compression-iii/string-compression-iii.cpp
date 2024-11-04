@@ -1,29 +1,28 @@
 class Solution {
 public:
     string compressedString(string word) {
-        if (word.empty()) return "";
-        
-        string comp;
-        comp.reserve(word.size() * 2);  // Maximum possible size
-        
-        char ch = word[0];
-        int cnt = 1;
-        
-        #pragma unroll
-        for (int i = 1; i < word.size(); ++i) {
-            if (word[i] == ch && cnt < 9) {
-                ++cnt;
-            } else {
-                comp += (cnt + '0');
-                comp += ch;
-                ch = word[i];
-                cnt = 1;
+        string temp;
+        char last=word[0];
+        int cnt=1;
+        for(int i=1; i<word.size(); i++){
+            if(last==word[i]){
+                if(cnt<9){
+                    ++cnt;
+                    continue;
+                }else{
+                    temp.push_back(cnt+'0');
+                    temp.push_back(last);
+                    cnt=1;
+                }
+            }else{
+                temp.push_back(cnt+'0');
+                temp.push_back(last);
+                cnt=1;
+                last=word[i];
             }
         }
-        
-        comp += (cnt + '0');
-        comp += ch;
-        
-        return comp;
+        temp.push_back(cnt+'0');
+        temp.push_back(last);
+        return temp;
     }
 };
