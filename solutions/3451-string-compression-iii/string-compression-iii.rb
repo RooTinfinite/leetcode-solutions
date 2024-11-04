@@ -7,7 +7,6 @@ def compressed_string(word)
     
     # Initialize counter to track consecutive character occurrences
     cnt = 1
-    
     # Initialize first character to process
     ch = word[0]
     
