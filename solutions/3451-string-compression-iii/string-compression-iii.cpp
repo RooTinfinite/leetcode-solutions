@@ -3,19 +3,16 @@ public:
     string compressedString(string word) {
         if (word.empty()) return "";
         
+        // Pre-allocate memory to avoid reallocations
         string comp;
-        comp.reserve(word.size());
+        comp.reserve(word.size() * 2);
         
-        #pragma GCC optimize("Ofast")
-        #pragma GCC target("avx,avx2,fma")
-        
-        char ch = word[0];
         int cnt = 1;
-        int n = word.size();
+        char ch = word[0];
         
-        for (int i = 1; i < n; i++) {
-            if (__builtin_expect((word[i] == ch && cnt < 9), 1)) {
-                cnt++;
+        for (size_t i = 1; i < word.size(); ++i) {
+            if (word[i] == ch && cnt < 9) {
+                ++cnt;
             } else {
                 comp += (cnt + '0');
                 comp += ch;
@@ -27,6 +24,6 @@ public:
         comp += (cnt + '0');
         comp += ch;
         
-        return move(comp);
+        return comp;
     }
 };
