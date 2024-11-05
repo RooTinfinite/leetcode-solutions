@@ -1,24 +1,14 @@
 class Solution {
 public:
     string makeFancyString(string s) {
-        string ret;
-        int cnt = 1;
-        char prev = '\0';
-        
-        for (char c : s) {
-            if (c == prev) {
-                cnt++;
-            } else {
-                cnt = 1;
-            }
-            
-            prev = c;
-            
-            if (cnt < 3) {
-                ret += c;
-            }
-        }
-        
-        return ret;
+    if(s.length()<3) {
+        return s;
     }
+    int j = 2;
+    for (int i = 2; i < s.size(); ++i)
+        if (s[i] != s[j - 1] || s[i] != s[j - 2])
+            s[j++] = s[i];
+    s.resize(j);
+    return s;
+}
 };
