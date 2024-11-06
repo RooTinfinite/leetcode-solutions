@@ -1,27 +1,23 @@
 class Solution {
 public:
     bool canSortArray(vector<int>& nums) {
-        int n = nums.size();
-
-        // Avoid modifying the input directly
-        // Create a copy of the input array
-        vector<int> values = nums;
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
-                if (values[j] <= values[j + 1]) {
-                    // No swap needed
-                    continue;
-                } else {
-                    if (__builtin_popcount(nums[j]) ==
-                        __builtin_popcount(nums[j + 1])) {
-                        // Swap the elements
-                        swap(values[j], values[j + 1]);
-                    } else {
-                        return false;
-                    }
-                }
+        vector<pair<int,int>>mm;
+        mm.push_back({nums[0],nums[0]});
+        for(int i = 1 ; i < nums.size() ;i++)
+        {
+            int cur = __builtin_popcount(nums[i]);
+            int prev = __builtin_popcount(nums[i-1]);
+            if(cur != prev)
+            {   
+                mm.push_back({nums[i],nums[i]});
             }
+            mm.back().first = min(mm.back().first,nums[i]);
+            mm.back().second = max(mm.back().second,nums[i]);
+        }
+        for(int i = 1 ; i < mm.size() ; i++)
+        {
+            if(mm[i-1].second > mm[i].first)
+                return false;
         }
         return true;
     }
