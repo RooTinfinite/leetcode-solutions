@@ -1,46 +1,50 @@
 public class Solution {
     public bool CanSortArray(int[] nums) {
-        // Store pairs of (min, max) values for each group of numbers with same bit count
-        List<(int min, int max)> mm = new List<(int min, int max)>();
+        int n = nums.Length;
         
-        // Initialize first group with first number
-        mm.Add((nums[0], nums[0]));
-        
-        // Iterate through array starting from second element
-        for (int i = 1; i < nums.Length; i++)
-        {
-            // Get bit count of current and previous numbers
-            int cur = BitCount(nums[i]);
-            int prev = BitCount(nums[i-1]);
-            
-            // If bit counts are different, start a new group
-            if (cur != prev)
-            {   
-                mm.Add((nums[i], nums[i]));
+        // Create a copy of input array to work with
+        int[] values = new int[n];
+        Array.Copy(nums, values, n);
+
+        // Forward pass - check and swap from left to right
+        for (int i = 0; i < n - 1; i++) {
+            // Skip if elements are already in order
+            if (values[i] <= values[i + 1]) continue;
+            else {
+                // Check if adjacent elements have same number of set bits
+                if (BitCount(values[i]) == BitCount(values[i + 1])) {
+                    // Swap elements if they have same number of set bits
+                    int temp = values[i];
+                    values[i] = values[i + 1];
+                    values[i + 1] = temp;
+                } 
+                else return false; // Cannot swap elements with different number of set bits
             }
-            
-            // Update min and max values of current group
-            var last = mm[mm.Count - 1];
-            mm[mm.Count - 1] = (Math.Min(last.min, nums[i]), Math.Max(last.max, nums[i]));
         }
-        
-        // Check if groups can be sorted
-        // For array to be sortable, max of previous group should be less than min of next group
-        for (int i = 1; i < mm.Count; i++)
-        {
-            if (mm[i-1].max > mm[i].min)
-                return false;
+
+        // Backward pass - check and swap from right to left
+        for (int i = n - 1; i >= 1; i--) {
+            // Skip if elements are already in order
+            if (values[i] >= values[i - 1]) continue;
+            else {
+                // Check if adjacent elements have same number of set bits
+                if (BitCount(values[i]) == BitCount(values[i - 1])) {
+                    // Swap elements if they have same number of set bits
+                    int temp = values[i];
+                    values[i] = values[i - 1];
+                    values[i - 1] = temp;
+                } 
+                else return false; // Cannot swap elements with different number of set bits
+            }
         }
-        
-        // If all groups can be sorted, return true
+
+        // Array can be sorted if we reach here
         return true;
     }
     
-    private int BitCount(int n)
-    {
+    private int BitCount(int n) {
         int count = 0;
-        while (n != 0)
-        {
+        while (n != 0) {
             count += n & 1;
             n >>= 1;
         }
