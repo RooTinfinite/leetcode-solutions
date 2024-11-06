@@ -1,36 +1,35 @@
 class Solution:
     def canSortArray(self, nums: List[int]) -> bool:
-        # Store groups of numbers with same bit count
-        groups = []
-        # Current group being built
-        curr = []
-        # Track bit count of current group
-        currBits = None
+        n = len(nums)
         
-        # Iterate through each number
-        for num in nums:
-            # If this is start of first group, set the bit count
-            if not currBits:
-                currBits = num.bit_count()
-            
-            # If number has same bits as current group, add to current group
-            if num.bit_count() == currBits:
-                curr.append(num)
-            # If different bit count, start new group
+        # Create a copy of input array to work with
+        values = nums.copy()
+        
+        # Forward pass - check and swap from left to right
+        for i in range(n - 1):
+            # Skip if elements are already in order
+            if values[i] <= values[i + 1]:
+                continue
             else:
-                currBits = num.bit_count()
-                groups.append(curr)
-                curr = [num]
+                # Check if adjacent elements have same number of set bits
+                if bin(values[i]).count('1') == bin(values[i + 1]).count('1'):
+                    # Swap elements if they have same number of set bits
+                    values[i], values[i + 1] = values[i + 1], values[i]
+                else:
+                    return False
         
-        # Add final group if exists
-        if curr:
-            groups.append(curr)
-
-        # Create result by sorting each group internally
-        out = []
-        for g in groups:
-            out += sorted(g)
-            
-        # Check if result matches fully sorted array
-        # If equal, means we can sort by swapping within groups
-        return out == sorted(nums)
+        # Backward pass - check and swap from right to left
+        for i in range(n - 1, 0, -1):
+            # Skip if elements are already in order
+            if values[i] >= values[i - 1]:
+                continue
+            else:
+                # Check if adjacent elements have same number of set bits
+                if bin(values[i]).count('1') == bin(values[i - 1]).count('1'):
+                    # Swap elements if they have same number of set bits
+                    values[i], values[i - 1] = values[i - 1], values[i]
+                else:
+                    return False
+        
+        # Array can be sorted if we reach here
+        return True
