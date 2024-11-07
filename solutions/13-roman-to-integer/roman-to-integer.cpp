@@ -1,26 +1,24 @@
 class Solution {
+    static int  calcScale( char c , char a1 , char a2 ) {
+        return (c == a1 || c == a2) ? -1 : +1;
+    }
 public:
     int romanToInt(string s) {
-        unordered_map<char, int> m;
-        
-        m['I'] = 1;
-        m['V'] = 5;
-        m['X'] = 10;
-        m['L'] = 50;
-        m['C'] = 100;
-        m['D'] = 500;
-        m['M'] = 1000;
-        
-        int ans = 0;
-        
-        for(int i = 0; i < s.length(); i++){
-            if(m[s[i]] < m[s[i+1]]){
-                ans -= m[s[i]];
-            }
-            else{
-                ans += m[s[i]];
+        int     result = 0;
+
+        for( size_t n = 0 ; n < s.size() ; ++n )
+        {
+            switch( s[n] )
+            {
+            case 'M':   result += 1000; break;
+            case 'D':   result +=  500; break;
+            case 'C':   result +=  100 * calcScale( s[n+1] , 'M' , 'D' ); break;
+            case 'L':   result +=   50; break;
+            case 'X':   result +=   10 * calcScale( s[n+1] , 'C' , 'L' ); break;
+            case 'V':   result +=    5; break;
+            case 'I':   result +=    1 * calcScale( s[n+1] , 'X' , 'V' ); break;
             }
         }
-        return ans;
+        return result;
     }
 };
