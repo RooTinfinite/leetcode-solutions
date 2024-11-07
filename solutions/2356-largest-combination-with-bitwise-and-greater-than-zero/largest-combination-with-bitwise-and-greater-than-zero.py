@@ -1,6 +1,7 @@
-BitMax = 24
+
 class Solution:
     def largestCombination(self, candidates: List[int]) -> int:
+        BitMax = 24
         max_set = 1
         mask = 1
         for shift in range(BitMax):
