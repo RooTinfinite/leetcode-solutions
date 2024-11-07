@@ -1,24 +1,21 @@
 public class Solution {
-    private static int CalcScale(char c, char a1, char a2) {
-        return (c == a1 || c == a2) ? -1 : 1;
-    }
-    
     public int RomanToInt(string s) {
-        int result = 0;
+        Dictionary<char, int> roman = new Dictionary<char, int> {
+            {'I', 1}, {'V', 5}, {'X', 10},
+            {'L', 50}, {'C', 100}, {'D', 500}, {'M', 1000}
+        };
         
-        for (int n = 0; n < s.Length; n++) {
-            char nextChar = (n + 1 < s.Length) ? s[n + 1] : '\0';
-            
-            switch (s[n]) {
-                case 'M': result += 1000; break;
-                case 'D': result += 500; break;
-                case 'C': result += 100 * CalcScale(nextChar, 'M', 'D'); break;
-                case 'L': result += 50; break;
-                case 'X': result += 10 * CalcScale(nextChar, 'C', 'L'); break;
-                case 'V': result += 5; break;
-                case 'I': result += 1 * CalcScale(nextChar, 'X', 'V'); break;
+        int n = s.Length;
+        int result = roman[s[n-1]];
+        
+        for(int i = n-2; i >= 0; i--) {
+            if(roman[s[i]] < roman[s[i+1]]) {
+                result -= roman[s[i]];
+            } else {
+                result += roman[s[i]];
             }
         }
+        
         return result;
     }
 }
