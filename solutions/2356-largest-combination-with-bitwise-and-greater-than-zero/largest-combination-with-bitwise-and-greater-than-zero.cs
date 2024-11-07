@@ -1,27 +1,20 @@
 public class Solution {
-    public int LargestCombination(int[] candidates) {
-        int[] ans = new int[32];
-        
-        foreach(int x in candidates) {
-            Find(x, ans);
-        }
-        
-        int res = 0;
-        for(int i = 0; i < 32; i++) {
-            res = Math.Max(res, ans[i]);
-        }
-        
-        return res;
-    }
+    private const int BitMax = 24;
     
-    private void Find(int n, int[] ans) {
-        int j = 31;
+    public int LargestCombination(int[] candidates) {
+        int maxSet = 1;
+        int mask = 1;
         
-        while(n > 0) {
-            int a = (n & 1);
-            ans[j] += a;
-            n >>= 1;
-            j--;
+        for (int shift = 0; shift < BitMax; shift++) {
+            int count = 0;
+            foreach (int num in candidates) {
+                if ((num & mask) != 0) {
+                    count++;
+                }
+            }
+            maxSet = Math.Max(maxSet, count);
+            mask <<= 1;
         }
+        return maxSet;
     }
 }
