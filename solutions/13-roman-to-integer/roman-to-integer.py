@@ -1,17 +1,26 @@
 class Solution:
+    @staticmethod
+    def calc_scale(c: str, a1: str, a2: str) -> int:
+        return -1 if c == a1 or c == a2 else 1
+        
     def romanToInt(self, s: str) -> int:
+        result = 0
         
-        roman = {"I": 1, "V":5, "X":10, "L":50, "C":100, "D":500, "M":1000}
-        
-        n = len(s)
-        result = roman[s[n-1]]
-        
-        for i in range(n-2, -1, -1):
-            
-            if roman[s[i]] < roman[s[i+1]]:
-                result = result - roman[s[i]]
-            else:
-                result = result + roman[s[i]]
+        for n in range(len(s)):
+            match s[n]:
+                case 'M':
+                    result += 1000
+                case 'D':
+                    result += 500
+                case 'C':
+                    result += 100 * self.calc_scale(s[n+1] if n+1 < len(s) else '', 'M', 'D')
+                case 'L':
+                    result += 50
+                case 'X':
+                    result += 10 * self.calc_scale(s[n+1] if n+1 < len(s) else '', 'C', 'L')
+                case 'V':
+                    result += 5
+                case 'I':
+                    result += 1 * self.calc_scale(s[n+1] if n+1 < len(s) else '', 'X', 'V')
         
         return result
-        
