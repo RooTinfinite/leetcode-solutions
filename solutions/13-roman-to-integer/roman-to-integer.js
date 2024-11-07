@@ -1,23 +1,19 @@
 // JavaScript
 
 var romanToInt = function(s) {
-    const calcScale = (c, a1, a2) => {
-        return (c === a1 || c === a2) ? -1 : 1;
+    const roman = {
+        'I': 1, 'V': 5, 'X': 10,
+        'L': 50, 'C': 100, 'D': 500, 'M': 1000
     };
     
-    let result = 0;
+    let n = s.length;
+    let result = roman[s[n-1]];
     
-    for (let n = 0; n < s.length; n++) {
-        const nextChar = s[n + 1] || '';
-        
-        switch (s[n]) {
-            case 'M': result += 1000; break;
-            case 'D': result += 500; break;
-            case 'C': result += 100 * calcScale(nextChar, 'M', 'D'); break;
-            case 'L': result += 50; break;
-            case 'X': result += 10 * calcScale(nextChar, 'C', 'L'); break;
-            case 'V': result += 5; break;
-            case 'I': result += 1 * calcScale(nextChar, 'X', 'V'); break;
+    for(let i = n-2; i >= 0; i--) {
+        if(roman[s[i]] < roman[s[i+1]]) {
+            result -= roman[s[i]];
+        } else {
+            result += roman[s[i]];
         }
     }
     
