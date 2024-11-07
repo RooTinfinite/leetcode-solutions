@@ -1,14 +1,17 @@
 class Solution:
     def largestCombination(self, candidates: List[int]) -> int:
-        BitMax = 24
-        max_set = 1
-        mask = 1
-        for shift in range(BitMax):
-            count = 0
-            for num in candidates:
-                if num & mask:
-                    count += 1
-            if max_set < count:
-                max_set = count
-            mask <<= 1
-        return max_set
+        ans = [0] * 32
+        
+        for x in candidates:
+            self.find(x, ans)
+        
+        return max(ans)
+    
+    def find(self, n: int, ans: list) -> None:
+        j = 31
+        
+        while n > 0:
+            a = n & 1
+            ans[j] += a
+            n >>= 1
+            j -= 1
