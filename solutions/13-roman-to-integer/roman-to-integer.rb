@@ -1,29 +1,17 @@
 def roman_to_int(s)
-    def calc_scale(c, a1, a2)
-        (c == a1 || c == a2) ? -1 : 1
-    end
+    roman = {
+        'I' => 1, 'V' => 5, 'X' => 10,
+        'L' => 50, 'C' => 100, 'D' => 500, 'M' => 1000
+    }
     
-    result = 0
-    chars = s.chars
+    n = s.length
+    result = roman[s[n-1]]
     
-    (0...chars.length).each do |n|
-        next_char = chars[n + 1]
-        
-        case chars[n]
-        when 'M'
-            result += 1000
-        when 'D'
-            result += 500
-        when 'C'
-            result += 100 * calc_scale(next_char, 'M', 'D')
-        when 'L'
-            result += 50
-        when 'X'
-            result += 10 * calc_scale(next_char, 'C', 'L')
-        when 'V'
-            result += 5
-        when 'I'
-            result += 1 * calc_scale(next_char, 'X', 'V')
+    (n-2).downto(0) do |i|
+        if roman[s[i]] < roman[s[i+1]]
+            result -= roman[s[i]]
+        else
+            result += roman[s[i]]
         end
     end
     
