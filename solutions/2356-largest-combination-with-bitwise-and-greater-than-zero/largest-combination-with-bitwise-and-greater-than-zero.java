@@ -1,11 +1,11 @@
-class Solution {
-    private static final int BitMax = 24;
+public class Solution {
+    private static final int BIT_MAX = 24;
     
     public int largestCombination(int[] candidates) {
         int maxSet = 1;
         int mask = 1;
         
-        for (int shift = 0; shift < BitMax; shift++) {
+        for (int shift = 0; shift < BIT_MAX; shift++) {
             int count = 0;
             for (int num : candidates) {
                 if ((num & mask) != 0) {
