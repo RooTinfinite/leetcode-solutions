@@ -1,20 +1,28 @@
 class Solution {
 public:
     int largestCombination(vector<int>& candidates) {
-        const int BitMax = 24;
-        int maxSet = 1;
-        int mask = 1;
+        vector<int> ans(32, 0);
         
-        for (int shift = 0; shift < BitMax; shift++) {
-            int count = 0;
-            for (int num : candidates) {
-                if (num & mask) {
-                    count++;
-                }
-            }
-            maxSet = max(maxSet, count);
-            mask <<= 1;
+        for(int x : candidates) {
+            find(x, ans);
         }
-        return maxSet;
+        
+        int res = 0;
+        for(int i = 0; i < 32; i++) {
+            res = max(res, ans[i]);
+        }
+        
+        return res;
+    }
+    
+    void find(int n, vector<int>& ans) {
+        int j = 31;
+        
+        while(n > 0) {
+            int a = (n & 1);
+            ans[j] += a;
+            n >>= 1;
+            j--;
+        }
     }
 };
