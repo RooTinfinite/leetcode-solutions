@@ -1,27 +1,22 @@
 class Solution {
-    static func calcScale(_ c: Character?, _ a1: Character, _ a2: Character) -> Int {
-        guard let c = c else { return 1 }
-        return (c == a1 || c == a2) ? -1 : 1
-    }
-    
     func romanToInt(_ s: String) -> Int {
-        var result = 0
-        let chars = Array(s)
+        let roman: [Character: Int] = [
+            "I": 1, "V": 5, "X": 10,
+            "L": 50, "C": 100, "D": 500, "M": 1000
+        ]
         
-        for n in 0..<chars.count {
-            let nextChar = n + 1 < chars.count ? chars[n + 1] : nil
-            
-            switch chars[n] {
-            case "M": result += 1000
-            case "D": result += 500
-            case "C": result += 100 * Solution.calcScale(nextChar, "M", "D")
-            case "L": result += 50
-            case "X": result += 10 * Solution.calcScale(nextChar, "C", "L")
-            case "V": result += 5
-            case "I": result += 1 * Solution.calcScale(nextChar, "X", "V")
-            default: break
+        let chars = Array(s)
+        let n = chars.count
+        var result = roman[chars[n-1]]!
+        
+        for i in stride(from: n-2, through: 0, by: -1) {
+            if roman[chars[i]]! < roman[chars[i+1]]! {
+                result -= roman[chars[i]]!
+            } else {
+                result += roman[chars[i]]!
             }
         }
+        
         return result
     }
 }
