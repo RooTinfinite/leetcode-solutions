@@ -1,4 +1,4 @@
-public class Solution {
+class Solution {
     public int[] GetMaximumXor(int[] nums, int maximumBit) {
         int mask = (1 << maximumBit) - 1;
         int n = nums.Length;
