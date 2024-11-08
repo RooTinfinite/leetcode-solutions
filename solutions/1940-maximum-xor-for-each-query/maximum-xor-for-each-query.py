@@ -7,6 +7,6 @@ class Solution:
         
         for i in range(n):
             curr ^= nums[i]
-            res[n-i-1] = ~curr & mask
+            res[n-1-i] = curr ^ mask
             
         return res
