@@ -6,7 +6,7 @@ def get_maximum_xor(nums, maximum_bit)
     
     n.times do |i|
         curr ^= nums[i]
-        res[n-i-1] = ~curr & mask
+        res[n-1-i] = curr ^ mask
     end
     
     res
