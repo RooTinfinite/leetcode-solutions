@@ -1,3 +1,5 @@
+// TypeScript
+
 function minEnd(n: number, x: number): number {
     let result: bigint = BigInt(x);
     let remaining: bigint = BigInt(n - 1);
