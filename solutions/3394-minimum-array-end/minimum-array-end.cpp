@@ -1,6 +1,6 @@
 class Solution {
 public:
-    long long minEnd(int n, int x) {
+    long minEnd(int n, int x) {
         long result = x;
         long remaining = n - 1;
         long position = 1;
