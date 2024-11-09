@@ -1,9 +1,9 @@
 class Solution {
 public:
     long long minEnd(int n, int x) {
-        long long result = x;
-        long long remaining = n - 1;
-        long long position = 1;
+        long result = x;
+        long remaining = n - 1;
+        long position = 1;
         
         while (remaining) {
             if (!(x & position)) {
