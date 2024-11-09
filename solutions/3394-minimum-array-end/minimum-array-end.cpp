@@ -1,15 +1,20 @@
 class Solution {
 public:
     long long minEnd(int n, int x) {
-        long long result = x;
+        vector<short> shifts;
+        long long cur = x;
+        long long calc = n - 1;
+        
+        for(int i = 0; i < 32; i++) 
+            if(!((1 << i) & x))
+                shifts.push_back(i);
+        for(int i = 32; i < 64; i++)
+            shifts.push_back(i);
 
-        // Step 1: Iterate n-1 times (since we already initialized result with
-        // x)
-        while (--n) {
-            // Step 2: Increment result and perform bitwise OR with x
-            result = (result + 1) | x;
+        
+        for(int i = 0; calc > 0; i++, calc >>= 1) {
+            cur += (calc & 1) << shifts[i];
         }
-
-        return result;
+        return cur;
     }
 };
