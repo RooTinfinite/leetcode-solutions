@@ -1,3 +1,5 @@
+// JavaScript
+
 var minEnd = function(n, x) {
     let result = BigInt(x);
     let remaining = BigInt(n - 1);
