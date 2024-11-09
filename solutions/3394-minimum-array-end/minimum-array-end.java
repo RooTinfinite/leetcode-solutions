@@ -1,32 +1,21 @@
 public class Solution {
+
     public long minEnd(int n, int x) {
-        // Store available bit positions that are 0 in x
-        ArrayList<Integer> shifts = new ArrayList<>();
-        
-        // Initialize result with starting number x
-        long cur = x;
-        
-        // Calculate how many 1's we need to add (n-1)
-        long calc = n - 1;
-        
-        // Find all bit positions that are 0 in x (up to 32 bits)
-        for(int i = 0; i < 32; i++) {
-            if((x & (1 << i)) == 0) {
-                shifts.add(i);
+        long result = x;
+        long mask;
+        n--; // Reducing n by 1 to exclude x from the iteration
+
+        // Step 1: Iterate over each bit position with mask starting at 1 and shifting left
+        for (mask = 1; n > 0; mask <<= 1) {
+            // Step 2: If the corresponding bit in x is 0
+            if ((mask & x) == 0) {
+                // Set the bit in result based on the least significant bit of n
+                result |= (n & 1) * mask;
+                // Shift n to the right by 1 to process the next bit
+                n >>= 1;
             }
         }
-        
-        // Add remaining positions 32-63 since long is 64 bit
-        for(int i = 32; i < 64; i++) {
-            shifts.add(i);
-        }
-        
-        // Process each bit in calc (n-1)
-        // If bit is 1, set that bit in next available position from shifts
-        for(int i = 0; calc > 0; i++, calc >>= 1) {
-            cur += (calc & 1L) << shifts.get(i);
-        }
-        
-        return cur;
+
+        return result;
     }
 }
