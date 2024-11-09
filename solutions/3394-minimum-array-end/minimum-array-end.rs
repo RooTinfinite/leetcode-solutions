@@ -1,17 +1,7 @@
+use core::arch::x86_64::_pdep_u64;
+
 impl Solution {
     pub fn min_end(n: i32, x: i32) -> i64 {
-        let mut result = x as i64;
-        let mut remaining = (n - 1) as i64;
-        let mut position: i64 = 1;
-        
-        while remaining != 0 {
-            if (x as i64 & position) == 0 {
-                result |= (remaining & 1) * position;
-                remaining >>= 1;
-            }
-            position <<= 1;
-        }
-        
-        result
+        return unsafe { (x as u64 | _pdep_u64(n as u64 - 1u64, !(x as u64))) as i64 };
     }
 }
