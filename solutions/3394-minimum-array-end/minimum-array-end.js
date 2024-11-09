@@ -1,20 +1,15 @@
-
 var minEnd = function(n, x) {
-    let num = BigInt(x) , one = BigInt(1);
-
-    let unsetBits = [];
-    for (let bit = 0n ; bit < 63n ; bit++) {
-        if(num >> bit & one ^ one) {
-            unsetBits.push(bit);
+    let result = BigInt(x);
+    let remaining = BigInt(n - 1);
+    let position = 1n;
+    
+    while (remaining > 0n) {
+        if ((BigInt(x) & position) === 0n) {
+            result |= (remaining & 1n) * position;
+            remaining >>= 1n;
         }
+        position <<= 1n;
     }
-
-    let mask = BigInt(n - 1);
-    for (let index = 0n ; index < unsetBits.length ; index++) {
-        if (mask >> index & one) {
-            console.log(unsetBits[index]);
-            num |= one << unsetBits[index];
-        }
-    }
-    return Number(num);
+    
+    return Number(result);
 };
