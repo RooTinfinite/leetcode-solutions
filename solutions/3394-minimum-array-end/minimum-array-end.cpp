@@ -1,18 +1,8 @@
+#include <immintrin.h>
+#define BMI2 __attribute__((__target__("bmi2")))
 class Solution {
 public:
-    long minEnd(int n, int x) {
-        long result = x;
-        long remaining = n - 1;
-        long position = 1;
-        
-        while (remaining) {
-            if (!(x & position)) {
-                result |= (remaining & 1) * position;
-                remaining >>= 1;
-            }
-            position <<= 1;
-        }
-        
-        return result;
+    static long long minEnd(const uint n, const uint x) BMI2 {
+        return x | _pdep_u64(n - 1u, ~uint64_t(x));
     }
 };
