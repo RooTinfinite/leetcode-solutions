@@ -11,14 +11,12 @@ public:
             s |= num;
             int i = 0;
             
-            // Counting bits in num
             while (num > 0) {
                 cnt[i] += num % 2;
                 num /= 2;
                 ++i;
             }
 
-            // Shrink window from the left
             while (s >= k && left <= right) {
                 ans = std::min(right - left + 1, ans);
                 num = nums[left];
