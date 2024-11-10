@@ -1,31 +1,22 @@
 class Solution:
     def minimumSubarrayLength(self, nums: List[int], k: int) -> int:
-        if k == 0:
-            return 1
-        shortest = len(nums) + 1
-        count = [0] * 32
-        val = 0
-        start = 0
-        
-        for i in range(len(nums)):
-            num = nums[i]
-            val |= num
-            ibit = 0
-            while num:
-                count[ibit] += num & 1
-                num >>= 1
-                ibit += 1
-                
-            while val >= k and start < len(nums):
-                shortest = min(shortest, i - start + 1)
-                num = nums[start]
-                start += 1
-                ibit = 0
-                while num:
-                    count[ibit] -= num & 1
-                    if count[ibit] == 0:
-                        val &= ~(1 << ibit)
-                    num >>= 1
-                    ibit += 1
-                    
-        return -1 if shortest == len(nums) + 1 else shortest
+        ans, s, left, cnt = inf, 0, 0, [0]*32
+        for right, num in enumerate(nums):
+            s |= num
+            i = 0
+            while num > 0:
+                cnt[i] += num % 2
+                num //= 2
+                i += 1
+            while s >= k and left <= right:
+                ans = min(right - left + 1, ans)
+                num, i = nums[left], 0
+                while num > 0:
+                    if num % 2:
+                        cnt[i] -= 1
+                        if not cnt[i]:
+                            s ^= 1 << i
+                    num //= 2
+                    i += 1
+                left += 1
+        return -1 if ans == inf else ans
