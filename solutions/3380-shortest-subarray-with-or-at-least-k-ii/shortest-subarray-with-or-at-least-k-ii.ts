@@ -1,31 +1,38 @@
+//TypeScript
+
 function minimumSubarrayLength(nums: number[], k: number): number {
-    if (k === 0) {
-        return 1;
-    }
-    let shortest = nums.length + 1;
-    const count = new Array(32).fill(0);
-    let val = 0;
-    let start = 0;
+    let ans = Infinity;
+    let s = 0;
+    let left = 0;
+    const cnt = new Array(32).fill(0);
     
-    for (let i = 0; i < nums.length; ++i) {
-        let num = nums[i];
-        val |= num;
-        for (let ibit = 0; num !== 0; ++ibit) {
-            count[ibit] += num & 1;
-            num >>= 1;
+    for (let right = 0; right < nums.length; right++) {
+        let num = nums[right];
+        s |= num;
+        let i = 0;
+        let temp = num;
+        while (temp > 0) {
+            cnt[i] += temp % 2;
+            temp = Math.floor(temp / 2);
+            i++;
         }
-        while (val >= k && start < nums.length) {
-            shortest = Math.min(shortest, i - start + 1);
-            num = nums[start];
-            ++start;
-            for (let ibit = 0; num !== 0; ++ibit) {
-                count[ibit] -= num & 1;
-                if (count[ibit] === 0) {
-                    val &= ~(1 << ibit);
+        
+        while (s >= k && left <= right) {
+            ans = Math.min(right - left + 1, ans);
+            temp = nums[left];
+            i = 0;
+            while (temp > 0) {
+                if (temp % 2) {
+                    cnt[i]--;
+                    if (cnt[i] === 0) {
+                        s ^= 1 << i;
+                    }
                 }
-                num >>= 1;
+                temp = Math.floor(temp / 2);
+                i++;
             }
+            left++;
         }
     }
-    return shortest === (nums.length + 1) ? -1 : shortest;
+    return ans === Infinity ? -1 : ans;
 }
