@@ -1,21 +1,33 @@
 var minimumSubarrayLength = function(nums, k) {
-    let ans = Infinity;
-    let d = new Map();
+    if (k === 0) {
+        return 1;
+    }
+    let shortest = nums.length + 1;
+    const count = new Array(32).fill(0);
+    let val = 0;
+    let start = 0;
     
     for (let i = 0; i < nums.length; i++) {
-        const temp = new Map();
-        for (const [or_, left] of d.entries()) {
-            temp.set(or_ | nums[i], left);
+        let num = nums[i];
+        val |= num;
+        for (let ibit = 0; num; ibit++) {
+            count[ibit] += num & 1;
+            num >>= 1;
         }
-        temp.set(nums[i], i);
-        d = temp;
         
-        for (const [or_, left] of d.entries()) {
-            if (or_ >= k) {
-                ans = Math.min(ans, i - left + 1);
+        while (val >= k && start < nums.length) {
+            shortest = Math.min(shortest, i - start + 1);
+            num = nums[start];
+            start++;
+            for (let ibit = 0; num; ibit++) {
+                count[ibit] -= num & 1;
+                if (count[ibit] === 0) {
+                    val &= ~(1 << ibit);
+                }
+                num >>= 1;
             }
         }
     }
     
-    return ans === Infinity ? -1 : ans;
+    return shortest === nums.length + 1 ? -1 : shortest;
 };
