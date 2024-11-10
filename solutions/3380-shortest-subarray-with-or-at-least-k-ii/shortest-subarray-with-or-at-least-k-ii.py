@@ -1,22 +1,18 @@
 class Solution:
     def minimumSubarrayLength(self, nums: List[int], k: int) -> int:
-        ans, s, left, cnt = inf, 0, 0, [0]*32
+        min_length = float('inf')
+        or_to_index = {}  # tracks leftmost index for each OR value
+        
         for right, num in enumerate(nums):
-            s |= num
-            i = 0
-            while num > 0:
-                cnt[i] += num % 2
-                num //= 2
-                i += 1
-            while s >= k and left <= right:
-                ans = min(right - left + 1, ans)
-                num, i = nums[left], 0
-                while num > 0:
-                    if num % 2:
-                        cnt[i] -= 1
-                        if not cnt[i]:
-                            s ^= 1 << i
-                    num //= 2
-                    i += 1
-                left += 1
-        return -1 if ans == inf else ans
+            # Update existing OR values with new number
+            new_or_values = {or_val | num: left for or_val, left in or_to_index.items()}
+            # Add the new number itself
+            new_or_values[num] = right
+            or_to_index = new_or_values
+            
+            # Check for valid subarrays
+            for or_val, left in or_to_index.items():
+                if or_val >= k:
+                    min_length = min(min_length, right - left + 1)
+                    
+        return min_length if min_length != float('inf') else -1
