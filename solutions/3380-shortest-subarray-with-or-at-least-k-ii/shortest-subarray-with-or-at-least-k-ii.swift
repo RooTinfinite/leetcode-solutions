@@ -1,37 +1,38 @@
 class Solution {
     func minimumSubarrayLength(_ nums: [Int], _ k: Int) -> Int {
-        if k == 0 {
-            return 1
-        }
-        var shortest = nums.count + 1
-        var count = Array(repeating: 0, count: 32)
-        var val = 0
-        var start = 0
+        var ans = Int.max
+        var s = 0
+        var left = 0
+        var cnt = Array(repeating: 0, count: 32)
         
-        for i in 0..<nums.count {
-            var num = nums[i]
-            val |= num
-            var ibit = 0
-            while num != 0 {
-                count[ibit] += num & 1
-                num >>= 1
-                ibit += 1
+        for right in 0..<nums.count {
+            let num = nums[right]
+            s |= num
+            var i = 0
+            var temp = num
+            while temp > 0 {
+                cnt[i] += temp % 2
+                temp /= 2
+                i += 1
             }
-            while val >= k && start < nums.count {
-                shortest = min(shortest, i - start + 1)
-                num = nums[start]
-                start += 1
-                ibit = 0
-                while num != 0 {
-                    count[ibit] -= num & 1
-                    if count[ibit] == 0 {
-                        val &= ~(1 << ibit)
+            
+            while s >= k && left <= right {
+                ans = min(right - left + 1, ans)
+                temp = nums[left]
+                i = 0
+                while temp > 0 {
+                    if temp % 2 == 1 {
+                        cnt[i] -= 1
+                        if cnt[i] == 0 {
+                            s ^= 1 << i
+                        }
                     }
-                    num >>= 1
-                    ibit += 1
+                    temp /= 2
+                    i += 1
                 }
+                left += 1
             }
         }
-        return shortest == (nums.count + 1) ? -1 : shortest
+        return ans == Int.max ? -1 : ans
     }
 }
