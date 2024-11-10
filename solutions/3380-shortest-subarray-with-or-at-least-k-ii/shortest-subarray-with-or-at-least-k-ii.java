@@ -1,33 +1,36 @@
 class Solution {
     public int minimumSubarrayLength(int[] nums, int k) {
-        if (k == 0) {
-            return 1;
-        }
-        int shortest = nums.length + 1;
-        int[] count = new int[32];
-        int val = 0;
-        int start = 0;
+        int ans = Integer.MAX_VALUE, s = 0, left = 0;
+        int[] cnt = new int[32];
         
-        for (int i = 0; i < nums.length; ++i) {
-            int num = nums[i];
-            val |= num;
-            for (int ibit = 0; num != 0; ++ibit) {
-                count[ibit] += num & 1;
-                num >>= 1;
+        for (int right = 0; right < nums.length; right++) {
+            int num = nums[right];
+            s |= num;
+            int i = 0;
+            int temp = num;
+            while (temp > 0) {
+                cnt[i] += temp % 2;
+                temp /= 2;
+                i++;
             }
-            while (val >= k && start < nums.length) {
-                shortest = Math.min(shortest, i - start + 1);
-                num = nums[start];
-                ++start;
-                for (int ibit = 0; num != 0; ++ibit) {
-                    count[ibit] -= num & 1;
-                    if (count[ibit] == 0) {
-                        val &= ~(1 << ibit);
+            
+            while (s >= k && left <= right) {
+                ans = Math.min(right - left + 1, ans);
+                temp = nums[left];
+                i = 0;
+                while (temp > 0) {
+                    if (temp % 2 == 1) {
+                        cnt[i]--;
+                        if (cnt[i] == 0) {
+                            s ^= 1 << i;
+                        }
                     }
-                    num >>= 1;
+                    temp /= 2;
+                    i++;
                 }
+                left++;
             }
         }
-        return shortest == (nums.length + 1) ? -1 : shortest;
+        return ans == Integer.MAX_VALUE ? -1 : ans;
     }
 }
