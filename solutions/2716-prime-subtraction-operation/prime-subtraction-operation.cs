@@ -1,10 +1,10 @@
 public class Solution {
     public bool PrimeSubOperation(int[] nums) {
-        int maxElement = GetMaxElement(nums);
+        int maxElement = nums.Max();
 
         // Create Sieve of Eratosthenes array to identify prime numbers
         bool[] sieve = new bool[maxElement + 1];
-        Fill(sieve, true);
+        Array.Fill(sieve, true);
         sieve[1] = false;
 
         for (int p = 2; p <= Math.Sqrt(maxElement + 1); p++) {
@@ -35,23 +35,5 @@ public class Solution {
             }
         }
         return true;
-    }
-
-    // Helper method to find maximum element in array
-    private int GetMaxElement(int[] nums) {
-        int max = -1;
-        foreach (int num in nums) {
-            if (num > max) {
-                max = num;
-            }
-        }
-        return max;
-    }
-
-    // Helper method to initialize boolean array
-    private void Fill(bool[] arr, bool value) {
-        for (int i = 0; i < arr.Length; i++) {
-            arr[i] = value;
-        }
     }
 }
