@@ -1,28 +1,23 @@
-import math
+valid = [True] * 1001
+valid[0] = valid[1] = False
+for i in range(2, len(valid)):
+    if valid[i]:
+        for j in range(i * i, len(valid), i):
+            valid[j] = False
+primes = [i for i in range(len(valid)) if valid[i]]
+
 
 class Solution:
-    def isPrime(self, number: int) -> bool:
-        if number < 2:
-            return False
-        
-        for i in range(2, int(math.sqrt(number)) + 1):
-            if number % i == 0:
-                return False
-        return True
-    
     def primeSubOperation(self, nums: List[int]) -> bool:
-        for i in range(len(nums)):
-            bound = nums[0] if i == 0 else nums[i] - nums[i-1]
-            
-            if bound <= 0:
+        prev = 0
+        for num in nums:
+            if num <= prev:
                 return False
-            
-            largest_prime = 0
-            for j in range(bound - 1, 1, -1):
-                if self.isPrime(j):
-                    largest_prime = j
-                    break
-            
-            nums[i] -= largest_prime
-        
+
+            i = bisect_left(primes, num - prev) - 1
+            if i != -1:
+                num -= primes[i]
+            prev = num
+
         return True
+                
