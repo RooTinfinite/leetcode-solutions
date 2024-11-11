@@ -1,6 +1,5 @@
-
 func primeSubOperation(nums []int) bool {
-    maxElement := slices.Max(nums)
+    maxElement := getMaxElement(nums)
     
     // Create Sieve of Eratosthenes array to identify prime numbers
     sieve := make([]bool, maxElement+1)
@@ -35,6 +34,17 @@ func primeSubOperation(nums []int) bool {
         }
     }
     return true
+}
+
+// Helper function to find maximum element in array
+func getMaxElement(nums []int) int {
+    max := -1
+    for _, num := range nums {
+        if num > max {
+            max = num
+        }
+    }
+    return max
 }
 
 // Helper function to initialize boolean array
