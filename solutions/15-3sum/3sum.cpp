@@ -1,41 +1,62 @@
 class Solution {
 public:
     vector<vector<int>> threeSum(vector<int>& nums) {
-        sort(nums.begin() , nums.end());    //Sorted Array
-        if(nums.size() < 3){    //Base case 1
-            return {};
+        // Sort array to handle duplicates and optimize searching
+        sort(nums.begin(), nums.end());
+        
+        vector<vector<int>> result;
+        
+        // Handle base cases
+        if (nums.size() < 3 || nums[0] > 0) {
+            return result;
         }
-        if(nums[0] > 0){        //Base case 2
-            return {};
-        }
-        vector<vector<int>> answer;
-        for(int i = 0 ; i < nums.size() ; ++i){     //Traversing the array to fix the number.
-            if(nums[i] > 0){     //If number fixed is +ve, stop there because we can't make it zero by searching after it.
+        
+        // Fix first number and use two pointers for the remaining two numbers
+        for (int i = 0; i < nums.size(); i++) {
+            // Skip positive numbers as first element
+            if (nums[i] > 0) {
                 break;
             }
-            if(i > 0 && nums[i] == nums[i - 1]){    //If number is getting repeated, ignore the lower loop and continue.
+            
+            // Skip duplicates for first number
+            if (i > 0 && nums[i] == nums[i - 1]) {
                 continue;
             }
-            int low = i + 1 , high = nums.size() - 1;   //Make two pointers high and low, and initialize sum as 0.
-            int sum = 0;
-            while(low < high){                          //Search between two pointers, just similiar to binary search.
-                sum = nums[i] + nums[low] + nums[high];
-                if(sum > 0){   //If sum is +ve, means, we need more -ve numbers to make it 0, decreament high (high--).
-                    high--;
-                } else if(sum < 0){ //If sum is -ve, means, we need more +ve numbers to make it 0, increament low (low++).
-                    low++;
-                } else {
-                    answer.push_back({nums[i] , nums[low] , nums[high]});  //we have found the required triplet, push it in answer vector
-                    int last_low_occurence = nums[low] , last_high_occurence = nums[high];  //Now again, to avoid duplicate triplets, we have to navigate to last occurences of num[low] and num[high] respectively
-                    while(low < high && nums[low] == last_low_occurence){   // Update the low and high with last occurences of low and high.
-                        low++;
+            
+            // Use two pointers technique to find remaining two numbers
+            int left = i + 1;
+            int right = nums.size() - 1;
+            
+            while (left < right) {
+                int currentSum = nums[i] + nums[left] + nums[right];
+                
+                if (currentSum == 0) {
+                    // Found a valid triplet
+                    result.push_back({nums[i], nums[left], nums[right]});
+                    
+                    // Skip duplicates for second number
+                    while (left < right && nums[left] == nums[left + 1]) {
+                        left++;
                     }
-                    while(low < high && nums[high] == last_high_occurence){
-                        high--;
+                    
+                    // Skip duplicates for third number
+                    while (left < right && nums[right] == nums[right - 1]) {
+                        right--;
                     }
+                    
+                    // Move both pointers
+                    left++;
+                    right--;
+                }
+                else if (currentSum < 0) {
+                    left++;  // Need larger numbers
+                }
+                else {
+                    right--;  // Need smaller numbers
                 }
             }
         }
-        return answer;      //Return the answer vector.
+        
+        return result;
     }
 };
