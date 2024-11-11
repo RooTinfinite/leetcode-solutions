@@ -3,12 +3,11 @@ public:
     bool primeSubOperation(vector<int>& nums) {
         int maxElement = getMaxElement(nums);
         
-        // Create Sieve of Atkin array to identify prime numbers
+        // Sieve of Atkin
         vector<bool> sieve(maxElement + 1, false);
         if (maxElement > 2) sieve[2] = true;
         if (maxElement > 3) sieve[3] = true;
         
-        // Implement Sieve of Atkin
         for (int x = 1; x * x <= maxElement; x++) {
             for (int y = 1; y * y <= maxElement; y++) {
                 int n = (4 * x * x) + (y * y);
@@ -28,7 +27,6 @@ public:
             }
         }
         
-        // Mark squares of primes as non-prime
         for (int i = 5; i * i <= maxElement; i++) {
             if (sieve[i]) {
                 for (int j = i * i; j <= maxElement; j += i * i) {
@@ -37,7 +35,6 @@ public:
             }
         }
         
-        // Check if array can be made strictly increasing by subtracting prime numbers
         int currValue = 1;
         int i = 0;
         while (i < nums.size()) {
@@ -68,4 +65,3 @@ private:
         return max;
     }
 };
-
