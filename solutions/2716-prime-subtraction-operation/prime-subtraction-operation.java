@@ -1,40 +1,70 @@
 class Solution {
-    // Checks if a number is prime
-    private boolean isPrime(int number) {
-        if (number < 2) return false;
+    
+    ArrayList<Integer> primes = new ArrayList<Integer>();
+    
+    public void getPrimes(){
         
-        for (int i = 2; i <= Math.sqrt(number); i++) {
-            if (number % i == 0) {
-                return false;
+        boolean[] visited = new boolean[10001];
+        
+        for(int i = 2; i <= 10000; i++){
+            if(!visited[i]){
+                visited[i] = true;
+                primes.add(i);
+                
+                int j = i;
+                while(j <= 10000){
+                    visited[j] = true;
+                    j += i;
+                }
             }
         }
-        return true;
+        
     }
     
     public boolean primeSubOperation(int[] nums) {
-        // Process each number in the array
-        for (int i = 0; i < nums.length; i++) {
-            // Calculate the upper bound for subtraction
-            int bound = (i == 0) ? nums[0] : nums[i] - nums[i - 1];
-            
-            // If bound is not positive, sequence is impossible
-            if (bound <= 0) {
+        getPrimes();
+        
+        for(int i = 0; i < nums.length; i++){
+            int prime = 0;
+            if(i == 0){
+                for(int j : primes){
+                    if(j >= nums[i]){
+                        break;
+                    }
+
+                    prime = j;
+                }
+
+                nums[i] -= prime;
+
+                // if(prime != 0)
+                //     primes.remove((Integer)prime);
+            }else{
+                for(int j : primes){
+                    if(j >= nums[i]){
+                        break;
+                    }
+
+                    if(nums[i-1] < (nums[i] - j)){
+                        prime = j;
+                    }
+                }
+
+                nums[i] -= prime;
+
+                // if(prime != 0)
+                //     primes.remove((Integer)prime);
+            }
+        }
+
+        System.out.println(Arrays.toString(nums));
+
+        for(int i = 1; i < nums.length; i++){
+            if(nums[i-1] >= nums[i]){
                 return false;
             }
-            
-            // Find the largest prime number less than bound
-            int largestPrime = 0;
-            for (int j = bound - 1; j >= 2; j--) {
-                if (isPrime(j)) {
-                    largestPrime = j;
-                    break;
-                }
-            }
-            
-            // Subtract the largest prime from current number
-            nums[i] -= largestPrime;
         }
-        
+
         return true;
     }
 }
