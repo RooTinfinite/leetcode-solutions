@@ -1,7 +1,7 @@
 class Solution {
 public:
     bool primeSubOperation(vector<int>& nums) {
-        int maxElement = *max_element(nums.begin(), nums.end());
+        int maxElement = getMaxElement(nums);
         
         // Sieve of Atkin
         vector<bool> sieve(maxElement + 1, false);
@@ -53,5 +53,15 @@ public:
         }
         return true;
     }
+    
+private:
+    int getMaxElement(vector<int>& nums) {
+        int max = -1;
+        for (int num : nums) {
+            if (num > max) {
+                max = num;
+            }
+        }
+        return max;
+    }
 };
-
