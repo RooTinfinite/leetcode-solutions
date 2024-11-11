@@ -1,39 +1,49 @@
+#include <vector>
+#include <algorithm>
+
 class Solution {
-public:
-    // Checks if a number is prime
-    bool isPrime(int number) {
-        if (number < 2) return false;
+private:
+    std::vector<int> generatePrimes(int size) {
+        std::vector<bool> isPrime(size, true);
+        isPrime[0] = isPrime[1] = false;
         
-        for (int i = 2; i <= sqrt(number); i++) {
-            if (number % i == 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    bool primeSubOperation(vector<int>& nums) {
-        // Process each number in the array
-        for (int i = 0; i < nums.size(); i++) {
-            // Calculate the upper bound for subtraction
-            int bound = (i == 0) ? nums[0] : nums[i] - nums[i - 1];
-            
-            // If bound is not positive, sequence is impossible
-            if (bound <= 0) {
-                return false;
-            }
-            
-            // Find the largest prime number less than bound
-            int largestPrime = 0;
-            for (int j = bound - 1; j >= 2; j--) {
-                if (isPrime(j)) {
-                    largestPrime = j;
-                    break;
+        for (int currentNumber = 2; currentNumber < size; currentNumber++) {
+            if (isPrime[currentNumber]) {
+                for (int multiple = currentNumber * currentNumber; 
+                     multiple < size; 
+                     multiple += currentNumber) {
+                    isPrime[multiple] = false;
                 }
             }
+        }
+        
+        std::vector<int> primeNumbers;
+        for (int i = 0; i < size; i++) {
+            if (isPrime[i]) {
+                primeNumbers.push_back(i);
+            }
+        }
+        return primeNumbers;
+    }
+    
+public:
+    bool primeSubOperation(std::vector<int>& numbers) {
+        std::vector<int> primes = generatePrimes(1001);
+        int previousValue = 0;
+        
+        for (int currentValue : numbers) {
+            if (currentValue <= previousValue) {
+                return false;
+            }
             
-            // Subtract the largest prime from current number
-            nums[i] -= largestPrime;
+            auto it = std::lower_bound(primes.begin(), primes.end(), 
+                                     currentValue - previousValue);
+            if (it != primes.begin()) {
+                --it;
+                currentValue -= *it;
+            }
+            
+            previousValue = currentValue;
         }
         
         return true;
