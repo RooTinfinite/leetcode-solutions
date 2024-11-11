@@ -1,48 +1,51 @@
 class Solution {
-private:
-    std::vector<int> generatePrimes(int size) {
-        std::vector<bool> isPrime(size, true);
-        isPrime[0] = isPrime[1] = false;
+public:
+    bool primeSubOperation(vector<int>& nums) {
+        int maxElement = getMaxElement(nums);
         
-        for (int currentNumber = 2; currentNumber < size; currentNumber++) {
-            if (isPrime[currentNumber]) {
-                for (int multiple = currentNumber * currentNumber; 
-                     multiple < size; 
-                     multiple += currentNumber) {
-                    isPrime[multiple] = false;
+        // Create Sieve of Eratosthenes array to identify prime numbers
+        vector<bool> sieve(maxElement + 1, true);
+        sieve[1] = false;
+        for (int i = 2; i <= sqrt(maxElement + 1); i++) {
+            if (sieve[i]) {
+                for (int j = i * i; j <= maxElement; j += i) {
+                    sieve[j] = false;
                 }
             }
         }
         
-        std::vector<int> primeNumbers;
-        for (int i = 0; i < size; i++) {
-            if (isPrime[i]) {
-                primeNumbers.push_back(i);
-            }
-        }
-        return primeNumbers;
-    }
-    
-public:
-    bool primeSubOperation(std::vector<int>& numbers) {
-        std::vector<int> primes = generatePrimes(1001);
-        int previousValue = 0;
-        
-        for (int currentValue : numbers) {
-            if (currentValue <= previousValue) {
+        // Check if array can be made strictly increasing by subtracting prime numbers
+        int currValue = 1;
+        int i = 0;
+        while (i < nums.size()) {
+            int difference = nums[i] - currValue;
+            
+            // Return false if current number is already smaller than required value
+            if (difference < 0) {
                 return false;
             }
             
-            auto it = std::lower_bound(primes.begin(), primes.end(), 
-                                     currentValue - previousValue);
-            if (it != primes.begin()) {
-                --it;
-                currentValue -= *it;
+            // Move to next number if difference is prime or zero
+            if (sieve[difference] == true || difference == 0) {
+                i++;
+                currValue++;
+            } else {
+                currValue++;
             }
-            
-            previousValue = currentValue;
         }
-        
         return true;
     }
+    
+private:
+    // Helper method to find maximum element in array
+    int getMaxElement(vector<int>& nums) {
+        int max = -1;
+        for (int num : nums) {
+            if (num > max) {
+                max = num;
+            }
+        }
+        return max;
+    }
 };
+
