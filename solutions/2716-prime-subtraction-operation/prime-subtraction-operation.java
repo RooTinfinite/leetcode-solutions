@@ -11,7 +11,6 @@ class Solution {
                 return false;
             }
             
-            // Find largest prime that keeps current number greater than prev
             int target = curr - prev;
             int idx = binarySearch(target);
             if (idx >= 0) {
