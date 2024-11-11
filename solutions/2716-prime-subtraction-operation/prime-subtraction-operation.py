@@ -5,7 +5,7 @@ class Solution:
         
         maxElement = getMaxElement(nums)
         
-        # Store the sieve array
+        # Create Sieve of Eratosthenes array to identify prime numbers
         sieve = [True] * (maxElement + 1)
         sieve[1] = False
         
@@ -14,26 +14,21 @@ class Solution:
                 for j in range(i * i, maxElement + 1, i):
                     sieve[j] = False
         
-        # Start by storing the currValue as 1, and the initial index as 0
+        # Check if array can be made strictly increasing by subtracting prime numbers
         currValue = 1
         i = 0
-        
         while i < len(nums):
-            # Store the difference needed to make nums[i] equal to currValue
             difference = nums[i] - currValue
             
-            # If difference is less than 0, then nums[i] is already less than
-            # currValue. Return false in this case
+            # Return false if current number is already smaller than required value
             if difference < 0:
                 return False
             
-            # If the difference is prime or zero, then nums[i] can be made
-            # equal to currValue
-            if sieve[difference] or difference == 0:
+            # Move to next number if difference is prime or zero
+            if sieve[difference] == True or difference == 0:
                 i += 1
                 currValue += 1
             else:
-                # Otherwise, try for the next currValue
                 currValue += 1
-        
+                
         return True
