@@ -1,44 +1,41 @@
 class Solution {
 public:
-    bool checkPrime(int x) {
-        for (int i = 2; i <= sqrt(x); i++) {
-            if (x % i == 0) {
-                return 0;
+    // Checks if a number is prime
+    bool isPrime(int number) {
+        if (number < 2) return false;
+        
+        for (int i = 2; i <= sqrt(number); i++) {
+            if (number % i == 0) {
+                return false;
             }
         }
-        return 1;
+        return true;
     }
+    
     bool primeSubOperation(vector<int>& nums) {
+        // Process each number in the array
         for (int i = 0; i < nums.size(); i++) {
-            int bound;
-            // In case of first index, we need to find the largest prime less
-            // than nums[0].
-            if (i == 0) {
-                bound = nums[0];
-            } else {
-                // Otherwise, we need to find the largest prime, that makes the
-                // current element closest to the previous element.
-                bound = nums[i] - nums[i - 1];
-            }
-
-            // If the bound is less than or equal to 0, then the array cannot be
-            // made strictly increasing.
+            // Calculate the upper bound for subtraction
+            int bound = (i == 0) ? nums[0] : nums[i] - nums[i - 1];
+            
+            // If bound is not positive, sequence is impossible
             if (bound <= 0) {
-                return 0;
+                return false;
             }
-
-            // Find the largest prime less than bound.
+            
+            // Find the largest prime number less than bound
             int largestPrime = 0;
             for (int j = bound - 1; j >= 2; j--) {
-                if (checkPrime(j)) {
+                if (isPrime(j)) {
                     largestPrime = j;
                     break;
                 }
             }
-
-            // Subtract this value from nums[i].
-            nums[i] = nums[i] - largestPrime;
+            
+            // Subtract the largest prime from current number
+            nums[i] -= largestPrime;
         }
-        return 1;
+        
+        return true;
     }
 };
