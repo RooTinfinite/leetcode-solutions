@@ -1,70 +1,59 @@
 class Solution {
-    
-    ArrayList<Integer> primes = new ArrayList<Integer>();
-    
-    public void getPrimes(){
-        
-        boolean[] visited = new boolean[10001];
-        
-        for(int i = 2; i <= 10000; i++){
-            if(!visited[i]){
-                visited[i] = true;
-                primes.add(i);
-                
-                int j = i;
-                while(j <= 10000){
-                    visited[j] = true;
-                    j += i;
-                }
-            }
-        }
-        
-    }
-    
+
     public boolean primeSubOperation(int[] nums) {
-        getPrimes();
-        
-        for(int i = 0; i < nums.length; i++){
-            int prime = 0;
-            if(i == 0){
-                for(int j : primes){
-                    if(j >= nums[i]){
-                        break;
-                    }
+        int maxElement = getMaxElement(nums);
 
-                    prime = j;
+        // Store the sieve array.
+        boolean[] sieve = new boolean[maxElement + 1];
+        fill(sieve, true);
+        sieve[1] = false;
+        for (int i = 2; i <= Math.sqrt(maxElement + 1); i++) {
+            if (sieve[i]) {
+                for (int j = i * i; j <= maxElement; j += i) {
+                    sieve[j] = false;
                 }
-
-                nums[i] -= prime;
-
-                // if(prime != 0)
-                //     primes.remove((Integer)prime);
-            }else{
-                for(int j : primes){
-                    if(j >= nums[i]){
-                        break;
-                    }
-
-                    if(nums[i-1] < (nums[i] - j)){
-                        prime = j;
-                    }
-                }
-
-                nums[i] -= prime;
-
-                // if(prime != 0)
-                //     primes.remove((Integer)prime);
             }
         }
 
-        System.out.println(Arrays.toString(nums));
+        // Start by storing the currValue as 1, and the initial index as 0.
+        int currValue = 1;
+        int i = 0;
+        while (i < nums.length) {
+            // Store the difference needed to make nums[i] equal to currValue.
+            int difference = nums[i] - currValue;
 
-        for(int i = 1; i < nums.length; i++){
-            if(nums[i-1] >= nums[i]){
+            // If difference is less than 0, then nums[i] is already less than
+            // currValue. Return false in this case.
+            if (difference < 0) {
                 return false;
             }
-        }
 
+            // If the difference is prime or zero, then nums[i] can be made
+            // equal to currValue.
+            if (sieve[difference] == true || difference == 0) {
+                i++;
+                currValue++;
+            } else {
+                // Otherwise, try for the next currValue.
+                currValue++;
+            }
+        }
         return true;
+    }
+
+    private int getMaxElement(int[] nums) {
+        int max = -1;
+        for (int num : nums) {
+            if (num > max) {
+                max = num;
+            }
+        }
+        return max;
+    }
+
+    private void fill(boolean[] arr, boolean value) {
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = value;
+        }
     }
 }
