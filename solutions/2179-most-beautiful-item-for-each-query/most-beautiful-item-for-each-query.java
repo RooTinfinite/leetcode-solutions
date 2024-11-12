@@ -1,28 +1,41 @@
 class Solution {
     public int[] maximumBeauty(int[][] items, int[] queries) {
-        // Sort items by price
-        Arrays.sort(items, (price1, price2) -> price1[0] - price2[0]);
+        Arrays.sort(items, (a, b) -> a[0] - b[0]);
         
-        int currentMaxBeauty = 0;
-        TreeMap<Integer, Integer> priceToBeautyMap = new TreeMap<>();
+        int n = items.length;
+        int[] maxBeauties = new int[n];
+        maxBeauties[0] = items[0][1];
         
-        // Build price to beauty mapping
-        for (int[] item : items) {
-            int price = item[0];
-            int beauty = item[1];
-            currentMaxBeauty = Math.max(currentMaxBeauty, beauty);
-            priceToBeautyMap.put(price, currentMaxBeauty);
+        // Precompute maximum beauties
+        for (int i = 1; i < n; i++) {
+            maxBeauties[i] = Math.max(maxBeauties[i-1], items[i][1]);
         }
         
-        int[] beautyResults = new int[queries.length];
-        int resultIndex = 0;
+        int[] result = new int[queries.length];
         
-        // Process each price query
-        for (int queryPrice : queries) {
-            Integer nearestPrice = priceToBeautyMap.floorKey(queryPrice);
-            beautyResults[resultIndex++] = (nearestPrice == null) ? 0 : priceToBeautyMap.get(nearestPrice);
+        // Binary search for each query
+        for (int i = 0; i < queries.length; i++) {
+            int idx = binarySearch(items, queries[i]);
+            result[i] = idx < 0 ? 0 : maxBeauties[idx];
         }
         
-        return beautyResults;
+        return result;
+    }
+    
+    private int binarySearch(int[][] items, int target) {
+        int left = 0;
+        int right = items.length - 1;
+        int result = -1;
+        
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (items[mid][0] <= target) {
+                result = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return result;
     }
 }
