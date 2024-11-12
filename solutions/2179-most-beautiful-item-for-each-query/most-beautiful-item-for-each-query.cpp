@@ -1,39 +1,39 @@
 class Solution {
 public:
     vector<int> maximumBeauty(vector<vector<int>>& items, vector<int>& queries) {
-        vector<int> ans(queries.size());
+        sort(items.begin(), items.end());
         
-        // Sort and store max beauty
-        sort(items.begin(), items.end(), [](vector<int>& a, vector<int>& b) { return a[0] < b[0]; });
+        int n = items.size();
+        vector<int> maxBeauties(n);
+        maxBeauties[0] = items[0][1];
         
-        int maxBeauty = items[0][1];
-        for (int i = 0; i < items.size(); i++) {
-            maxBeauty = max(maxBeauty, items[i][1]);
-            items[i][1] = maxBeauty;
+        for(int i = 1; i < n; i++) {
+            maxBeauties[i] = max(maxBeauties[i-1], items[i][1]);
         }
         
-        for (int i = 0; i < queries.size(); i++) {
-            // answer i-th query
-            ans[i] = binarySearch(items, queries[i]);
+        vector<int> result;
+        for(int query : queries) {
+            int idx = binarySearch(items, query);
+            result.push_back(idx < 0 ? 0 : maxBeauties[idx]);
         }
         
-        return ans;
+        return result;
     }
     
-    int binarySearch(vector<vector<int>>& items, int targetPrice) {
-        int left = 0;
-        int right = items.size() - 1;
-        int maxBeauty = 0;
-        while (left <= right) {
-            int mid = (left + right) / 2;
-            if (items[mid][0] > targetPrice) {
-                right = mid - 1;
-            } else {
-                // Found viable price. Keep moving to right
-                maxBeauty = max(maxBeauty, items[mid][1]);
+private:
+    int binarySearch(vector<vector<int>>& items, int target) {
+        int left = 0, right = items.size() - 1;
+        int result = -1;
+        
+        while(left <= right) {
+            int mid = left + (right - left) / 2;
+            if(items[mid][0] <= target) {
+                result = mid;
                 left = mid + 1;
+            } else {
+                right = mid - 1;
             }
         }
-        return maxBeauty;
+        return result;
     }
 };
