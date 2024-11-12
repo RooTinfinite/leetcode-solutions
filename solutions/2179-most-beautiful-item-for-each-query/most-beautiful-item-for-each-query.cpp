@@ -1,41 +1,43 @@
 class Solution {
 public:
-    vector<int> maximumBeauty(vector<vector<int>>& items,
-                              vector<int>& queries) {
-        vector<int> ans(queries.size());
-
-        // Sort and store max beauty
-        sort(items.begin(), items.end(),
-             [](vector<int>& a, vector<int>& b) { return a[0] < b[0]; });
-
-        int maxBeauty = items[0][1];
-        for (int i = 0; i < items.size(); i++) {
-            maxBeauty = max(maxBeauty, items[i][1]);
-            items[i][1] = maxBeauty;
+    vector<int> maximumBeauty(vector<vector<int>>& items, vector<int>& queries) {
+        sort(items.begin(),items.end());
+        int n = items.size();
+        vector<int> maxBeauty(n),prices(n);
+        maxBeauty[0] = items[0][1];
+        prices[0] = items[0][0];
+        for(int i =1;i<n;i++) {
+            prices[i] = items[i][0];
+            maxBeauty[i] = max(maxBeauty[i-1],items[i][1]);
         }
-
-        for (int i = 0; i < queries.size(); i++) {
-            // answer i-th query
-            ans[i] = binarySearch(items, queries[i]);
+        int m = queries.size();
+        vector<int> ans(m);
+        for(int i = 0;i<m;i++) {
+            int idx = bs(prices,queries[i]);
+            if(idx == -1) {
+                ans[i] = 0;
+            }
+            else {
+                ans[i] = maxBeauty[idx];
+            }
         }
-
         return ans;
     }
 
-    int binarySearch(vector<vector<int>>& items, int targetPrice) {
-        int left = 0;
-        int right = items.size() - 1;
-        int maxBeauty = 0;
-        while (left <= right) {
-            int mid = (left + right) / 2;
-            if (items[mid][0] > targetPrice) {
-                right = mid - 1;
-            } else {
-                // Found viable price. Keep moving to right
-                maxBeauty = max(maxBeauty, items[mid][1]);
-                left = mid + 1;
+    int bs(vector<int>& prices,int target) {
+        int low = 0;
+        int high = prices.size() - 1;
+        int result = -1;
+        while(low <= high) {
+            int mid = low + (high -low) / 2;
+            if(prices[mid] <= target) {
+                result = mid;
+                low = mid +1;
+            }
+            else {
+                high = mid - 1;
             }
         }
-        return maxBeauty;
+        return result;
     }
 };
