@@ -1,28 +1,18 @@
 class Solution {
 public:
-    vector<int> arraysIntersection(vector<int>& arr1, vector<int>& arr2,
-                                   vector<int>& arr3) {
+    vector<int> arraysIntersection(vector<int>& arr1, vector<int>& arr2, vector<int>& arr3) {
+        int n = arr1.size(), m = arr2.size(), o = arr3.size();
+        int i = 0, j = 0, k = 0;
         vector<int> ans;
-        map<int, int> counter;
-
-        // Iterate through arr1, arr2, and arr3 to count the frequencies
-        for (int e : arr1) {
-            counter[e]++;
-        }
-        for (int e : arr2) {
-            counter[e]++;
-        }
-        for (int e : arr3) {
-            counter[e]++;
-        }
-
-        // Collect elements that appear in all three arrays
-        for (const auto& item : counter) {
-            if (item.second == 3) {
-                ans.push_back(item.first);
+        while(i<n && j<m && k<o) {
+            if(arr1[i]==arr2[j] && arr2[j]==arr3[k]) {
+                ans.push_back(arr1[i]);
             }
+            int mini = min({arr1[i], arr2[j], arr3[k]});
+            if(mini==arr1[i]) i++;
+            if(mini==arr2[j]) j++;
+            if(mini==arr3[k]) k++;
         }
-
         return ans;
     }
 };
