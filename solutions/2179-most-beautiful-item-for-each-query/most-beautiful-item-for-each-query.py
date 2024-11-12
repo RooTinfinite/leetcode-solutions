@@ -1,7 +1,7 @@
 class Solution:
     def maximumBeauty(self, items: List[List[int]], queries: List[int]) -> List[int]:
-        items.sort()  # Sortujemy listę przedmiotów
-        queries = sorted([(q, i) for i, q in enumerate(queries)])  # Sortujemy zapytania i przechowujemy ich oryginalne indeksy
+        items.sort()  
+        queries = sorted([(q, i) for i, q in enumerate(queries)]) 
 
         res = [0] * len(queries)
         max_bea = 0
