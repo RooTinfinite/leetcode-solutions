@@ -1,14 +1,16 @@
 class Solution:
     def maximumBeauty(self, items: List[List[int]], queries: List[int]) -> List[int]:
-        sorted_items = sorted(items, key=lambda item: item[0])  # Step 1: Sort items by price
+        items.sort()  # Sortujemy listę przedmiotów
+        queries = sorted([(q, i) for i, q in enumerate(queries)])  # Sortujemy zapytania i przechowujemy ich oryginalne indeksy
 
-        prices = [item[0] for item in sorted_items] # Step 2: Extract prices and beauties
-        beauties = [item[1] for item in sorted_items]
-        
-        max_beauties = list(accumulate(beauties, max, initial=0)) # Step 3: Create running maximum beauty array
-        
-        result = []     # Step 4: Find maximum beauty for each query price
-        for query_price in queries:
-            index = bisect_right(prices, query_price)
-            result.append(max_beauties[index])  
-        return result
+        res = [0] * len(queries)
+        max_bea = 0
+        j = 0
+        for q, i in queries:
+            while j < len(items) and items[j][0] <= q:
+                max_bea = max(max_bea, items[j][1])
+                j += 1
+
+            res[i] = max_bea
+
+        return res
