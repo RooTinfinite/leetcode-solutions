@@ -1,24 +1,25 @@
 impl Solution {
-    pub fn maximum_beauty(mut items: Vec<Vec<i32>>, queries: Vec<i32>) -> Vec<i32> {
-        // Step 1: Sort items by price in ascending order
-        items.sort_by_key(|item| item[0]);
+    pub fn maximum_beauty(items: Vec<Vec<i32>>, queries: Vec<i32>) -> Vec<i32> {
+        let mut items = items;
+        items.sort_by_key(|x| x[0]);
         
-        // Step 2: Extract prices and beauties into separate vectors
-        let prices: Vec<i32> = items.iter().map(|item| item[0]).collect();
-        let beauties: Vec<i32> = items.iter().map(|item| item[1]).collect();
+        let mut queries_with_index: Vec<(i32, usize)> = queries.iter()
+            .enumerate()
+            .map(|(i, &q)| (q, i))
+            .collect();
+        queries_with_index.sort_by_key(|&(q, _)| q);
         
-        // Step 3: Create running maximum beauty array
-        let mut max_beauties = vec![0];
-        let mut current_max = 0;
-        for &beauty in beauties.iter() {
-            current_max = current_max.max(beauty);
-            max_beauties.push(current_max);
+        let mut res = vec![0; queries.len()];
+        let mut max_bea = 0;
+        let mut j = 0;
+        
+        for (query, index) in queries_with_index {
+            while j < items.len() && items[j][0] <= query {
+                max_bea = max_bea.max(items[j][1]);
+                j += 1;
+            }
+            res[index] = max_bea;
         }
-        
-        // Step 4: Process each query using binary search
-        queries.iter().map(|&query| {
-            let index = prices.partition_point(|&x| x <= query);
-            max_beauties[index]
-        }).collect()
+        res
     }
 }
