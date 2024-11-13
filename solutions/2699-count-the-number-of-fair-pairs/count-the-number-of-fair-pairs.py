@@ -1,7 +1,6 @@
 class Solution:
     def countFairPairs(self, nums: List[int], lower: int, upper: int) -> int:
         def bin_search(l, r, target):
-            # Return largest i, where nums[i] < target
             while l <= r:
                 m = (l + r) // 2
                 if nums[m] >= target:
