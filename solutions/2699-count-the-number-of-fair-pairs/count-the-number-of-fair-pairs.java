@@ -1,22 +1,32 @@
+import java.util.Arrays;
+
 class Solution {
-    private int binSearch(int[] nums, int l, int r, int target) {
-        while (l <= r) {
-            int m = l + (r - l) / 2;
-            if (nums[m] >= target) r = m - 1;
-            else l = m + 1;
+    public long countFairPairs(int[] v, int lower, int upper) {
+        Arrays.sort(v);
+        long ans = 0;
+        for (int i = 0; i < v.length - 1; i++) {
+            int low = lowerBound(v, i + 1, v.length, lower - v[i]);
+            int up = upperBound(v, i + 1, v.length, upper - v[i]);
+            ans += up - low;
         }
-        return r;
+        return ans;
     }
-    
-    public long countFairPairs(int[] nums, int lower, int upper) {
-        Arrays.sort(nums);
-        long res = 0;
-        for (int i = 0; i < nums.length; i++) {
-            int low = lower - nums[i];
-            int up = upper - nums[i];
-            res += binSearch(nums, i + 1, nums.length - 1, up + 1) - 
-                   binSearch(nums, i + 1, nums.length - 1, low);
+  
+    private int lowerBound(int[] v, int start, int end, int target) {
+        while (start < end) {
+            int mid = start + (end - start) / 2;
+            if (v[mid] >= target) end = mid;
+            else start = mid + 1;
         }
-        return res;
+        return start;
+    }
+
+    private int upperBound(int[] v, int start, int end, int target) {
+        while (start < end) {
+            int mid = start + (end - start) / 2;
+            if (v[mid] > target) end = mid;
+            else start = mid + 1;
+        }
+        return start;
     }
 }
