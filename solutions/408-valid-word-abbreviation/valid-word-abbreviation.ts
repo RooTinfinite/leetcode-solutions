@@ -1,22 +1,34 @@
 // TypeScript
 
+function parseNumber(abbreviation: string, startPos: number): number {
+    let number = 0;
+    while (startPos < abbreviation.length && /\d/.test(abbreviation[startPos])) {
+        number = number * 10 + parseInt(abbreviation[startPos]);
+        startPos++;
+    }
+    return number;
+}
 
-function validWordAbbreviation(word: string, abbr: string): boolean {
-    let i = 0, j = 0;
-    while (i < word.length && j < abbr.length) {
-        if (/\d/.test(abbr[j])) {
-            if (abbr[j] === '0') return false;
-            let num = 0;
-            while (j < abbr.length && /\d/.test(abbr[j])) {
-                num = num * 10 + parseInt(abbr[j]);
-                j++;
+function validWordAbbreviation(word: string, abbreviation: string): boolean {
+    let wordPos = 0, abbrPos = 0;
+    
+    while (abbrPos < abbreviation.length && wordPos < word.length) {
+        if (/[a-zA-Z]/.test(abbreviation[abbrPos])) {
+            if (abbreviation[abbrPos] !== word[wordPos]) {
+                return false;
             }
-            i += num;
+            wordPos++;
+            abbrPos++;
         } else {
-            if (word[i] !== abbr[j]) return false;
-            i++;
-            j++;
+            if (abbreviation[abbrPos] === '0') {
+                return false;
+            }
+            
+            const skipCount = parseNumber(abbreviation, abbrPos);
+            abbrPos += skipCount.toString().length;
+            wordPos += skipCount;
         }
     }
-    return i === word.length && j === abbr.length;
+    
+    return abbrPos === abbreviation.length && wordPos === word.length;
 }
