@@ -1,23 +1,25 @@
 impl Solution {
-    pub fn count_fair_pairs(nums: Vec<i32>, lower: i32, upper: i32) -> i64 {
-        let mut sorted_nums = nums.clone();
-        sorted_nums.sort();
-        Self::count_pairs(&sorted_nums, upper) - Self::count_pairs(&sorted_nums, lower - 1)
-    }
-    
-    fn count_pairs(nums: &Vec<i32>, target: i32) -> i64 {
-        let mut count: i64 = 0;
-        let mut left = 0;
-        let mut right = nums.len() - 1;
-        
-        while left < right {
-            if nums[left] + nums[right] > target {
-                right -= 1;
+    fn bin_search(nums: &Vec<i32>, mut l: i32, mut r: i32, target: i32) -> i64 {
+        while l <= r {
+            let m = l + (r - l) / 2;
+            if nums[m as usize] >= target {
+                r = m - 1;
             } else {
-                count += (right - left) as i64;
-                left += 1;
+                l = m + 1;
             }
         }
-        count
+        r as i64
+    }
+    
+    pub fn count_fair_pairs(mut nums: Vec<i32>, lower: i32, upper: i32) -> i64 {
+        nums.sort();
+        let mut res = 0i64;
+        for i in 0..nums.len() {
+            let low = lower - nums[i];
+            let up = upper - nums[i];
+            res += Self::bin_search(&nums, (i + 1) as i32, (nums.len() - 1) as i32, up + 1) -
+                   Self::bin_search(&nums, (i + 1) as i32, (nums.len() - 1) as i32, low);
+        }
+        res
     }
 }
