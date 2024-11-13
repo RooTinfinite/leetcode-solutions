@@ -1,23 +1,32 @@
-func validWordAbbreviation(word string, abbr string) bool {
-    i, j := 0, 0
-    for i < len(word) && j < len(abbr) {
-        if abbr[j] >= '0' && abbr[j] <= '9' {
-            if abbr[j] == '0' {
+func parseNumber(abbreviation string, startPos int) int {
+    number := 0
+    for startPos < len(abbreviation) && unicode.IsDigit(rune(abbreviation[startPos])) {
+        number = number * 10 + int(abbreviation[startPos] - '0')
+        startPos++
+    }
+    return number
+}
+
+func validWordAbbreviation(word string, abbreviation string) bool {
+    wordPos, abbrPos := 0, 0
+    
+    for abbrPos < len(abbreviation) && wordPos < len(word) {
+        if unicode.IsLetter(rune(abbreviation[abbrPos])) {
+            if abbreviation[abbrPos] != word[wordPos] {
                 return false
             }
-            num := 0
-            for j < len(abbr) && abbr[j] >= '0' && abbr[j] <= '9' {
-                num = num * 10 + int(abbr[j] - '0')
-                j++
-            }
-            i += num
+            wordPos++
+            abbrPos++
         } else {
-            if word[i] != abbr[j] {
+            if abbreviation[abbrPos] == '0' {
                 return false
             }
-            i++
-            j++
+            
+            skipCount := parseNumber(abbreviation, abbrPos)
+            abbrPos += len(strconv.Itoa(skipCount))
+            wordPos += skipCount
         }
     }
-    return i == len(word) && j == len(abbr)
+    
+    return abbrPos == len(abbreviation) && wordPos == len(word)
 }
