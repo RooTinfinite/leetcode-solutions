@@ -1,19 +1,23 @@
-func countFairPairs(nums []int, lower int, upper int) int64 {
-    sort.Ints(nums)
-    return countPairs(nums, upper) - countPairs(nums, lower - 1)
-}
-
-func countPairs(nums []int, target int) int64 {
-    var count int64 = 0
-    left, right := 0, len(nums) - 1
-    
-    for left < right {
-        if nums[left] + nums[right] > target {
-            right--
+func binSearch(nums []int, l, r, target int) int {
+    for l <= r {
+        m := l + (r-l)/2
+        if nums[m] >= target {
+            r = m - 1
         } else {
-            count += int64(right - left)
-            left++
+            l = m + 1
         }
     }
-    return count
+    return r
+}
+
+func countFairPairs(nums []int, lower int, upper int) int64 {
+    sort.Ints(nums)
+    var res int64
+    for i := 0; i < len(nums); i++ {
+        low := lower - nums[i]
+        up := upper - nums[i]
+        res += int64(binSearch(nums, i+1, len(nums)-1, up+1) - 
+                     binSearch(nums, i+1, len(nums)-1, low))
+    }
+    return res
 }
