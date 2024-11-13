@@ -1,20 +1,23 @@
-def count_fair_pairs(nums, lower, upper)
-    nums.sort!
-    count_pairs(nums, upper) - count_pairs(nums, lower - 1)
-end
-
-def count_pairs(nums, target)
-    count = 0
-    left = 0
-    right = nums.length - 1
-    
-    while left < right
-        if nums[left] + nums[right] > target
-            right -= 1
+def bin_search(nums, l, r, target)
+    while l <= r
+        m = (l + r) / 2
+        if nums[m] >= target
+            r = m - 1
         else
-            count += right - left
-            left += 1
+            l = m + 1
         end
     end
-    count
+    r
+end
+
+def count_fair_pairs(nums, lower, upper)
+    nums.sort!
+    res = 0
+    nums.each_with_index do |num, i|
+        low = lower - num
+        up = upper - num
+        res += bin_search(nums, i + 1, nums.length - 1, up + 1) - 
+               bin_search(nums, i + 1, nums.length - 1, low)
+    end
+    res
 end
