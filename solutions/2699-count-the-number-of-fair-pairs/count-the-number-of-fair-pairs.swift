@@ -1,24 +1,27 @@
 class Solution {
+    private func binSearch(_ nums: [Int], _ l: Int, _ r: Int, _ target: Int) -> Int {
+        var left = l
+        var right = r
+        while left <= right {
+            let m = left + (right - left) / 2
+            if nums[m] >= target {
+                right = m - 1
+            } else {
+                left = m + 1
+            }
+        }
+        return right
+    }
+    
     func countFairPairs(_ nums: [Int], _ lower: Int, _ upper: Int) -> Int {
         let sortedNums = nums.sorted()
-        
-        func countPairs(_ target: Int) -> Int {
-            var left = 0
-            var right = sortedNums.count - 1
-            var count = 0
-            
-            while left < right {
-                let currentSum = sortedNums[left] + sortedNums[right]
-                if currentSum <= target {
-                    count += right - left
-                    left += 1
-                } else {
-                    right -= 1
-                }
-            }
-            return count
+        var res = 0
+        for i in 0..<sortedNums.count {
+            let low = lower - sortedNums[i]
+            let up = upper - sortedNums[i]
+            res += binSearch(sortedNums, i + 1, sortedNums.count - 1, up + 1) - 
+                   binSearch(sortedNums, i + 1, sortedNums.count - 1, low)
         }
-        
-        return countPairs(upper) - countPairs(lower - 1)
+        return res
     }
 }
