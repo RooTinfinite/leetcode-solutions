@@ -1,21 +1,34 @@
 public class Solution {
-    public bool ValidWordAbbreviation(string word, string abbr) {
-        int i = 0, j = 0;
-        while (i < word.Length && j < abbr.Length) {
-            if (char.IsDigit(abbr[j])) {
-                if (abbr[j] == '0') return false;
-                int num = 0;
-                while (j < abbr.Length && char.IsDigit(abbr[j])) {
-                    num = num * 10 + (abbr[j] - '0');
-                    j++;
+    private int ParseNumber(string abbreviation, int startPos) {
+        int number = 0;
+        while (startPos < abbreviation.Length && char.IsDigit(abbreviation[startPos])) {
+            number = number * 10 + (abbreviation[startPos] - '0');
+            startPos++;
+        }
+        return number;
+    }
+    
+    public bool ValidWordAbbreviation(string word, string abbreviation) {
+        int wordPos = 0, abbrPos = 0;
+        
+        while (abbrPos < abbreviation.Length && wordPos < word.Length) {
+            if (char.IsLetter(abbreviation[abbrPos])) {
+                if (abbreviation[abbrPos] != word[wordPos]) {
+                    return false;
                 }
-                i += num;
+                wordPos++;
+                abbrPos++;
             } else {
-                if (word[i] != abbr[j]) return false;
-                i++;
-                j++;
+                if (abbreviation[abbrPos] == '0') {
+                    return false;
+                }
+                
+                int skipCount = ParseNumber(abbreviation, abbrPos);
+                abbrPos += skipCount.ToString().Length;
+                wordPos += skipCount;
             }
         }
-        return i == word.Length && j == abbr.Length;
+        
+        return abbrPos == abbreviation.Length && wordPos == word.Length;
     }
 }
