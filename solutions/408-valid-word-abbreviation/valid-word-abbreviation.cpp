@@ -1,22 +1,36 @@
 class Solution {
+private:
+    int parseNumber(const string& abbreviation, int startPos) {
+        int number = 0;
+        while (startPos < abbreviation.length() && isdigit(abbreviation[startPos])) {
+            number = number * 10 + (abbreviation[startPos] - '0');
+            startPos++;
+        }
+        return number;
+    }
+    
 public:
-    bool validWordAbbreviation(string word, string abbr) {
-        int i = 0, j = 0;
-        while (i < word.length() && j < abbr.length()) {
-            if (isdigit(abbr[j])) {
-                if (abbr[j] == '0') return false;
-                int num = 0;
-                while (j < abbr.length() && isdigit(abbr[j])) {
-                    num = num * 10 + (abbr[j] - '0');
-                    j++;
+    bool validWordAbbreviation(string word, string abbreviation) {
+        int wordPos = 0, abbrPos = 0;
+        
+        while (abbrPos < abbreviation.length() && wordPos < word.length()) {
+            if (isalpha(abbreviation[abbrPos])) {
+                if (abbreviation[abbrPos] != word[wordPos]) {
+                    return false;
                 }
-                i += num;
+                wordPos++;
+                abbrPos++;
             } else {
-                if (word[i] != abbr[j]) return false;
-                i++;
-                j++;
+                if (abbreviation[abbrPos] == '0') {
+                    return false;
+                }
+                
+                int skipCount = parseNumber(abbreviation, abbrPos);
+                abbrPos += to_string(skipCount).length();
+                wordPos += skipCount;
             }
         }
-        return i == word.length() && j == abbr.length();
+        
+        return abbrPos == abbreviation.length() && wordPos == word.length();
     }
 };
