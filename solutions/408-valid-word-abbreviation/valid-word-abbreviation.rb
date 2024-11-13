@@ -1,23 +1,28 @@
-def valid_word_abbreviation(word, abbr)
-    i = j = 0
-   
-    while i < word.length && j < abbr.length
-        if abbr[j] =~ /\d/
-            return false if abbr[j] == '0'
-            num = 0
-            while j < abbr.length && abbr[j] =~ /\d/
-                num = num * 10 + abbr[j].to_i
-                j += 1
-            end
-            i += num
-        else
-            return false if word[i] != abbr[j]
-            i += 1
-            j += 1
-        end
+def parse_number(abbreviation, start_pos)
+    number = 0
+    while start_pos < abbreviation.length && abbreviation[start_pos].match?(/\d/)
+        number = number * 10 + abbreviation[start_pos].to_i
+        start_pos += 1
     end
-   
-    i == word.length && j == abbr.length
+    number
 end
 
-
+def valid_word_abbreviation(word, abbreviation)
+    word_pos = abbr_pos = 0
+    
+    while abbr_pos < abbreviation.length && word_pos < word.length
+        if abbreviation[abbr_pos].match?(/[a-zA-Z]/)
+            return false if abbreviation[abbr_pos] != word[word_pos]
+            word_pos += 1
+            abbr_pos += 1
+        else
+            return false if abbreviation[abbr_pos] == '0'
+            
+            skip_count = parse_number(abbreviation, abbr_pos)
+            abbr_pos += skip_count.to_s.length
+            word_pos += skip_count
+        end
+    end
+    
+    abbr_pos == abbreviation.length && word_pos == word.length
+end
