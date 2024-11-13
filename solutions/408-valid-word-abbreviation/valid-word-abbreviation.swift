@@ -1,24 +1,39 @@
 class Solution {
-    func validWordAbbreviation(_ word: String, _ abbr: String) -> Bool {
-        let word = Array(word)
-        let abbr = Array(abbr)
-        var i = 0, j = 0
-       
-        while i < word.count && j < abbr.count {
-            if abbr[j].isNumber {
-                if abbr[j] == "0" { return false }
-                var num = 0
-                while j < abbr.count && abbr[j].isNumber {
-                    num = num * 10 + Int(String(abbr[j]))!
-                    j += 1
+    private func parseNumber(_ abbreviation: String, _ startPos: Int) -> Int {
+        var number = 0
+        var pos = startPos
+        let chars = Array(abbreviation)
+        while pos < chars.count && chars[pos].isNumber {
+            number = number * 10 + Int(String(chars[pos]))!
+            pos += 1
+        }
+        return number
+    }
+    
+    func validWordAbbreviation(_ word: String, _ abbreviation: String) -> Bool {
+        var wordPos = 0
+        var abbrPos = 0
+        let wordChars = Array(word)
+        let abbrChars = Array(abbreviation)
+        
+        while abbrPos < abbrChars.count && wordPos < wordChars.count {
+            if abbrChars[abbrPos].isLetter {
+                if abbrChars[abbrPos] != wordChars[wordPos] {
+                    return false
                 }
-                i += num
+                wordPos += 1
+                abbrPos += 1
             } else {
-                if word[i] != abbr[j] { return false }
-                i += 1
-                j += 1
+                if abbrChars[abbrPos] == "0" {
+                    return false
+                }
+                
+                let skipCount = parseNumber(abbreviation, abbrPos)
+                abbrPos += String(skipCount).count
+                wordPos += skipCount
             }
         }
-        return i == word.count && j == abbr.count
+        
+        return abbrPos == abbrChars.count && wordPos == wordChars.count
     }
 }
