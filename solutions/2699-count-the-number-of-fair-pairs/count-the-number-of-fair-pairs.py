@@ -1,17 +1,16 @@
 class Solution:
     def countFairPairs(self, nums: List[int], lower: int, upper: int) -> int:
         nums.sort()
-        return self.countPairs(nums, upper) - self.countPairs(nums, lower - 1)
-    
-    def countPairs(self, nums: List[int], target: int) -> int:
-        count = 0
-        left, right = 0, len(nums) - 1
         
-        while left < right:
-            if nums[left] + nums[right] > target:
-                right -= 1
-            else:
-                count += right - left
-                left += 1
-                
-        return count
+        def countPairsLessEqual(target):
+            left, right = 0, len(nums) - 1
+            total = 0
+            while left < right:
+                if nums[left] + nums[right] <= target:
+                    total += right - left
+                    left += 1
+                else:
+                    right -= 1
+            return total
+        
+        return countPairsLessEqual(upper) - countPairsLessEqual(lower - 1)
