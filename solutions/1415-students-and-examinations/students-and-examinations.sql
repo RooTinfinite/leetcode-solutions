@@ -1,6 +1,6 @@
 SELECT
     S.student_id
-    ,S.student_name
+    ,S.student_name ###dsdsadsad
     ,SU.subject_name
     ,COUNT(E.student_id) attended_exams
 FROM Students S
