@@ -1,41 +1,42 @@
+import heapq
 class MaxStack:
 
     def __init__(self):
-        self.maxH = []
-        self.clean_elements = set() 
         self.stack = []
-        self.id = 0
-    
-    def clean_stk_or_heap(self):
-        while self.stack and self.stack[-1][1] in self.clean_elements:
-            self.clean_elements.remove(self.stack[-1][1])
-            self.stack.pop()
-        while self.maxH and self.maxH[0][1] in self.clean_elements:
-            self.clean_elements.remove(self.maxH[0][1])
-            heapq.heappop(self.maxH)
-
+        self.heap = []
+        self.removed = set()
+        self.counter = 0
+        
 
     def push(self, x: int) -> None:
-        self.stack.append((x, self.id))
-        heapq.heappush(self.maxH, (-x, self.id))
-        self.id -= 1
+        self.stack.append((x, self.counter))
+        heapq.heappush(self.heap, (-x, -self.counter))
+        self.counter += 1
+
 
     def pop(self) -> int:
-        if len(self.stack) == 0:
-            raise Exception("Nope")
-        x, x_id = self.stack.pop()
-        self.clean_elements.add(x_id)
-        self.clean_stk_or_heap()
-        return x
+        while self.stack and self.stack[-1][1] in self.removed:
+            self.stack.pop()
+        val, key = self.stack.pop()
+        self.removed.add(key)
+        return val
+        
 
     def top(self) -> int:
+        while self.stack and self.stack[-1][1] in self.removed:
+            self.stack.pop()
         return self.stack[-1][0]
+        
 
     def peekMax(self) -> int:
-        return -self.maxH[0][0]
+        while self.heap and -self.heap[0][1] in self.removed:
+            heapq.heappop(self.heap)
+        return -self.heap[0][0]
+        
 
     def popMax(self) -> int:
-        x, x_id = heapq.heappop(self.maxH)
-        self.clean_elements.add(x_id)
-        self.clean_stk_or_heap()
-        return -x
+        while self.heap and -self.heap[0][1] in self.removed:
+            heapq.heappop(self.heap)
+        val, key = heapq.heappop(self.heap)
+        self.removed.add(-key)
+        return -val
