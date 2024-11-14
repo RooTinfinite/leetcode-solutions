@@ -1,28 +1,25 @@
-function minimizedMaximum(storeCount: number, productQuantities: number[]): number {
-    const maxQuantity = Math.max(...productQuantities);
+function minimizedMaximum(n: number, quantities: number[]): number {
+    const canDistribute = (x: number): boolean => {
+        let stores = 0;
+        for (const q of quantities) {
+            stores += Math.ceil(q / x);
+        }
+        return stores <= n;
+    };
+    
     let left = 1;
-    let right = maxQuantity;
+    let right = Math.max(...quantities);
     let result = 0;
     
     while (left <= right) {
-        const mid = left + Math.floor((right - left) / 2);
-        if (canDistributeProducts(mid, storeCount, productQuantities)) {
-            result = mid;
-            right = mid - 1;
+        const x = Math.floor((left + right) / 2);
+        if (canDistribute(x)) {
+            result = x;
+            right = x - 1;
         } else {
-            left = mid + 1;
+            left = x + 1;
         }
     }
     
     return result;
-}
-
-function canDistributeProducts(maxProductsPerStore: number, storeCount: number, quantities: number[]): boolean {
-    let requiredStores = 0;
-    
-    for (const quantity of quantities) {
-        requiredStores += Math.ceil(quantity / maxProductsPerStore);
-    }
-    
-    return requiredStores <= storeCount;
 }
