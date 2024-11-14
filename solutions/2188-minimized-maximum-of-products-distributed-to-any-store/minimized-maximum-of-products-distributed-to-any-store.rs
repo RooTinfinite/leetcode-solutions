@@ -1,30 +1,27 @@
 impl Solution {
-    pub fn minimized_maximum(store_count: i32, product_quantities: Vec<i32>) -> i32 {
-        let max_quantity = *product_quantities.iter().max().unwrap();
+    pub fn minimized_maximum(n: i32, quantities: Vec<i32>) -> i32 {
+        fn can_distribute(x: i32, quantities: &Vec<i32>, n: i32) -> bool {
+            let mut stores = 0;
+            for &q in quantities {
+                stores += (q + x - 1) / x;
+            }
+            stores <= n
+        }
+        
         let mut left = 1;
-        let mut right = max_quantity;
+        let mut right = *quantities.iter().max().unwrap();
         let mut result = 0;
         
         while left <= right {
-            let mid = left + (right - left) / 2;
-            if Self::can_distribute_products(mid, store_count, &product_quantities) {
-                result = mid;
-                right = mid - 1;
+            let x = (left + right) / 2;
+            if can_distribute(x, &quantities, n) {
+                result = x;
+                right = x - 1;
             } else {
-                left = mid + 1;
+                left = x + 1;
             }
         }
         
         result
-    }
-    
-    fn can_distribute_products(max_products_per_store: i32, store_count: i32, quantities: &Vec<i32>) -> bool {
-        let mut required_stores = 0;
-        
-        for &quantity in quantities {
-            required_stores += (quantity + max_products_per_store - 1) / max_products_per_store;
-        }
-        
-        required_stores <= store_count
     }
 }
