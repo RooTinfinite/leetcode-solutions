@@ -1,10 +1,8 @@
-# max heap
 class MaxStack:
 
     def __init__(self):
         self.maxH = []
-        self.clean_elements = set() # check if we should clean the number from the stack or heap
-        # self.removed_from_pop_max = {} # remove the element in the stack
+        self.clean_elements = set() 
         self.stack = []
         self.id = 0
     
