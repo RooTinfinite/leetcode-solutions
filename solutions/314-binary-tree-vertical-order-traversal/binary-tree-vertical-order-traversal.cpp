@@ -1,34 +1,48 @@
 class Solution {
 public:
+    vector<vector<int>> verticalOrder(TreeNode* root) {
+        if (!root) {
+            return {};
+        }  
 
-vector<vector<int>> verticalOrder(TreeNode* root) {
-    vector<vector<int>> output;
-    if(!root){
-        return output;
-    }
-    map<int, vector<int>> m;
-    queue<pair<int, TreeNode*>> q;
-    q.push(make_pair(0,root));
-    while(!q.empty()){
-        int size = q.size();
-        for(int i = 0;  i < size; i++){
-            TreeNode* t = q.front().second;
-            int tmp = q.front().first;
+        map<int, vector<int>> mp;
+        queue<pair<TreeNode*, int>> q;
+        q.push({root, 0});
+        mp[0] = {root->val};
+
+        while (!q.empty()) {
+            TreeNode* cur = q.front().first;
+            int index = q.front().second;
             q.pop();
-            m[tmp].push_back(t->val);
-            if(t->left){
-                q.push(make_pair(tmp - 1, t->left));
+
+            if (cur->left) {
+                q.push({cur->left, index-1});
+
+                if (mp.find(index-1) == mp.end()) {
+                    mp[index-1] = {cur->left->val};
+                }
+                else {
+                    mp[index-1].push_back(cur->left->val);
+                }
             }
-            if(t->right){
-                q.push(make_pair(tmp + 1, t->right));
-                
-            }
+
+            if (cur->right) {
+                q.push({cur->right, index+1});
+
+                if (mp.find(index+1) == mp.end()) {
+                    mp[index+1] = {cur->right->val};
+                }
+                else {
+                    mp[index+1].push_back(cur->right->val);
+                }
+            } 
+        }  
+
+        vector<vector<int>> result;
+        for (auto it : mp) {
+            result.push_back(it.second);
         }
+
+        return result;
     }
-    for(auto& v : m){
-        output.push_back(v.second);
-    }
-    return output;
-    
-}
 };
