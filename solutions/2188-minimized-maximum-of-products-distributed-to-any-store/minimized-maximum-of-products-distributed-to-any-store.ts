@@ -1,3 +1,5 @@
+// TypeScript
+
 function minimizedMaximum(n: number, quantities: number[]): number {
     const canDistribute = (x: number): boolean => {
         let stores = 0;
