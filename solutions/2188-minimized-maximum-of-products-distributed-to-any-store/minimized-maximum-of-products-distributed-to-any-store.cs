@@ -1,30 +1,27 @@
 public class Solution {
-    public int MinimizedMaximum(int storeCount, int[] productQuantities) {
-        int maxQuantity = productQuantities.Max();
+    private bool CanDistribute(int x, int[] quantities, int n) {
+        int stores = 0;
+        foreach (int q in quantities) {
+            stores += (int)Math.Ceiling((double)q / x);
+        }
+        return stores <= n;
+    }
+    
+    public int MinimizedMaximum(int n, int[] quantities) {
         int left = 1;
-        int right = maxQuantity;
+        int right = quantities.Max();
         int result = 0;
         
         while (left <= right) {
-            int mid = left + (right - left) / 2;
-            if (CanDistributeProducts(mid, storeCount, productQuantities)) {
-                result = mid;
-                right = mid - 1;
+            int x = (left + right) / 2;
+            if (CanDistribute(x, quantities, n)) {
+                result = x;
+                right = x - 1;
             } else {
-                left = mid + 1;
+                left = x + 1;
             }
         }
         
         return result;
-    }
-    
-    private bool CanDistributeProducts(int maxProductsPerStore, int storeCount, int[] quantities) {
-        int requiredStores = 0;
-        
-        foreach (int quantity in quantities) {
-            requiredStores += (quantity + maxProductsPerStore - 1) / maxProductsPerStore;
-        }
-        
-        return requiredStores <= storeCount;
     }
 }
