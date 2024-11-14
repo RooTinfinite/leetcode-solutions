@@ -1,11 +1,9 @@
-// JavaScript
-
-var minEatingSpeed = function(piles, h) {
-    let left = 1;
-    let right = Math.max(...piles);
+function minEatingSpeed(piles: number[], h: number): number {
+    let left: number = 1;
+    let right: number = Math.max(...piles);
     
     while (left < right) {
-        const mid = left + Math.floor((right - left) / 2);
+        const mid: number = left + Math.floor((right - left) / 2);
         
         if (canEatAll(piles, h, mid)) {
             right = mid;
@@ -15,10 +13,10 @@ var minEatingSpeed = function(piles, h) {
     }
     
     return left;
-};
+}
 
-function canEatAll(piles, h, k) {
-    let hours = 0;
+function canEatAll(piles: number[], h: number, k: number): boolean {
+    let hours: number = 0;
     for (const pile of piles) {
         hours += Math.ceil(pile / k);
         if (hours > h) return false;
