@@ -1,24 +1,34 @@
 class Solution {
 public:
     int minEatingSpeed(vector<int>& piles, int h) {
-        int left=0,right=piles.size()-1,max=0;
-        for(int i=0;i<piles.size();i++){
-            if(piles[i]>max) max=piles[i];
+        long long left = 1;
+        long long right = 0;
+        
+        // Find maximum pile as upper bound
+        for (int pile : piles) {
+            right = max(right, (long long)pile);
         }
-       
-       
-        int min=1,ans;
-        while(min<=max){
-            int mid=(min+max)/2;
+        
+        while (left < right) {
+            long long mid = left + (right - left) / 2;
             
-            long int count=0;
-            for(int i=0;i<piles.size();i++){
-               count+=(piles[i] + mid - 1) / mid;
+            if (canEatAll(piles, h, mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
             }
-            
-             if(count<=h) max=mid-1;
-            else min=mid+1;
         }
-      return min;
+        
+        return (int)left;
+    }
+    
+private:
+    bool canEatAll(vector<int>& piles, int h, long long k) {
+        long long hours = 0;
+        for (int pile : piles) {
+            hours += (pile + k - 1) / k;
+            if (hours > h) return false;
+        }
+        return true;
     }
 };
