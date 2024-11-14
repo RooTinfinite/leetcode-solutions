@@ -1,34 +1,35 @@
 class Solution {
-    public int minimizedMaximum(int storeCount, int[] productQuantities) {
-        int maxQuantity = 0;
-        for (int quantity : productQuantities) {
-            maxQuantity = Math.max(maxQuantity, quantity);
-        }
-        
+    public int minimizedMaximum(int n, int[] quantities) {
+        int res = 0;
         int left = 1;
-        int right = maxQuantity;
-        int result = 0;
+        int right = getMax(quantities);
         
         while (left <= right) {
-            int mid = left + (right - left) / 2;
-            if (canDistributeProducts(mid, storeCount, productQuantities)) {
-                result = mid;
-                right = mid - 1;
+            int x = (left + right) / 2;
+            if (canDistribute(x, n, quantities)) {
+                res = x;
+                right = x - 1;
             } else {
-                left = mid + 1;
+                left = x + 1;
             }
         }
         
-        return result;
+        return res;
     }
     
-    private boolean canDistributeProducts(int maxProductsPerStore, int storeCount, int[] quantities) {
-        int requiredStores = 0;
-        
-        for (int quantity : quantities) {
-            requiredStores += (quantity + maxProductsPerStore - 1) / maxProductsPerStore;
+    private boolean canDistribute(int x, int n, int[] quantities) {
+        int stores = 0;
+        for (int q : quantities) {
+            stores += (q + x - 1) / x; // Math.ceil equivalent in Java
         }
-        
-        return requiredStores <= storeCount;
+        return stores <= n;
+    }
+    
+    private int getMax(int[] quantities) {
+        int max = quantities[0];
+        for (int q : quantities) {
+            max = Math.max(max, q);
+        }
+        return max;
     }
 }
