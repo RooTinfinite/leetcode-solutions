@@ -1,9 +1,5 @@
 class Solution(object):
     def depthSum(self, nestedList):
-        """
-        :type nestedList: List[NestedInteger]
-        :rtype: int
-        """
         def visit(nestedList, depth):
             res = 0
             for item in nestedList:
