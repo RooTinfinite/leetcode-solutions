@@ -1,38 +1,43 @@
-import heapq
-
+# max heap
 class MaxStack:
 
     def __init__(self):
-        self.soft_deleted = set()
-        self.max_heap = []
-        self.recency_stack = []
-        self.next_id = 0
-        
-    def push(self, x: int) -> None:
-        heapq.heappush(self.max_heap, (-x, self.next_id))
-        self.recency_stack.append((x, self.next_id))
-        self.next_id -= 1
-
-    def _clean_up(self):
-        while self.recency_stack and self.recency_stack[-1][1] in self.soft_deleted:
-            self.soft_deleted.remove(self.recency_stack.pop()[1])
-        while self.max_heap and self.max_heap[0][1] in self.soft_deleted:
-            self.soft_deleted.remove(heapq.heappop(self.max_heap)[1])
+        self.maxH = []
+        self.clean_elements = set() # check if we should clean the number from the stack or heap
+        # self.removed_from_pop_max = {} # remove the element in the stack
+        self.stack = []
+        self.id = 0
     
+    def clean_stk_or_heap(self):
+        while self.stack and self.stack[-1][1] in self.clean_elements:
+            self.clean_elements.remove(self.stack[-1][1])
+            self.stack.pop()
+        while self.maxH and self.maxH[0][1] in self.clean_elements:
+            self.clean_elements.remove(self.maxH[0][1])
+            heapq.heappop(self.maxH)
+
+
+    def push(self, x: int) -> None:
+        self.stack.append((x, self.id))
+        heapq.heappush(self.maxH, (-x, self.id))
+        self.id -= 1
+
     def pop(self) -> int:
-        entry_to_return = self.recency_stack.pop()
-        self.soft_deleted.add(entry_to_return[1])
-        self._clean_up()
-        return entry_to_return[0]
-        
+        if len(self.stack) == 0:
+            raise Exception("Nope")
+        x, x_id = self.stack.pop()
+        self.clean_elements.add(x_id)
+        self.clean_stk_or_heap()
+        return x
+
     def top(self) -> int:
-        return self.recency_stack[-1][0]
+        return self.stack[-1][0]
 
     def peekMax(self) -> int:
-        return -self.max_heap[0][0]
-        
+        return -self.maxH[0][0]
+
     def popMax(self) -> int:
-        value, time = heapq.heappop(self.max_heap)
-        self.soft_deleted.add(time)
-        self._clean_up()
-        return value * -1
+        x, x_id = heapq.heappop(self.maxH)
+        self.clean_elements.add(x_id)
+        self.clean_stk_or_heap()
+        return -x
