@@ -1,7 +1,5 @@
-// TypeScript
-
-function minimizedMaximum(n: number, quantities: number[]): number {
-    const canDistribute = (x: number): boolean => {
+var minimizedMaximum = function(n, quantities) {
+    const canDistribute = (x) => {
         let stores = 0;
         for (const q of quantities) {
             stores += Math.ceil(q / x);
@@ -24,4 +22,4 @@ function minimizedMaximum(n: number, quantities: number[]): number {
     }
     
     return result;
-}
+};
