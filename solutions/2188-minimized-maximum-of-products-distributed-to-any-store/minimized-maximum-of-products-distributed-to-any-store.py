@@ -1,19 +1,25 @@
 class Solution:
-    def minimizedMaximum(self, n: int, quantities: List[int]) -> int:
-        def can_distribute(x):
-            stores = 0
-            for q in quantities:
-                stores += math.ceil(q / x)
-            return stores <= n
-
-        l, r = 1, max(quantities)
-        res = 0
-        while l <= r:
-            x = (l + r) // 2
-            if can_distribute(x):
-                res = x
-                r = x - 1
+    def minimizedMaximum(self, storeCount: int, productQuantities: List[int]) -> int:
+        maxQuantity = max(productQuantities)
+        left = 1
+        right = maxQuantity
+        result = 0
+        
+        while left <= right:
+            mid = left + (right - left) // 2
+            if self.canDistributeProducts(mid, storeCount, productQuantities):
+                result = mid
+                right = mid - 1
             else:
-                l = x + 1
-
-        return res
+                left = mid + 1
+        
+        return result
+    
+    def canDistributeProducts(self, maxProductsPerStore: int, storeCount: int, quantities: List[int]) -> bool:
+        requiredStores = 0
+        
+        for quantity in quantities:
+            # Calculate stores needed for current product type
+            requiredStores += (quantity + maxProductsPerStore - 1) // maxProductsPerStore
+        
+        return requiredStores <= storeCount
