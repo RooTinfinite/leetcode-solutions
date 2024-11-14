@@ -1,33 +1,44 @@
 class Solution {
-public:
-    bool isPossible(int target, int n, vector<int> &q){
-        int sz = q.size();
-        int cnt = 0;
-        for(int i=0;i<sz;i++){
-            int div = q[i]/target;
-            int rem = q[i] % target;
-            cnt += div;
-            if(rem > 0) cnt ++;
-        }
-        return cnt <= n;
-
-    }
-    int minimizedMaximum(int n, vector<int>& q) {
-        int sz = q.size();
-        int mx = 0;
-        for(int i=0;i<sz;i++) {
-            mx = max(mx, q[i]);
-        }
-        int lo = 1, hi = mx;
-        int ans = 0;
-        while(lo<=hi){
-            int mid = lo + (hi-lo)/2;
-            if(isPossible(mid,n,q)) {
-                ans = mid;
-                hi = mid-1;
+private:
+    int solveWithBinSearchByValue(int n, vector<int>& q) {
+        sort(q.rbegin(), q.rend());
+        
+        int m = q.size();
+        int left = 1;
+        int right = q[0];
+        int res = right;
+        
+        while (left <= right) {
+            int freeSlots = n - m;
+            int mid = (left + right) / 2;
+            int i = 0;
+            
+            while (i < m && freeSlots >= 0) {
+                int slots = (q[i] + mid - 1) / mid - 1;  // ceil(q[i]/mid) - 1
+                if (!slots) {
+                    break;
+                }
+                freeSlots -= slots;
+                i++;
             }
-            else lo = mid+1;
+            
+            if (freeSlots < 0) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+                res = mid;
+            }
         }
-        return ans;
+        
+        return res;
+    }
+    
+public:
+    int minimizedMaximum(int n, vector<int>& quantities) {
+        if (n == quantities.size()) {
+            return *max_element(quantities.begin(), quantities.end());
+        }
+        
+        return solveWithBinSearchByValue(n, quantities);
     }
 };
