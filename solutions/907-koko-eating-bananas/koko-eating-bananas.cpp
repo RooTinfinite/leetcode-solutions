@@ -1,31 +1,24 @@
-
 class Solution {
 public:
-    int getH(vector<int>& pile,int k){
-        int h = 0;
-        for (int i = 0; i < pile.size(); ++i) {
-            h += pile[i]/k;
-            if(pile[i]%k != 0)h++;
-        }
-        return h;
-    }
-
     int minEatingSpeed(vector<int>& piles, int h) {
-        int high = *max_element(piles.begin(), piles.end());
-        int low = 1,mid;
-        while(low<=high){
-            mid = (high - low)/2 + low;
-            if(getH(piles,mid) <= h && (mid == 1 || getH(piles,mid-1) > h)){
-                return mid;
-            }
-            if(getH(piles,mid) > h){
-                low = mid + 1;
-            }else{
-                high = mid - 1;
-            }
-
+        int left=0,right=piles.size()-1,max=0;
+        for(int i=0;i<piles.size();i++){
+            if(piles[i]>max) max=piles[i];
         }
-        return -1;
-
+       
+       
+        int min=1,ans;
+        while(min<=max){
+            int mid=(min+max)/2;
+            
+            long int count=0;
+            for(int i=0;i<piles.size();i++){
+               count+=(piles[i] + mid - 1) / mid;
+            }
+            
+             if(count<=h) max=mid-1;
+            else min=mid+1;
+        }
+      return min;
     }
 };
