@@ -1,8 +1,14 @@
 class Solution:
     def lowestCommonAncestor(self, p: 'Node', q: 'Node') -> 'Node':
-        p1, p2 = p, q
-        while p1 != p2:
-            p1 = p1.parent if p1.parent else q
-            p2 = p2.parent if p2.parent else p
+        p_copy, q_copy = p, q
+        while p_copy != q_copy:
+            if q_copy:
+                q_copy = q_copy.parent
+            else:
+                q_copy = p
+            if p_copy:
+                p_copy = p_copy.parent
+            else:
+                p_copy = q
+        return p_copy
             
-        return p1
