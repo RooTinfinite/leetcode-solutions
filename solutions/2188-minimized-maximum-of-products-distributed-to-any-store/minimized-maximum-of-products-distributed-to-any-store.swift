@@ -1,30 +1,27 @@
 class Solution {
-    func minimizedMaximum(_ storeCount: Int, _ productQuantities: [Int]) -> Int {
-        let maxQuantity = productQuantities.max()!
+    func minimizedMaximum(_ n: Int, _ quantities: [Int]) -> Int {
+        func canDistribute(_ x: Int) -> Bool {
+            var stores = 0
+            for q in quantities {
+                stores += (q + x - 1) / x
+            }
+            return stores <= n
+        }
+        
         var left = 1
-        var right = maxQuantity
+        var right = quantities.max()!
         var result = 0
         
         while left <= right {
-            let mid = left + (right - left) / 2
-            if canDistributeProducts(mid, storeCount, productQuantities) {
-                result = mid
-                right = mid - 1
+            let x = (left + right) / 2
+            if canDistribute(x) {
+                result = x
+                right = x - 1
             } else {
-                left = mid + 1
+                left = x + 1
             }
         }
         
         return result
-    }
-    
-    private func canDistributeProducts(_ maxProductsPerStore: Int, _ storeCount: Int, _ quantities: [Int]) -> Bool {
-        var requiredStores = 0
-        
-        for quantity in quantities {
-            requiredStores += (quantity + maxProductsPerStore - 1) / maxProductsPerStore
-        }
-        
-        return requiredStores <= storeCount
     }
 }
