@@ -2,37 +2,40 @@ class Solution {
     public int findLengthOfShortestSubarray(int[] arr) {
         int n = arr.length;
         
-        // 1.Find the rightmost point where array becomes non-ascending
+        if (n == 1) {
+            return 0;
+        }
+        
+        // Find the longest non-decreasing prefix
+        int left = 0;
+        while (left + 1 < n && arr[left] <= arr[left + 1]) {
+            left++;
+        }
+        
+        if (left == n - 1) {  // Array is already non-decreasing
+            return 0;
+        }
+        
+        // Find the longest non-decreasing suffix
         int right = n - 1;
         while (right > 0 && arr[right - 1] <= arr[right]) {
             right--;
         }
         
-        // 2.If array is already sorted in ascending order
-        if (right == 0) {
-            return 0;
+        // Initial result: remove everything between left and right
+        int result = Math.min(n - left - 1, right);
+        
+        // Try to merge prefix and suffix
+        int i = 0, j = right;
+        while (i <= left && j < n) {
+            if (arr[i] <= arr[j]) {
+                result = Math.min(result, j - i - 1);
+                i++;
+            } else {
+                j++;
+            }
         }
         
-        // 3.Initial minimum length is from start to right pointer
-        int minLength = right;
-        
-        // Check each element from left side
-        for (int left = 0; left < n; left++) {
-            // Break if left sequence becomes non-ascending
-            if (left > 0 && arr[left - 1] > arr[left]) {
-                break;
-            }
-            
-            // Find the first element from right that's >= arr[left]
-            while (right < n && arr[left] > arr[right]) {
-                right++;
-            }
-            
-            // Update minimum length of subarray to be removed
-            int currentLength = right - left - 1;
-            minLength = Math.min(minLength, currentLength);
-        }
-        
-        return minLength;
+        return result;
     }
 }
