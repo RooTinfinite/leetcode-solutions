@@ -2,37 +2,35 @@
 
 function findLengthOfShortestSubarray(arr: number[]): number {
     const n: number = arr.length;
+    if (n === 1) return 0;
     
-    // 1. Find the rightmost point where array becomes non-ascending
+    // Find the longest non-decreasing prefix
+    let left: number = 0;
+    while (left + 1 < n && arr[left] <= arr[left + 1]) {
+        left++;
+    }
+    
+    if (left === n - 1) return 0;
+    
+    // Find the longest non-decreasing suffix
     let right: number = n - 1;
     while (right > 0 && arr[right - 1] <= arr[right]) {
         right--;
     }
     
-    // 2. If array is already sorted in ascending order
-    if (right === 0) {
-        return 0;
+    // Initial result: remove everything between left and right
+    let result: number = Math.min(n - left - 1, right);
+    
+    // Try to merge prefix and suffix
+    let i: number = 0, j: number = right;
+    while (i <= left && j < n) {
+        if (arr[i] <= arr[j]) {
+            result = Math.min(result, j - i - 1);
+            i++;
+        } else {
+            j++;
+        }
     }
     
-    // 3. Initial minimum length is from start to right pointer
-    let minLength: number = right;
-    
-    // Check each element from left side
-    for (let left = 0; left < n; left++) {
-        // Break if left sequence becomes non-ascending
-        if (left > 0 && arr[left - 1] > arr[left]) {
-            break;
-        }
-        
-        // Find the first element from right that's >= arr[left]
-        while (right < n && arr[left] > arr[right]) {
-            right++;
-        }
-        
-        // Update minimum length of subarray to be removed
-        const currentLength: number = right - left - 1;
-        minLength = Math.min(minLength, currentLength);
-    }
-    
-    return minLength;
+    return result;
 }
