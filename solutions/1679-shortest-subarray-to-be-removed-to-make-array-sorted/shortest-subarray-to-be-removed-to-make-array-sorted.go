@@ -1,36 +1,45 @@
 func findLengthOfShortestSubarray(arr []int) int {
     n := len(arr)
+    if n == 1 {
+        return 0
+    }
     
-    // 1. Find the rightmost point where array becomes non-ascending
+    // Find the longest non-decreasing prefix
+    left := 0
+    for left+1 < n && arr[left] <= arr[left+1] {
+        left++
+    }
+    
+    if left == n-1 {
+        return 0
+    }
+    
+    // Find the longest non-decreasing suffix
     right := n - 1
     for right > 0 && arr[right-1] <= arr[right] {
         right--
     }
     
-    // 2. If array is already sorted in ascending order
-    if right == 0 {
-        return 0
+    // Initial result: remove everything between left and right
+    result := min(n-left-1, right)
+    
+    // Try to merge prefix and suffix
+    i, j := 0, right
+    for i <= left && j < n {
+        if arr[i] <= arr[j] {
+            result = min(result, j-i-1)
+            i++
+        } else {
+            j++
+        }
     }
     
-    // 3. Initial minimum length is from start to right pointer
-    minLength := right
-    
-    // Check each element from left side
-    for left := 0; left < n; left++ {
-        // Break if left sequence becomes non-ascending
-        if left > 0 && arr[left-1] > arr[left] {
-            break
-        }
-        
-        // Find the first element from right that's >= arr[left]
-        for right < n && arr[left] > arr[right] {
-            right++
-        }
-        
-        // Update minimum length of subarray to be removed
-        currentLength := right - left - 1
-        minLength = min(minLength, currentLength)
+    return result
+}
+
+func min(a, b int) int {
+    if a < b {
+        return a
     }
-    
-    return minLength
+    return b
 }
