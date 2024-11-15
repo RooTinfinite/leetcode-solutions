@@ -1,32 +1,30 @@
 def find_length_of_shortest_subarray(arr)
     n = arr.length
+    return 0 if n == 1
     
-    # 1. Find the rightmost point where array becomes non-ascending
+    # Find the longest non-decreasing prefix
+    left = 0
+    left += 1 while left + 1 < n && arr[left] <= arr[left + 1]
+    
+    return 0 if left == n - 1
+    
+    # Find the longest non-decreasing suffix
     right = n - 1
-    while right > 0 && arr[right - 1] <= arr[right]
-        right -= 1
-    end
+    right -= 1 while right > 0 && arr[right - 1] <= arr[right]
     
-    # 2. If array is already sorted in ascending order
-    return 0 if right == 0
+    # Initial result: remove everything between left and right
+    result = [n - left - 1, right].min
     
-    # 3. Initial minimum length is from start to right pointer
-    min_length = right
-    
-    # Check each element from left side
-    (0...n).each do |left|
-        # Break if left sequence becomes non-ascending
-        break if left > 0 && arr[left - 1] > arr[left]
-        
-        # Find the first element from right that's >= arr[left]
-        while right < n && arr[left] > arr[right]
-            right += 1
+    # Try to merge prefix and suffix
+    i, j = 0, right
+    while i <= left && j < n
+        if arr[i] <= arr[j]
+            result = [result, j - i - 1].min
+            i += 1
+        else
+            j += 1
         end
-        
-        # Update minimum length of subarray to be removed
-        current_length = right - left - 1
-        min_length = [min_length, current_length].min
     end
     
-    min_length
+    result
 end
