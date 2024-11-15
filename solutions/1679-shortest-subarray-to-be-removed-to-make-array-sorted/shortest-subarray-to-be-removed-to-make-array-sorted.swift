@@ -1,38 +1,36 @@
 class Solution {
     func findLengthOfShortestSubarray(_ arr: [Int]) -> Int {
         let n = arr.count
+        if n == 1 { return 0 }
         
-        // 1. Find the rightmost point where array becomes non-ascending
+        // Find the longest non-decreasing prefix
+        var left = 0
+        while left + 1 < n && arr[left] <= arr[left + 1] {
+            left += 1
+        }
+        
+        if left == n - 1 { return 0 }
+        
+        // Find the longest non-decreasing suffix
         var right = n - 1
         while right > 0 && arr[right - 1] <= arr[right] {
             right -= 1
         }
         
-        // 2. If array is already sorted in ascending order
-        if right == 0 {
-            return 0
+        // Initial result: remove everything between left and right
+        var result = min(n - left - 1, right)
+        
+        // Try to merge prefix and suffix
+        var i = 0, j = right
+        while i <= left && j < n {
+            if arr[i] <= arr[j] {
+                result = min(result, j - i - 1)
+                i += 1
+            } else {
+                j += 1
+            }
         }
         
-        // 3. Initial minimum length is from start to right pointer
-        var minLength = right
-        
-        // Check each element from left side
-        for left in 0..<n {
-            // Break if left sequence becomes non-ascending
-            if left > 0 && arr[left - 1] > arr[left] {
-                break
-            }
-            
-            // Find the first element from right that's >= arr[left]
-            while right < n && arr[left] > arr[right] {
-                right += 1
-            }
-            
-            // Update minimum length of subarray to be removed
-            let currentLength = right - left - 1
-            minLength = min(minLength, currentLength)
-        }
-        
-        return minLength
+        return result
     }
 }
