@@ -2,35 +2,30 @@ class Solution:
     def findLengthOfShortestSubarray(self, arr: List[int]) -> int:
         n = len(arr)
         
-        # Find the longest non-decreasing prefix
-        left_end = 0
-        while left_end + 1 < n and arr[left_end] <= arr[left_end + 1]:
-            left_end += 1
+        # 1.Find the rightmost point where array becomes non-ascending
+        right = n - 1
+        while right > 0 and arr[right - 1] <= arr[right]:
+            right -= 1
             
-        # If array is already non-decreasing, return 0
-        if left_end == n - 1:
+        # 2.If array is already sorted in ascending order
+        if right == 0:
             return 0
             
-        # Find the longest non-decreasing suffix
-        right_start = n - 1
-        while right_start > left_end and arr[right_start - 1] <= arr[right_start]:
-            right_start -= 1
-            
-        # Initial answer is minimum of:
-        # 1. Remove everything after left_end
-        # 2. Remove everything before right_start
-        min_length = min(n - left_end - 1, right_start)
+        # 3.Initial minimum length is from start to right pointer
+        min_length = right
         
-        # Try to merge prefix and suffix
-        left = 0
-        right = right_start
-        while left <= left_end and right < n:
-            if arr[right] >= arr[left]:
-                # Found a valid merge point
-                # Update minimum length by removing elements between left and right
-                min_length = min(min_length, right - left - 1)
-                left += 1
-            else:
+        # Check each element from left side
+        for left in range(n):
+            # Break if left sequence becomes non-ascending
+            if left > 0 and arr[left - 1] > arr[left]:
+                break
+                
+            # Find the first element from right that's >= arr[left]
+            while right < n and arr[left] > arr[right]:
                 right += 1
                 
+            # Update minimum length of subarray to be removed
+            current_length = right - left - 1
+            min_length = min(min_length, current_length)
+            
         return min_length
