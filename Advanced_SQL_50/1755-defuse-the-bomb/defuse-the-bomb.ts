@@ -1,28 +1,22 @@
-// TypeScript
+function decrypt(circ: number[], k: number): number[] {
+    const n: number = circ.length;
+    const result: number[] = new Array(n).fill(0);
 
-function decrypt(code: number[], k: number): number[] {
-    const N = code.length;
-    const res = new Array(N).fill(0);
-    
-    if (k === 0) return res;
-    
-    let l = 0;
-    let curSum = 0;
-    for (let r = 0; r < N + Math.abs(k); r++) {
-        curSum += code[r % N];
-        
-        if (r - l + 1 > Math.abs(k)) {
-            curSum -= code[l % N];
-            l = (l + 1) % N;
-        }
-        
-        if (r - l + 1 === Math.abs(k)) {
-            if (k > 0) {
-                res[((l - 1 + N) % N)] = curSum;
-            } else {
-                res[(r + 1) % N] = curSum;
-            }
-        }
+    if (k === 0) return result;
+
+    let wSum: number = 0;
+    const start: number = k > 0 ? 1 : n + k;
+    const end: number = k > 0 ? k : n - 1;
+
+    for (let i = start; i <= end; i++) {
+        wSum += circ[i % n];
     }
-    return res;
-}
+
+    for (let i = 0; i < n; i++) {
+        result[i] = wSum;
+        wSum -= circ[(start + i) % n];
+        wSum += circ[(end + i + 1) % n];
+    }
+    return result;
+};
+
