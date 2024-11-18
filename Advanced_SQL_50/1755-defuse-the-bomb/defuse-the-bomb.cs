@@ -1,28 +1,24 @@
 public class Solution {
-    public int[] Decrypt(int[] code, int k) {
-        int N = code.Length;
-        int[] res = new int[N];
+    public int[] Decrypt(int[] circ, int k) {
+        int n = circ.Length;
+        int[] result = new int[n];
         
-        if (k == 0) return res;
+        if (k == 0) return result;
         
-        int l = 0;
-        int curSum = 0;
-        for (int r = 0; r < N + Math.Abs(k); r++) {
-            curSum += code[r % N];
-            
-            if (r - l + 1 > Math.Abs(k)) {
-                curSum -= code[l % N];
-                l = (l + 1) % N;
-            }
-            
-            if (r - l + 1 == Math.Abs(k)) {
-                if (k > 0) {
-                    res[(l - 1 + N) % N] = curSum;
-                } else {
-                    res[(r + 1) % N] = curSum;
-                }
-            }
+        int wSum = 0;
+        int start = (k > 0) ? 1 : n + k;
+        int end = (k > 0) ? k : n - 1;
+        
+        for (int i = start; i <= end; i++) {
+            wSum += circ[i % n];
         }
-        return res;
+        
+        for (int i = 0; i < n; i++) {
+            result[i] = wSum;
+            wSum -= circ[(start + i) % n];
+            wSum += circ[(end + i + 1) % n];
+        }
+        
+        return result;
     }
 }
