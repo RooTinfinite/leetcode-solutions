@@ -1,21 +1,36 @@
+from typing import List
+from functools import reduce
+
 class Solution:
-    def decrypt(self, circ: List[int], k: int) -> List[int]:
-        n = len(circ)  # circular array
-        result = [0] * n
-        
-        if k == 0:
-            return result
-            
-        start = 1 if k > 0 else n + k
-        end = k if k > 0 else n - 1
-        
-        # Calculate initial window sum
-        wSum = sum(circ[i % n] for i in range(start, end + 1))
-        
-        # Update result array using sliding window
-        for i in range(n):
-            result[i] = wSum
-            wSum -= circ[(start + i) % n]
-            wSum += circ[(end + i + 1) % n]
-            
-        return result
+    @staticmethod
+    def mod1(i: int, n: int) -> int:
+        return i - (-(i >= n) & n)
+
+    @staticmethod
+    def decrypt(code: List[int], k: int) -> List[int]:
+        n = len(code)
+        if k < 0:
+            s = sum(code[n + k:])
+            code = [v << 16 for v in code]
+            for i in range(n):
+                v = code[i] >> 16
+                code[i] += s
+                j = Solution.mod1(n + k + i, n)
+                s += v - (code[j] >> 16)
+            code = [v & 0x3FFF for v in code]
+        elif k > 0:
+            s = sum(code[:k])
+            code = [v << 16 for v in code]
+            for i in range(n):
+                v = code[i] >> 16
+                j = Solution.mod1(i + k, n)
+                s += (code[j] >> 16) - v
+                code[i] += s
+            code = [v & 0x3FFF for v in code]
+        else:
+            code = [0] * n
+        return code
+
+# Initialize faster I/O
+import sys
+input = sys.stdin.readline
