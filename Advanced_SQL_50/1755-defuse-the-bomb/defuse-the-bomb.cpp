@@ -1,59 +1,26 @@
 class Solution {
-private:
-    static int mod1(int i, int n) {
-        return i - ((-(i >= n ? 1 : 0)) & n);
-    }
-    
 public:
-    static vector<int> decrypt(vector<int>& code, int k) {
-        int n = code.size();
-        
-        if (k < 0) {
-            int s = 0;
-            for (int i = n + k; i < n; i++) {
-                s += code[i];
+    vector<int> decrypt(vector<int>& circ, int k) {
+        int n=circ.size();
+        vector<int> ans(n, 0);
+        if (k==0) return ans;
+        if (k>0){
+            int wsum=accumulate(circ.begin()+1, circ.begin()+k+1, 0);
+            ans[0]=wsum;
+            for(int l=1, r=k+1; l<n ; r++, l++){
+                wsum+=-circ[l]+circ[r%n];
+                ans[l]=wsum;
             }
-            
-            for (int i = 0; i < n; i++) {
-                code[i] <<= 16;
-            }
-            
-            for (int i = 0; i < n; i++) {
-                int v = code[i] >> 16;
-                code[i] += s;
-                int j = mod1(n + k + i, n);
-                s += v - (code[j] >> 16);
-            }
-            
-            for (int i = 0; i < n; i++) {
-                code[i] &= 0x3FFF;
-            }
-            
-        } else if (k > 0) {
-            int s = 0;
-            for (int i = 0; i < k; i++) {
-                s += code[i];
-            }
-            
-            for (int i = 0; i < n; i++) {
-                code[i] <<= 16;
-            }
-            
-            for (int i = 0; i < n; i++) {
-                int v = code[i] >> 16;
-                int j = mod1(i + k, n);
-                s += (code[j] >> 16) - v;
-                code[i] += s;
-            }
-            
-            for (int i = 0; i < n; i++) {
-                code[i] &= 0x3FFF;
-            }
-            
-        } else {
-            fill(code.begin(), code.end(), 0);
+            return ans;
         }
-        
-        return code;
+        // k<0
+        k=-k;
+        int wsum=accumulate(circ.end()-k , circ.end(), 0);
+        ans[0]=wsum;
+        for(int r=0, l=n-k; r<n-1; r++, l++){
+            wsum+=-circ[l%n]+circ[r];
+            ans[r+1]=wsum;
+        }
+        return ans;
     }
 };
