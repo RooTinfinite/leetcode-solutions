@@ -1,28 +1,24 @@
 class Solution {
-    func decrypt(_ code: [Int], _ k: Int) -> [Int] {
-        let N = code.count
-        var res = Array(repeating: 0, count: N)
+    func decrypt(_ circ: [Int], _ k: Int) -> [Int] {
+        let n = circ.count
+        var result = Array(repeating: 0, count: n)
         
-        if k == 0 { return res }
+        if k == 0 { return result }
         
-        var l = 0
-        var curSum = 0
-        for r in 0..<(N + abs(k)) {
-            curSum += code[r % N]
-            
-            if r - l + 1 > abs(k) {
-                curSum -= code[l % N]
-                l = (l + 1) % N
-            }
-            
-            if r - l + 1 == abs(k) {
-                if k > 0 {
-                    res[((l - 1 + N) % N)] = curSum
-                } else {
-                    res[(r + 1) % N] = curSum
-                }
-            }
+        var wSum = 0
+        let start = k > 0 ? 1 : n + k
+        let end = k > 0 ? k : n - 1
+        
+        for i in start...end {
+            wSum += circ[i % n]
         }
-        return res
+        
+        for i in 0..<n {
+            result[i] = wSum
+            wSum -= circ[(start + i) % n]
+            wSum += circ[(end + i + 1) % n]
+        }
+        
+        return result
     }
 }
