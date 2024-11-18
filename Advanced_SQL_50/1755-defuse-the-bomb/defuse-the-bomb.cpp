@@ -6,14 +6,14 @@ public:
 
         if (k == 0) return result;
 
-        int windowSum = 0; int start = (k > 0) ? 1 : n + k; int end = (k > 0) ? k : n - 1;
+        int wSum = 0; int start = (k > 0) ? 1 : n + k; int end = (k > 0) ? k : n - 1;
         for (int i = start; i <= end; i++) {
-            windowSum += code[i % n];
+            wSum += code[i % n];
         }
         for (int i = 0; i < n; i++) {
-            result[i] = windowSum;
-            windowSum -= code[(start + i) % n];
-            windowSum += code[(end + i + 1) % n];
+            result[i] = wSum;
+            wSum -= code[(start + i) % n];
+            wSum += code[(end + i + 1) % n];
         }
         
         return result;
