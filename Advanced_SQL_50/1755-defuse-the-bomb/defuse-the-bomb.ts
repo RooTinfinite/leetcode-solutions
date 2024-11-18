@@ -1,20 +1,28 @@
 // TypeScript
 
 function decrypt(code: number[], k: number): number[] {
-    const N: number = code.length;
-    const res: number[] = new Array(N).fill(0);
+    const N = code.length;
+    const res = new Array(N).fill(0);
     
-    for (let i = 0; i < N; i++) {
-        if (k > 0) {
-            for (let j = i + 1; j < i + 1 + k; j++) {
-                res[i] += code[j % N];
-            }
-        } else if (k < 0) {
-            for (let j = i - 1; j > i - 1 - Math.abs(k); j--) {
-                res[i] += code[((j % N) + N) % N];
+    if (k === 0) return res;
+    
+    let l = 0;
+    let curSum = 0;
+    for (let r = 0; r < N + Math.abs(k); r++) {
+        curSum += code[r % N];
+        
+        if (r - l + 1 > Math.abs(k)) {
+            curSum -= code[l % N];
+            l = (l + 1) % N;
+        }
+        
+        if (r - l + 1 === Math.abs(k)) {
+            if (k > 0) {
+                res[((l - 1 + N) % N)] = curSum;
+            } else {
+                res[(r + 1) % N] = curSum;
             }
         }
     }
-    
     return res;
 }
