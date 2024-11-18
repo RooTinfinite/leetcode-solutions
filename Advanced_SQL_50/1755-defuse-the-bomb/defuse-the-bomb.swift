@@ -3,18 +3,26 @@ class Solution {
         let N = code.count
         var res = Array(repeating: 0, count: N)
         
-        for i in 0..<N {
-            if k > 0 {
-                for j in (i + 1)...(i + k) {
-                    res[i] += code[j % N]
-                }
-            } else if k < 0 {
-                for j in stride(from: i - 1, through: i - abs(k), by: -1) {
-                    res[i] += code[((j % N) + N) % N]
+        if k == 0 { return res }
+        
+        var l = 0
+        var curSum = 0
+        for r in 0..<(N + abs(k)) {
+            curSum += code[r % N]
+            
+            if r - l + 1 > abs(k) {
+                curSum -= code[l % N]
+                l = (l + 1) % N
+            }
+            
+            if r - l + 1 == abs(k) {
+                if k > 0 {
+                    res[((l - 1 + N) % N)] = curSum
+                } else {
+                    res[(r + 1) % N] = curSum
                 }
             }
         }
-        
         return res
     }
 }
