@@ -1,26 +1,59 @@
 class Solution {
+private:
+    static int mod1(int i, int n) {
+        return i - ((-(i >= n ? 1 : 0)) & n);
+    }
+    
 public:
-    vector<int> decrypt(vector<int>& code, int k) {
-        int n=code.size();
-        vector<int> ans(n, 0);
-        if (k==0) return ans;
-        if (k>0){
-            int wsum=accumulate(code.begin()+1, code.begin()+k+1, 0);
-            ans[0]=wsum;
-            for(int l=1, r=k+1; l<n ; r++, l++){
-                wsum+=-code[l]+code[r%n];
-                ans[l]=wsum;
+    static vector<int> decrypt(vector<int>& code, int k) {
+        int n = code.size();
+        
+        if (k < 0) {
+            int s = 0;
+            for (int i = n + k; i < n; i++) {
+                s += code[i];
             }
-            return ans;
+            
+            for (int i = 0; i < n; i++) {
+                code[i] <<= 16;
+            }
+            
+            for (int i = 0; i < n; i++) {
+                int v = code[i] >> 16;
+                code[i] += s;
+                int j = mod1(n + k + i, n);
+                s += v - (code[j] >> 16);
+            }
+            
+            for (int i = 0; i < n; i++) {
+                code[i] &= 0x3FFF;
+            }
+            
+        } else if (k > 0) {
+            int s = 0;
+            for (int i = 0; i < k; i++) {
+                s += code[i];
+            }
+            
+            for (int i = 0; i < n; i++) {
+                code[i] <<= 16;
+            }
+            
+            for (int i = 0; i < n; i++) {
+                int v = code[i] >> 16;
+                int j = mod1(i + k, n);
+                s += (code[j] >> 16) - v;
+                code[i] += s;
+            }
+            
+            for (int i = 0; i < n; i++) {
+                code[i] &= 0x3FFF;
+            }
+            
+        } else {
+            fill(code.begin(), code.end(), 0);
         }
-        // k<0
-        k=-k;
-        int wsum=accumulate(code.end()-k , code.end(), 0);
-        ans[0]=wsum;
-        for(int r=0, l=n-k; r<n-1; r++, l++){
-            wsum+=-code[l%n]+code[r];
-            ans[r+1]=wsum;
-        }
-        return ans;
+        
+        return code;
     }
 };
