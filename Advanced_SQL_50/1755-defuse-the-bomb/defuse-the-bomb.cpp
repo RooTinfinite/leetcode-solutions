@@ -1,39 +1,26 @@
 class Solution {
 public:
-    vector<int> decrypt(vector<int>& circ, int k) {
-        int n = circ.size();
-        vector<int> ans(n);
+    vector<int> decrypt(vector<int>& code, int k) {
+        int n = code.size();
+        vector<int> result(n, 0);
+        if (k == 0) return result;
         
-        if (k == 0) return ans;
-        
-        int wsum = 0;
         if (k > 0) {
-            // Calculate initial window sum
-            for (int i = 0; i < k; i++) {
-                wsum += circ[i + 1];
-            }
-            
-            // Sliding window
-            ans[0] = wsum;
+            int windowSum = accumulate(code.begin() + 1, code.begin() + k + 1, 0);
+            result[0] = windowSum;
             for (int i = 1; i < n; i++) {
-                wsum = wsum - circ[i] + circ[(i + k) % n];
-                ans[i] = wsum;
+                windowSum += -code[i] + code[(i + k) % n];
+                result[i] = windowSum;
             }
         } else {
             k = -k;
-            // Calculate initial window sum
-            for (int i = 0; i < k; i++) {
-                wsum += circ[n - k + i];
-            }
-            
-            // Sliding window
-            ans[0] = wsum;
+            int windowSum = accumulate(code.end() - k, code.end(), 0);
+            result[0] = windowSum;
             for (int i = 1; i < n; i++) {
-                wsum = wsum - circ[(n - k + i - 1) % n] + circ[i - 1];
-                ans[i] = wsum;
+                windowSum += -code[(n - k + i - 1) % n] + code[i - 1];
+                result[i] = windowSum;
             }
         }
-        
-        return ans;
+        return result;
     }
 };
