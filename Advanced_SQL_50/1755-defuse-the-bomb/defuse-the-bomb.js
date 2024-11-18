@@ -1,30 +1,23 @@
-// JavaScript
-
 var decrypt = function(code, k) {
-    const N = code.length;
-    const res = new Array(N).fill(0);
+    const n = code.length;
+    const result = new Array(n).fill(0);
     
-    if (k === 0) return res;
+    if (k === 0) return result;
     
-    let l = 0;
-    let curSum = 0;
+    let wSum = 0;
+    const start = k > 0 ? 1 : n + k;
+    const end = k > 0 ? k : n - 1;
     
-    for (let r = 0; r < N + Math.abs(k); r++) {
-        curSum += code[r % N];
-        
-        if (r - l + 1 > Math.abs(k)) {
-            curSum -= code[l % N];
-            l = (l + 1) % N;
-        }
-        
-        if (r - l + 1 === Math.abs(k)) {
-            if (k > 0) {
-                res[(l - 1 + N) % N] = curSum;
-            } else {
-                res[(r + 1) % N] = curSum;
-            }
-        }
+    for (let i = start; i <= end; i++) {
+        wSum += code[i % n];
     }
     
-    return res;
+    for (let i = 0; i < n; i++) {
+        result[i] = wSum;
+        wSum -= code[(start + i) % n];
+        wSum += code[(end + i + 1) % n];
+    }
+    
+    return result;
 };
+
