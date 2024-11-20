@@ -1,24 +1,16 @@
 class Solution:
-    def takeCharacters(self, text: str, req: int) -> int:
-        freq = [0] * 3
-        size = len(text)
-        
-        for char in text:
-            freq[ord(char) - ord('a')] += 1
-        
-        left = 0
-        right = 0
-        
-        if freq[0] < req or freq[1] < req or freq[2] < req:
+    def takeCharacters(self, s: str, k: int) -> int:
+        limits = {c: s.count(c) - k for c in 'abc'}
+        if any(x < 0 for x in limits.values()):
             return -1
-        
-        for right in range(size):
-            freq[ord(text[right]) - ord('a')] -= 1
-            
-            if freq[0] < req or freq[1] < req or freq[2] < req:
-                freq[ord(text[left]) - ord('a')] += 1
-                left += 1
-        
-        return size - (right - left + 1)
 
-        
+        cnts = {c: 0 for c in 'abc'}
+        ans = l = 0
+        for r, c in enumerate(s):
+            cnts[c] += 1
+            while cnts[c] > limits[c]:
+                cnts[s[l]] -= 1
+                l += 1
+            ans = max(ans, r - l + 1)
+
+        return len(s) - ans
