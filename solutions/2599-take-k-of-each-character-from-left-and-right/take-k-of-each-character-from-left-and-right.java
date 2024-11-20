@@ -1,29 +1,53 @@
 class Solution {
     public int takeCharacters(String s, int k) {
-        int[] arr = new int[3];
-        char[] c = s.toCharArray();
-        int cur,len = c.length;
-        for(cur = 0; cur < len; cur++){
-            arr[c[cur] - 'a']++;
-            if(arr[0] >= k && arr[1] >= k && arr[2] >= k) break;
-        }
-        if(cur == len) return -1;
-        int count = cur + 1,min = count,end = len - 1;
-        while(cur >= 0){
-            if(arr[c[cur] - 'a'] == k){
-                while(c[cur] != c[end]){
-                    arr[c[end] - 'a']++;
-                    end--;
-                    count++;
-                }
-                end--;
-            }else{
-                arr[c[cur] - 'a']--;
-                count--;
-                min = Math.min(count, min);
+        // Count frequencies of characters a, b, c
+        int[] charCount = new int[3];
+        char[] chars = s.toCharArray();
+        int length = chars.length;
+        
+        // Find first valid position from left
+        int left;
+        for (left = 0; left < length; left++) {
+            charCount[chars[left] - 'a']++;
+            if (isValidCount(charCount, k)) {
+                break;
             }
-            cur--; 
         }
-        return min;
+        
+        // If we couldn't find valid count
+        if (left == length) {
+            return -1;
+        }
+        
+        // Initialize variables for sliding window
+        int currentCount = left + 1;
+        int minCount = currentCount;
+        int right = length - 1;
+        
+        // Slide window to find minimum length
+        while (left >= 0) {
+            int currentChar = chars[left] - 'a';
+            
+            if (charCount[currentChar] == k) {
+                // Move right pointer until matching character found
+                while (chars[left] != chars[right]) {
+                    charCount[chars[right] - 'a']++;
+                    right--;
+                    currentCount++;
+                }
+                right--;
+            } else {
+                charCount[currentChar]--;
+                currentCount--;
+                minCount = Math.min(currentCount, minCount);
+            }
+            left--;
+        }
+        
+        return minCount;
+    }
+    
+    private boolean isValidCount(int[] count, int k) {
+        return count[0] >= k && count[1] >= k && count[2] >= k;
     }
 }
