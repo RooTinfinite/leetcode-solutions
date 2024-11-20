@@ -1,25 +1,27 @@
 class Solution:
     def takeCharacters(self, s: str, k: int) -> int:
-        freqs = [0] * 3
-        n = len(s)
+        char_counts = [0] * 3
+        for char in s:
+            char_counts[ord(char) - ord('a')] += 1
         
-        for c in s:
-            freqs[ord(c) - ord('a')] += 1
-        
-        i = 0
-        j = 0
-        if freqs[0] < k or freqs[1] < k or freqs[2] < k:
+        if any(count < k for count in char_counts):
             return -1
         
-        for j in range(n):
-            freqs[ord(s[j]) - ord('a')] -= 1
-            
-            if freqs[0] < k or freqs[1] < k or freqs[2] < k:
-                freqs[ord(s[i]) - ord('a')] += 1
-                i += 1
-            
-
-        return n - (j - i + 1)
-                
+        string_length = len(s)
+        left = 0
+        max_window = 0
         
+        for right in range(string_length):
+            current_char = ord(s[right]) - ord('a')
+            char_counts[current_char] -= 1
+            
+            while left <= right and any(count < k for count in char_counts):
+                left_char = ord(s[left]) - ord('a')
+                char_counts[left_char] += 1
+                left += 1
+            
+            max_window = max(max_window, right - left + 1)
+        
+        return string_length - max_window
+
             
