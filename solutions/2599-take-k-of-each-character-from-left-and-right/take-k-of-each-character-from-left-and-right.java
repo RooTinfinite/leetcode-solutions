@@ -1,15 +1,27 @@
 class Solution {
     public int takeCharacters(String s, int k) {
-        int[] d = new int[3], h = new int[3];
-        for (char c : s.toCharArray()) d[c - 'a']++;
-        for (int i = 0; i < 3; i++) if ((d[i] -= k) < 0) return -1;
-        
-        int m = 0, l = 0;
-        for (int r = 0; r < s.length(); r++) {
-            h[s.charAt(r) - 'a']++;
-            while (l <= r && h[s.charAt(r) - 'a'] > d[s.charAt(r) - 'a']) h[s.charAt(l++) - 'a']--;
-            m = Math.max(m, r - l + 1);
+        // Total counts
+        int[] count = new int[3];
+        for (char c : s.toCharArray()) {
+            count[c - 'a']++;
         }
-        return s.length() - m;
+        
+        if (Math.min(Math.min(count[0], count[1]), count[2]) < k) {
+            return -1;
+        }
+        
+        // Sliding Window
+        int res = Integer.MAX_VALUE;
+        int l = 0;
+        for (int r = 0; r < s.length(); r++) {
+            count[s.charAt(r) - 'a']--;
+            
+            while (Math.min(Math.min(count[0], count[1]), count[2]) < k) {
+                count[s.charAt(l) - 'a']++;
+                l++;
+            }
+            res = Math.min(res, s.length() - (r - l + 1));
+        }
+        return res;
     }
 }
