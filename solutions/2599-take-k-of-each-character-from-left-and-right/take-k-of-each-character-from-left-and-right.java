@@ -1,33 +1,29 @@
 class Solution {
     public int takeCharacters(String s, int k) {
-        int[] freq = new int[3];
-        int n = s.length();
-        
-        for (char c : s.toCharArray()) {
-            freq[c - 'a']++;
+        int[] arr = new int[3];
+        char[] c = s.toCharArray();
+        int cur,len = c.length;
+        for(cur = 0; cur < len; cur++){
+            arr[c[cur] - 'a']++;
+            if(arr[0] >= k && arr[1] >= k && arr[2] >= k) break;
         }
-        
-        if (freq[0] < k || freq[1] < k || freq[2] < k) {
-            return -1;
-        }
-        
-        int[] curr = new int[3];
-        int maxLen = 0;
-        int left = 0;
-        
-        for (int right = 0; right < n; right++) {
-            curr[s.charAt(right) - 'a']++;
-            
-            while (left <= right && (curr[0] > freq[0] - k || 
-                   curr[1] > freq[1] - k || 
-                   curr[2] > freq[2] - k)) {
-                curr[s.charAt(left) - 'a']--;
-                left++;
+        if(cur == len) return -1;
+        int count = cur + 1,min = count,end = len - 1;
+        while(cur >= 0){
+            if(arr[c[cur] - 'a'] == k){
+                while(c[cur] != c[end]){
+                    arr[c[end] - 'a']++;
+                    end--;
+                    count++;
+                }
+                end--;
+            }else{
+                arr[c[cur] - 'a']--;
+                count--;
+                min = Math.min(count, min);
             }
-            
-            maxLen = Math.max(maxLen, right - left + 1);
+            cur--; 
         }
-        
-        return n - maxLen;
+        return min;
     }
 }
