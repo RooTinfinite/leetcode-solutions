@@ -1,43 +1,41 @@
 class Solution {
 public:
     int takeCharacters(string s, int k) {
-        int n = s.size();
-        int countA = 0, countB = 0, countC = 0;
+        if (k == 0) return 0;
         
-        // Count total occurrences of each character
-        for(int i = 0; i < n; i++) {
-            if(s[i] == 'a') countA++;
-            if(s[i] == 'b') countB++;
-            if(s[i] == 'c') countC++;
+        vector<int> count(3, 0);
+        int n = s.length();
+        
+        // Count characters from the end
+        for (char c : s) {
+            count[c - 'a']++;
         }
         
-        // Check if it's possible to get k occurrences of each character
-        if(countA < k || countB < k || countC < k) {
-            return -1;
+        // Early validation
+        for (int i = 0; i < 3; i++) {
+            if (count[i] < k) return -1;
         }
         
-        int minLength = n;
-        int right = n - 1;
+        vector<int> window(3, 0);
+        int left = 0, maxWindow = 0;
         
-        // Try different windows by moving left pointer
-        for(int left = n - 1; left >= 0; left--) {
-            // Remove character at left pointer from counts
-            if(s[left] == 'a') countA--;
-            if(s[left] == 'b') countB--;
-            if(s[left] == 'c') countC--;
+        // Sliding window approach
+        for (int right = 0; right < n; right++) {
+            window[s[right] - 'a']++;
             
-            // Adjust right pointer until we have k of each character
-            while(countA < k || countB < k || countC < k) {
-                if(s[right] == 'a') countA++;
-                if(s[right] == 'b') countB++;
-                if(s[right] == 'c') countC++;
-                right--;
+            // Shrink window while any character count exceeds limit
+            while (left <= right && (
+                window[0] > count[0] - k ||
+                window[1] > count[1] - k ||
+                window[2] > count[2] - k
+            )) {
+                window[s[left] - 'a']--;
+                left++;
             }
             
-            // Update minimum length required
-            minLength = min(minLength, left + n - 1 - right);
+            maxWindow = max(maxWindow, right - left + 1);
         }
         
-        return minLength;
+        return n - maxWindow;
     }
 };
