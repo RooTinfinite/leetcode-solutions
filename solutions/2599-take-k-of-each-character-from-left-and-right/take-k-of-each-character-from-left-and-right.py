@@ -1,8 +1,8 @@
 class Solution:
     def takeCharacters(self, s: str, k: int) -> int:
-        limit = {char: s.count(char) - k for char in "abc"}
-        if any(x < 0 for x in limit.values()):
-            return -1
+        limit = {c: s.count(c) - k for c in 'abc'}
+        if any(x < 0 for x in limit.values()): return -1
+        
         cnts = {c: 0 for c in 'abc'}
         ans = l = 0
         for r, c in enumerate(s):
