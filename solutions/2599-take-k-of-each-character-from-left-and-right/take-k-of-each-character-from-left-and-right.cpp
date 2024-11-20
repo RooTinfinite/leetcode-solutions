@@ -1,34 +1,25 @@
 class Solution {
 public:
     int takeCharacters(string s, int k) {
-        vector<int> freq(3, 0);
-        int n = s.length();
-        
-        for (char c : s) {
-            freq[c - 'a']++;
+        vector<int> d(3);
+        for (char c : s) d[c - 'a']++;
+        for (int i = 0; i < 3; i++) {
+            d[i] -= k;
+            if (d[i] < 0) return -1;
         }
         
-        if (freq[0] < k || freq[1] < k || freq[2] < k) {
-            return -1;
-        }
+        vector<int> h(3);
+        int m = 0, l = 0;
         
-        vector<int> curr(3, 0);
-        int maxLen = 0;
-        int left = 0;
-        
-        for (int right = 0; right < n; right++) {
-            curr[s[right] - 'a']++;
-            
-            while (left <= right && (curr[0] > freq[0] - k || 
-                   curr[1] > freq[1] - k || 
-                   curr[2] > freq[2] - k)) {
-                curr[s[left] - 'a']--;
-                left++;
+        for (int r = 0; r < s.length(); r++) {
+            h[s[r] - 'a']++;
+            while (h[s[r] - 'a'] > d[s[r] - 'a']) {
+                h[s[l] - 'a']--;
+                l++;
             }
-            
-            maxLen = max(maxLen, right - left + 1);
+            m = max(m, r - l + 1);
         }
         
-        return n - maxLen;
+        return s.length() - m;
     }
 };
