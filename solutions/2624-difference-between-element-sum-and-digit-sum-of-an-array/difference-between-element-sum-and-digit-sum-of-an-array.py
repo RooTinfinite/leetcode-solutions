@@ -1,11 +1,14 @@
 class Solution:
     def differenceOfSum(self, nums: List[int]) -> int:
-        sum1 = 0
-        for i in range(len(nums)):
-                sum1 += nums[i]
-        sum2 = 0
-        for i in range(len(nums)):
-                while(nums[i] != 0):
-                        sum2 += nums[i]%10
-                        nums[i] = nums[i]//10
-        return abs(sum2-sum1)                
+        element_sum = sum(nums)
+        digit_sum = 0
+
+        for num in nums:
+            if num >= 10:
+                while num > 0:
+                    digit_sum += num % 10
+                    num //= 10
+            else:
+                digit_sum += num
+        
+        return abs(element_sum - digit_sum)
