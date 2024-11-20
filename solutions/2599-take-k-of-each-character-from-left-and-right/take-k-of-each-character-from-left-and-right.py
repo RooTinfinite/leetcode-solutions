@@ -1,17 +1,20 @@
 class Solution:
     def takeCharacters(self, s: str, k: int) -> int:
-        freq = Counter(s)
-        if freq['a'] < k or freq['b'] < k or freq['c'] < k:
+        cnt = Counter(s)
+        
+        if cnt['a'] < k or cnt['b'] < k or cnt['c'] < k:
             return -1
-
-        result = len(s)
-        left = 0
-
-        for right in range(len(s)):
-            freq[s[right]] -= 1      
-
-            while freq[s[right]] < k:
-                freq[s[left]] += 1      
-                left += 1
-            result = min(result, freq['a'] + freq['b'] + freq['c'])
-        return result
+        
+        min_len = len(s)
+        l = 0
+        
+        for r in range(len(s)):
+            cnt[s[r]] -= 1
+            
+            while cnt[s[r]] < k:
+                cnt[s[l]] += 1
+                l += 1
+                
+            min_len = min(min_len, cnt['a'] + cnt['b'] + cnt['c'])
+            
+        return min_len
