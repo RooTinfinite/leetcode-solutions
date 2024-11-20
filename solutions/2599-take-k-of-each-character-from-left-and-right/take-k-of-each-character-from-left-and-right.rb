@@ -1,29 +1,23 @@
 def take_characters(s, k)
-    freq = [0, 0, 0]
-    n = s.length
-    
+    # Total counts
+    count = [0, 0, 0]
     s.each_char do |c|
-        freq[c.ord - 'a'.ord] += 1
+        count[c.ord - 'a'.ord] += 1
     end
     
-    return -1 if freq[0] < k || freq[1] < k || freq[2] < k
+    return -1 if count.min < k
     
-    curr = [0, 0, 0]
-    max_len = 0
-    left = 0
-    
-    (0...n).each do |right|
-        curr[s[right].ord - 'a'.ord] += 1
+    # Sliding Window
+    res = Float::INFINITY
+    l = 0
+    s.length.times do |r|
+        count[s[r].ord - 'a'.ord] -= 1
         
-        while left <= right && (curr[0] > freq[0] - k ||
-               curr[1] > freq[1] - k ||
-               curr[2] > freq[2] - k)
-            curr[s[left].ord - 'a'.ord] -= 1
-            left += 1
+        while count.min < k
+            count[s[l].ord - 'a'.ord] += 1
+            l += 1
         end
-        
-        max_len = [max_len, right - left + 1].max
+        res = [res, s.length - (r - l + 1)].min
     end
-    
-    n - max_len
+    res
 end
