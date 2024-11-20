@@ -1,48 +1,34 @@
 class Solution {
 public:
     int takeCharacters(string s, int k) {
-        vector<int> charCount(3, 0);
-        int length = s.length();
+        vector<int> freq(3, 0);
+        int n = s.length();
         
-        int left;
-        for (left = 0; left < length; left++) {
-            charCount[s[left] - 'a']++;
-            if (isValidCount(charCount, k)) {
-                break;
-            }
+        for (char c : s) {
+            freq[c - 'a']++;
         }
         
-        if (left == length) {
+        if (freq[0] < k || freq[1] < k || freq[2] < k) {
             return -1;
         }
         
-        int currentCount = left + 1;
-        int minCount = currentCount;
-        int right = length - 1;
+        vector<int> curr(3, 0);
+        int maxLen = 0;
+        int left = 0;
         
-        while (left >= 0) {
-            int currentChar = s[left] - 'a';
+        for (int right = 0; right < n; right++) {
+            curr[s[right] - 'a']++;
             
-            if (charCount[currentChar] == k) {
-                while (s[left] != s[right]) {
-                    charCount[s[right] - 'a']++;
-                    right--;
-                    currentCount++;
-                }
-                right--;
-            } else {
-                charCount[currentChar]--;
-                currentCount--;
-                minCount = min(currentCount, minCount);
+            while (left <= right && (curr[0] > freq[0] - k || 
+                   curr[1] > freq[1] - k || 
+                   curr[2] > freq[2] - k)) {
+                curr[s[left] - 'a']--;
+                left++;
             }
-            left--;
+            
+            maxLen = max(maxLen, right - left + 1);
         }
         
-        return minCount;
-    }
-    
-private:
-    bool isValidCount(const vector<int>& count, int k) {
-        return count[0] >= k && count[1] >= k && count[2] >= k;
+        return n - maxLen;
     }
 };
