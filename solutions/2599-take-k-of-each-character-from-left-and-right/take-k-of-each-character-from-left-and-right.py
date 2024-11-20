@@ -1,22 +1,24 @@
 class Solution:
-    def takeCharacters(self, s: str, k: int) -> int:
-        cnt = [0] * 3
-        n = len(s)
+    def takeCharacters(self, text: str, req: int) -> int:
+        freq = [0] * 3
+        size = len(text)
         
-        for c in s:
-            cnt[ord(c) - ord('a')] += 1
+        for char in text:
+            freq[ord(char) - ord('a')] += 1
         
-        l = 0
-        r = 0
+        left = 0
+        right = 0
         
-        if cnt[0] < k or cnt[1] < k or cnt[2] < k:
+        if freq[0] < req or freq[1] < req or freq[2] < req:
             return -1
         
-        for r in range(n):
-            cnt[ord(s[r]) - ord('a')] -= 1
+        for right in range(size):
+            freq[ord(text[right]) - ord('a')] -= 1
             
-            if cnt[0] < k or cnt[1] < k or cnt[2] < k:
-                cnt[ord(s[l]) - ord('a')] += 1
-                l += 1
+            if freq[0] < req or freq[1] < req or freq[2] < req:
+                freq[ord(text[left]) - ord('a')] += 1
+                left += 1
         
-        return n - (r - l + 1)
+        return size - (right - left + 1)
+
+        
