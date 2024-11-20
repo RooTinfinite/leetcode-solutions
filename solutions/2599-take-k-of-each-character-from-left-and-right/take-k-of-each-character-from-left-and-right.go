@@ -1,33 +1,32 @@
 func takeCharacters(s string, k int) int {
-    freq := make([]int, 3)
-    n := len(s)
-    
+    // Total counts
+    count := make([]int, 3)
     for _, c := range s {
-        freq[c-'a']++
+        count[c-'a']++
     }
     
-    if freq[0] < k || freq[1] < k || freq[2] < k {
+    if min(count[0], min(count[1], count[2])) < k {
         return -1
     }
     
-    curr := make([]int, 3)
-    maxLen := 0
-    left := 0
-    
-    for right := 0; right < n; right++ {
-        curr[s[right]-'a']++
+    // Sliding Window
+    res := len(s) + 1
+    l := 0
+    for r := 0; r < len(s); r++ {
+        count[s[r]-'a']--
         
-        for left <= right && (curr[0] > freq[0]-k || 
-            curr[1] > freq[1]-k || 
-            curr[2] > freq[2]-k) {
-            curr[s[left]-'a']--
-            left++
+        for min(count[0], min(count[1], count[2])) < k {
+            count[s[l]-'a']++
+            l++
         }
-        
-        if right-left+1 > maxLen {
-            maxLen = right-left+1
-        }
+        res = min(res, len(s)-(r-l+1))
     }
-    
-    return n - maxLen
+    return res
+}
+
+func min(a, b int) int {
+    if a < b {
+        return a
+    }
+    return b
 }
