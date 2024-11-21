@@ -1,44 +1,47 @@
 class Solution {
     public int countUnguarded(int m, int n, int[][] guards, int[][] walls) {
-        // Initialize grid with zeros
-        int[][] g = new int[m][n];
+        int[][] grid = new int[m][n];
+        // 0 = free, 1 = guard, 2 = wall, 3 = guardable
         
-        // Mark guards and walls as 2
-        for (int[] e : guards) {
-            g[e[0]][e[1]] = 2;
+        for (int[] guard : guards) {
+            grid[guard[0]][guard[1]] = 1;
         }
-        for (int[] e : walls) {
-            g[e[0]][e[1]] = 2;
+        for (int[] wall : walls) {
+            grid[wall[0]][wall[1]] = 2;
         }
         
-        // Directions: up, right, down, left
-        int[] dirs = {-1, 0, 1, 0, -1};
+        for (int[] guard : guards) {
+            markGuarded(grid, guard[0], guard[1], m, n);
+        }
         
-        // Process each guard's line of sight
-        for (int[] e : guards) {
-            for (int k = 0; k < 4; ++k) {
-                int x = e[0], y = e[1];
-                int dx = dirs[k], dy = dirs[k + 1];
-                
-                // Check cells in current direction until hitting boundary or obstacle
-                while (x + dx >= 0 && x + dx < m && y + dy >= 0 && y + dy < n && g[x + dx][y + dy] < 2) {
-                    x += dx;
-                    y += dy;
-                    g[x][y] = 1;
+        int res = 0;
+        for (int[] row : grid) {
+            for (int cell : row) {
+                if (cell == 0) {
+                    res++;
                 }
             }
         }
         
-        // Count unguarded cells (cells with value 0)
-        int unguardedCount = 0;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (g[i][j] == 0) {
-                    unguardedCount++;
-                }
-            }
+        return res;
+    }
+    
+    private void markGuarded(int[][] grid, int r, int c, int m, int n) {
+        for (int row = r + 1; row < m; row++) {
+            if (grid[row][c] == 1 || grid[row][c] == 2) break;
+            grid[row][c] = 3;
         }
-        
-        return unguardedCount;
+        for (int row = r - 1; row >= 0; row--) {
+            if (grid[row][c] == 1 || grid[row][c] == 2) break;
+            grid[row][c] = 3;
+        }
+        for (int col = c + 1; col < n; col++) {
+            if (grid[r][col] == 1 || grid[r][col] == 2) break;
+            grid[r][col] = 3;
+        }
+        for (int col = c - 1; col >= 0; col--) {
+            if (grid[r][col] == 1 || grid[r][col] == 2) break;
+            grid[r][col] = 3;
+        }
     }
 }
