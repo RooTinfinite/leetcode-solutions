@@ -1,35 +1,55 @@
 class Solution {
     func countUnguarded(_ m: Int, _ n: Int, _ guards: [[Int]], _ walls: [[Int]]) -> Int {
-        // Initialize grid with zeros
-        var g = Array(repeating: Array(repeating: 0, count: n), count: m)
+        var grid = Array(repeating: Array(repeating: 0, count: n), count: m)
+        // 0 = free, 1 = guard, 2 = wall, 3 = guardable
         
-        // Mark guards and walls as 2
-        for e in guards {
-            g[e[0]][e[1]] = 2
-        }
-        for e in walls {
-            g[e[0]][e[1]] = 2
+        for guardPos in guards {
+            grid[guardPos[0]][guardPos[1]] = 1
         }
         
-        // Directions: up, right, down, left
-        let dirs = [-1, 0, 1, 0, -1]
+        for wall in walls {
+            grid[wall[0]][wall[1]] = 2
+        }
         
-        // Process each guard's line of sight
-        for e in guards {
-            for k in 0..<4 {
-                var x = e[0], y = e[1]
-                let dx = dirs[k], dy = dirs[k + 1]
-                
-                // Check cells in current direction until hitting boundary or obstacle
-                while x + dx >= 0 && x + dx < m && y + dy >= 0 && y + dy < n && g[x + dx][y + dy] < 2 {
-                    x += dx
-                    y += dy
-                    g[x][y] = 1
+        func markGuarded(_ r: Int, _ c: Int) {
+            // Check downward
+            for row in (r + 1)..<m {
+                if grid[row][c] == 1 || grid[row][c] == 2 { break }
+                grid[row][c] = 3
+            }
+            
+            // Check upward
+            for row in (0..<r).reversed() {
+                if grid[row][c] == 1 || grid[row][c] == 2 { break }
+                grid[row][c] = 3
+            }
+            
+            // Check right
+            for col in (c + 1)..<n {
+                if grid[r][col] == 1 || grid[r][col] == 2 { break }
+                grid[r][col] = 3
+            }
+            
+            // Check left
+            for col in (0..<c).reversed() {
+                if grid[r][col] == 1 || grid[r][col] == 2 { break }
+                grid[r][col] = 3
+            }
+        }
+        
+        for guardPos in guards {
+            markGuarded(guardPos[0], guardPos[1])
+        }
+        
+        var result = 0
+        for row in grid {
+            for cell in row {
+                if cell == 0 {
+                    result += 1
                 }
             }
         }
         
-        // Count unguarded cells (cells with value 0)
-        return g.reduce(0) { $0 + $1.filter { $0 == 0 }.count }
+        return result
     }
 }
