@@ -1,18 +1,16 @@
 class Solution {
-    func firstUniqChar(_ inputStr: String) -> Int {
-        var firstUnique = Int.max
+    func firstUniqChar(_ s: String) -> Int {
+        var firstUnique: [Int] = []
         
-        for ascii in Character("a").asciiValue!...Character("z").asciiValue! {
-            let char = String(UnicodeScalar(ascii))
-            if inputStr.contains(char) {
-                if inputStr.firstIndex(of: Character(char)) == inputStr.lastIndex(of: Character(char)) {
-                    if let index = inputStr.firstIndex(of: Character(char)) {
-                        firstUnique = min(firstUnique, inputStr.distance(from: inputStr.startIndex, to: index))
-                    }
+        for letter in "abcdefghijklmnopqrstuvwxyz" {
+            let count = s.filter { $0 == letter }.count
+            if count == 1 {
+                if let index = s.firstIndex(of: letter) {
+                    firstUnique.append(s.distance(from: s.startIndex, to: index))
                 }
             }
         }
         
-        return firstUnique != Int.max ? firstUnique : -1
+        return firstUnique.min() ?? -1
     }
 }
