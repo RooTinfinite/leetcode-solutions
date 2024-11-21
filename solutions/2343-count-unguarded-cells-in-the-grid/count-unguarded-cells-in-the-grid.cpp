@@ -1,6 +1,16 @@
-#define NO_SAN __attribute__((no_sanitize("undefined", "address", "coverage", "thread")))
-#define INL __attribute__((always_inline))
-#define HOT __attribute__((hot))
+
+#define NO_SANITIZE __attribute__((no_sanitize("undefined", "address", "thread", "memory", "leak")))
+
+#define ALWAYS_INLINE __attribute__((always_inline)) inline
+#define HOT __attribute__((hot, optimize("O3")))
+#define PURE __attribute__((pure))
+#define CONST __attribute__((const))
+#define FLATTEN __attribute__((flatten))
+#define LIKELY(x) __builtin_expect(!!(x), 1)
+#define UNLIKELY(x) __builtin_expect(!!(x), 0)
+
+#define ALIGNED(x) __attribute__((aligned(x)))
+#define VECTOR_SIZE(x) __attribute__((vector_size(x)))
 
 class Solution {
 private:
