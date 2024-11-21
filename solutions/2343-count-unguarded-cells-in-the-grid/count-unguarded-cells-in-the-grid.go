@@ -1,42 +1,56 @@
 func countUnguarded(m int, n int, guards [][]int, walls [][]int) int {
-    // Initialize grid with zeros
-    grid := make([]uint8, m*n)
-    
-    // Mark guards and walls as 2
-    for _, pos := range guards {
-        grid[pos[0]*n+pos[1]] = 2
+    grid := make([][]int, m)
+    for i := range grid {
+        grid[i] = make([]int, n)
     }
-    for _, pos := range walls {
-        grid[pos[0]*n+pos[1]] = 2
+    // 0 = free, 1 = guard, 2 = wall, 3 = guardable
+    
+    for _, g := range guards {
+        grid[g[0]][g[1]] = 1
+    }
+    for _, w := range walls {
+        grid[w[0]][w[1]] = 2
     }
     
-    // Directions: up, right, down, left
-    dx := [4]int{-1, 0, 1, 0}
-    dy := [4]int{0, 1, 0, -1}
+    markGuarded := func(r, c int) {
+        for row := r + 1; row < m; row++ {
+            if grid[row][c] == 1 || grid[row][c] == 2 {
+                break
+            }
+            grid[row][c] = 3
+        }
+        for row := r - 1; row >= 0; row-- {
+            if grid[row][c] == 1 || grid[row][c] == 2 {
+                break
+            }
+            grid[row][c] = 3
+        }
+        for col := c + 1; col < n; col++ {
+            if grid[r][col] == 1 || grid[r][col] == 2 {
+                break
+            }
+            grid[r][col] = 3
+        }
+        for col := c - 1; col >= 0; col-- {
+            if grid[r][col] == 1 || grid[r][col] == 2 {
+                break
+            }
+            grid[r][col] = 3
+        }
+    }
     
-    // Process each guard's line of sight
-    for _, guard := range guards {
-        for k := 0; k < 4; k++ {
-            x, y := guard[0], guard[1]
-            newX, newY := x+dx[k], y+dy[k]
-            
-            // Check cells in current direction until hitting boundary or obstacle
-            for newX >= 0 && newX < m && newY >= 0 && newY < n && grid[newX*n+newY] < 2 {
-                grid[newX*n+newY] = 1
-                newX += dx[k]
-                newY += dy[k]
+    for _, g := range guards {
+        markGuarded(g[0], g[1])
+    }
+    
+    res := 0
+    for i := 0; i < m; i++ {
+        for j := 0; j < n; j++ {
+            if grid[i][j] == 0 {
+                res++
             }
         }
     }
     
-    // Count unguarded cells (cells with value 0)
-    unguardedCount := m*n - len(guards) - len(walls)
-    for i := 0; i < m*n; i++ {
-        if grid[i] == 1 {
-            unguardedCount--
-        }
-    }
-    
-    return unguardedCount
+    return res
 }
-
