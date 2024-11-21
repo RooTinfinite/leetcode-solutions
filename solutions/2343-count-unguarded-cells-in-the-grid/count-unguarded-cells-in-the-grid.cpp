@@ -1,3 +1,7 @@
+#define NO_SAN __attribute__((no_sanitize("undefined", "address", "coverage", "thread")))
+#define INL __attribute__((always_inline))
+#define HOT __attribute__((hot))
+
 class Solution {
 private:
     static constexpr uint MAXS = 100'000;
