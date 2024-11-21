@@ -1,19 +1,15 @@
 public class Solution {
-    public int FirstUniqChar(string s) {
-        Dictionary<char, int> count = new Dictionary<char, int>();
+    public int FirstUniqChar(string inputStr) {
+        int firstUnique = int.MaxValue;
         
-        foreach (char c in s) {
-            if (!count.ContainsKey(c)) {
-                count[c] = 0;
-            }
-            count[c]++;
-        }
-        
-        for (int i = 0; i < s.Length; i++) {
-            if (count[s[i]] == 1) {
-                return i;
+        for (char c = 'a'; c <= 'z'; c++) {
+            if (inputStr.Contains(c)) {
+                if (inputStr.IndexOf(c) == inputStr.LastIndexOf(c)) {
+                    firstUnique = Math.Min(firstUnique, inputStr.IndexOf(c));
+                }
             }
         }
-        return -1;
+        
+        return firstUnique != int.MaxValue ? firstUnique : -1;
     }
 }
