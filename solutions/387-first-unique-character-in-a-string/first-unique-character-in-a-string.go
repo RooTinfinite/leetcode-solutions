@@ -1,14 +1,16 @@
-func firstUniqChar(s string) int {
-    count := make(map[rune]int)
+func firstUniqChar(inputStr string) int {
+    firstUnique := math.MaxInt32
     
-    for _, c := range s {
-        count[c]++
-    }
-    
-    for i, c := range s {
-        if count[c] == 1 {
-            return i
+    for c := 'a'; c <= 'z'; c++ {
+        if strings.Contains(inputStr, string(c)) {
+            if strings.Index(inputStr, string(c)) == strings.LastIndex(inputStr, string(c)) {
+                firstUnique = min(firstUnique, strings.Index(inputStr, string(c)))
+            }
         }
     }
-    return -1
+    
+    if firstUnique == math.MaxInt32 {
+        return -1
+    }
+    return firstUnique
 }
