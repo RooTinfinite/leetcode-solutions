@@ -1,16 +1,17 @@
 // TypeScript
 
-function firstUniqChar(s: string): number {
-    const count = new Map<string, number>();
+function firstUniqChar(inputStr: string): number {
+    let firstUnique: number = Infinity;
     
-    for (const c of s) {
-        count.set(c, (count.get(c) || 0) + 1);
-    }
-    
-    for (let i = 0; i < s.length; i++) {
-        if (count.get(s[i]) === 1) {
-            return i;
+    for (let charCode = 'a'.charCodeAt(0); charCode <= 'z'.charCodeAt(0); charCode++) {
+        const currChar = String.fromCharCode(charCode);
+        
+        if (inputStr.includes(currChar)) {
+            if (inputStr.indexOf(currChar) === inputStr.lastIndexOf(currChar)) {
+                firstUnique = Math.min(firstUnique, inputStr.indexOf(currChar));
+            }
         }
     }
-    return -1
+    
+    return firstUnique !== Infinity ? firstUnique : -1;
 }
