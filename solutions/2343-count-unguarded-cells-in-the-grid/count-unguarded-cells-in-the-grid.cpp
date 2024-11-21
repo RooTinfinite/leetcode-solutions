@@ -12,22 +12,18 @@ public:
         }
         
         auto mark_guarded = [&](int r, int c) {
-            // Down
             for (int row = r + 1; row < m; row++) {
                 if (grid[row][c] == 1 || grid[row][c] == 2) break;
                 grid[row][c] = 3;
             }
-            // Up
             for (int row = r - 1; row >= 0; row--) {
                 if (grid[row][c] == 1 || grid[row][c] == 2) break;
                 grid[row][c] = 3;
             }
-            // Right
             for (int col = c + 1; col < n; col++) {
                 if (grid[r][col] == 1 || grid[r][col] == 2) break;
                 grid[r][col] = 3;
             }
-            // Left
             for (int col = c - 1; col >= 0; col--) {
                 if (grid[r][col] == 1 || grid[r][col] == 2) break;
                 grid[r][col] = 3;
