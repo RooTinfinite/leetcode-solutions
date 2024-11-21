@@ -1,12 +1,13 @@
-def first_uniq_char(s)
-    count = Hash.new(0)
+def first_uniq_char(input_str)
+    first_unique = Float::INFINITY
     
-    s.each_char do |c|
-        count[c] += 1
+    ('a'..'z').each do |c|
+        if input_str.include?(c)
+            if input_str.index(c) == input_str.rindex(c)
+                first_unique = [first_unique, input_str.index(c)].min
+            end
+        end
     end
     
-    s.each_char.with_index do |c, i|
-        return i if count[c] == 1
-    end
-    -1
+    first_unique == Float::INFINITY ? -1 : first_unique
 end
