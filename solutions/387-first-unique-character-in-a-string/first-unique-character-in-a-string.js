@@ -1,16 +1,17 @@
 // JavaScript
 
 var firstUniqChar = function(s) {
-    const count = new Map();
+    let firstUnique = Infinity;
     
-    for (let c of s) {
-        count.set(c, (count.get(c) || 0) + 1);
-    }
-    
-    for (let i = 0; i < s.length; i++) {
-        if (count.get(s[i]) === 1) {
-            return i;
+    for (let charCode = 97; charCode <= 122; charCode++) {
+        const currChar = String.fromCharCode(charCode);
+        
+        if (s.includes(currChar)) {
+            if (s.indexOf(currChar) === s.lastIndexOf(currChar)) {
+                firstUnique = Math.min(firstUnique, s.indexOf(currChar));
+            }
         }
     }
-    return -1;
+    
+    return firstUnique === Infinity ? -1 : firstUnique;
 };
