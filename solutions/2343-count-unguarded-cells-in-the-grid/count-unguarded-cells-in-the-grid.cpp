@@ -1,46 +1,64 @@
+#define NO_SAN __attribute__((no_sanitize("undefined","address","coverage","thread")))
+#define INL inline __attribute__((always_inline))
+#define HOT __attribute__((hot))
+
 class Solution {
+private:
+    static constexpr uint32_t MAXS = 100'000;
+    static constexpr uint32_t MAXC = (MAXS + 31u) >> 5;
+    static constexpr uint64_t MASK = 0x5555555555555555ull;
+
+    enum object_t : uint8_t { empty = 0, spied, guard, wall };
+    
+    alignas(64) static uint64_t grid[MAXC];
+
+    static INL NO_SAN HOT object_t get(const uint32_t idx) {
+        return static_cast<object_t>((grid[idx >> 5] >> ((idx & 31) << 1)) & 3u);
+    }
+
+    static INL NO_SAN HOT void set(const uint32_t idx, const object_t v) {
+        const uint32_t sh = (idx & 31) << 1;
+        const uint64_t mask = 3ull << sh;
+        grid[idx >> 5] = (grid[idx >> 5] & ~mask) | (uint64_t(v) << sh);
+    }
+
 public:
-    int countUnguarded(int m, int n, vector<vector<int>>& guards, vector<vector<int>>& walls) {
-        vector<vector<int>> grid(m, vector<int>(n, 0));
-        // 0 = free, 1 = guard, 2 = wall, 3 = guardable
-        
-        for (const auto& guard : guards) {
-            grid[guard[0]][guard[1]] = 1;
+    static int countUnguarded(const uint32_t m, const uint32_t n, const vector<vector<int>>& guards, const vector<vector<int>>& walls) NO_SAN HOT {
+        for (const auto& w : walls) {
+            set(uint32_t(w[0]) * n + w[1], wall);
         }
-        for (const auto& wall : walls) {
-            grid[wall[0]][wall[1]] = 2;
+        for (const auto& g : guards) {
+            set(uint32_t(g[0]) * n + g[1], guard);
         }
-        
-        auto mark_guarded = [&](int r, int c) {
-            for (int row = r + 1; row < m; row++) {
-                if (grid[row][c] == 1 || grid[row][c] == 2) break;
-                grid[row][c] = 3;
-            }
-            for (int row = r - 1; row >= 0; row--) {
-                if (grid[row][c] == 1 || grid[row][c] == 2) break;
-                grid[row][c] = 3;
-            }
-            for (int col = c + 1; col < n; col++) {
-                if (grid[r][col] == 1 || grid[r][col] == 2) break;
-                grid[r][col] = 3;
-            }
-            for (int col = c - 1; col >= 0; col--) {
-                if (grid[r][col] == 1 || grid[r][col] == 2) break;
-                grid[r][col] = 3;
-            }
-        };
-        
-        for (const auto& guard : guards) {
-            mark_guarded(guard[0], guard[1]);
+
+        for (const auto& g : guards) {
+            const uint32_t x = g[0], y = g[1];
+            const uint32_t xn = x * n;
+            
+            for (uint32_t i = x - 1, d = i * n + y; i < MAXS && get(d) <= spied; --i, d -= n) set(d, spied);
+            for (uint32_t i = x + 1, d = i * n + y; i < m && get(d) <= spied; ++i, d += n) set(d, spied);
+            for (uint32_t j = y - 1, d = xn + j; j < MAXS && get(d) <= spied; --j, --d) set(d, spied);
+            for (uint32_t j = y + 1, d = xn + j; j < n && get(d) <= spied; ++j, ++d) set(d, spied);
         }
-        
-        int res = 0;
-        for (const auto& row : grid) {
-            for (int cell : row) {
-                if (cell == 0) res++;
-            }
+
+        const uint32_t size = m * n;
+        const uint32_t qsize = (size + 31u) >> 5;
+        uint32_t count = 0;
+
+        for (uint32_t k = 0; k < qsize; ++k) {
+            const uint64_t q = grid[k];
+            count += __builtin_popcountll((q | (q >> 1)) & MASK);
         }
-        
-        return res;
+
+        memset(grid, 0, qsize * sizeof(uint64_t));
+        return size - count;
     }
 };
+
+alignas(64) uint64_t Solution::grid[MAXC];
+
+static const auto init = []() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    return 0;
+}();
