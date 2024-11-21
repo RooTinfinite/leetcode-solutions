@@ -1,11 +1,9 @@
 class Solution:
     def firstUniqChar(self, s: str) -> int:
-        count = defaultdict(int) # char -> count
-
-        for c in s:
-            count[c] += 1
-
-        for i, c in enumerate(s):
-            if count[c] == 1:
-                return i
-        return -1
+        minIdx = float('inf')
+        for c in range(ord('a'),ord('z') + 1):
+            c = chr(c)
+            if c in s:
+                if s.index(c) == s.rindex(c):
+                    minIdx = min(minIdx,s.index(c))
+        return minIdx if minIdx != float('inf') else -1
