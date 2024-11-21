@@ -1,14 +1,15 @@
 class Solution {
     public int firstUniqChar(String s) {
-        int firstUnique = Integer.MAX_VALUE;
+        ArrayList<Integer> firstUnique = new ArrayList<>();
+        String letters = "abcdefghijklmnopqrstuvwxyz";
         
-        for (char c = 'a'; c <= 'z'; c++) {
-            int firstIndex = s.indexOf(c);
-            if (firstIndex != -1 && firstIndex == s.lastIndexOf(c)) {
-                firstUnique = Math.min(firstUnique, firstIndex);
+        for (char letter : letters.toCharArray()) {
+            long count = s.chars().filter(ch -> ch == letter).count();
+            if (count == 1) {
+                firstUnique.add(s.indexOf(letter));
             }
         }
         
-        return firstUnique == Integer.MAX_VALUE ? -1 : firstUnique;
+        return firstUnique.isEmpty() ? -1 : Collections.min(firstUnique);
     }
 }
