@@ -1,47 +1,35 @@
 var countUnguarded = function(m, n, guards, walls) {
-    const grid = Array(m).fill().map(() => Array(n).fill(0));
-    // 0 = free, 1 = guard, 2 = wall, 3 = guardable
+    // Initialize grid with zeros
+    const g = Array(m).fill().map(() => Array(n).fill(0));
     
-    for (const [r, c] of guards) {
-        grid[r][c] = 1;
+    // Mark guards and walls as 2
+    for (const [x, y] of guards) {
+        g[x][y] = 2;
     }
-    for (const [r, c] of walls) {
-        grid[r][c] = 2;
+    for (const [x, y] of walls) {
+        g[x][y] = 2;
     }
     
-    function markGuarded(r, c) {
-        // Check downward
-        for (let row = r + 1; row < m; row++) {
-            if (grid[row][c] === 1 || grid[row][c] === 2) break;
-            grid[row][c] = 3;
-        }
-        // Check upward
-        for (let row = r - 1; row >= 0; row--) {
-            if (grid[row][c] === 1 || grid[row][c] === 2) break;
-            grid[row][c] = 3;
-        }
-        // Check right
-        for (let col = c + 1; col < n; col++) {
-            if (grid[r][col] === 1 || grid[r][col] === 2) break;
-            grid[r][col] = 3;
-        }
-        // Check left
-        for (let col = c - 1; col >= 0; col--) {
-            if (grid[r][col] === 1 || grid[r][col] === 2) break;
-            grid[r][col] = 3;
+    // Directions: up, right, down, left
+    const dirs = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+    
+    // Process each guard's line of sight
+    for (const [gx, gy] of guards) {
+        for (const [dx, dy] of dirs) {
+            let x = gx;
+            let y = gy;
+            while (true) {
+                x += dx;
+                y += dy;
+                // Check cells in current direction until hitting boundary or obstacle
+                if (x < 0 || x >= m || y < 0 || y >= n || g[x][y] === 2) {
+                    break;
+                }
+                g[x][y] = 1;
+            }
         }
     }
     
-    for (const [r, c] of guards) {
-        markGuarded(r, c);
-    }
-    
-    let res = 0;
-    for (const row of grid) {
-        for (const cell of row) {
-            if (cell === 0) res++;
-        }
-    }
-    
-    return res;
+    // Count unguarded cells (cells with value 0)
+    return g.reduce((sum, row) => sum + row.filter(cell => cell === 0).length, 0);
 };
