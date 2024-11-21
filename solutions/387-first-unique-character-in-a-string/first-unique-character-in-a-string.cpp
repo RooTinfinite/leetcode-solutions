@@ -1,18 +1,19 @@
 class Solution {
 public:
     int firstUniqChar(string s) {
-        int firstUnique = INT_MAX;
+        vector<int> firstUnique;
+        string letters = "abcdefghijklmnopqrstuvwxyz";
         
-        for (char c = 'a'; c <= 'z'; c++) {
-            size_t firstPos = s.find(c);
-            if (firstPos != string::npos) {
-                size_t lastPos = s.rfind(c);
-                if (firstPos == lastPos) {
-                    firstUnique = min(firstUnique, (int)firstPos);
-                }
+        for (char letter : letters) {
+            int count = 0;
+            for (char c : s) {
+                if (c == letter) count++;
+            }
+            if (count == 1) {
+                firstUnique.push_back(s.find(letter));
             }
         }
         
-        return firstUnique == INT_MAX ? -1 : firstUnique;
+        return firstUnique.empty() ? -1 : *min_element(firstUnique.begin(), firstUnique.end());
     }
 };
