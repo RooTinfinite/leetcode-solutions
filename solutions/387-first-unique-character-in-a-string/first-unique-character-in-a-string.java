@@ -1,16 +1,14 @@
 class Solution {
     public int firstUniqChar(String s) {
-        Map<Character, Integer> count = new HashMap<>();
+        int firstUnique = Integer.MAX_VALUE;
         
-        for (char c : s.toCharArray()) {
-            count.put(c, count.getOrDefault(c, 0) + 1);
-        }
-        
-        for (int i = 0; i < s.length(); i++) {
-            if (count.get(s.charAt(i)) == 1) {
-                return i;
+        for (char c = 'a'; c <= 'z'; c++) {
+            int firstIndex = s.indexOf(c);
+            if (firstIndex != -1 && firstIndex == s.lastIndexOf(c)) {
+                firstUnique = Math.min(firstUnique, firstIndex);
             }
         }
-        return -1;
+        
+        return firstUnique == Integer.MAX_VALUE ? -1 : firstUnique;
     }
 }
