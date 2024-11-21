@@ -1,16 +1,23 @@
-func firstUniqChar(inputStr string) int {
-    firstUnique := math.MaxInt32
+func firstUniqChar(s string) int {
+    firstUnique := make([]int, 0)
+    letters := "abcdefghijklmnopqrstuvwxyz"
     
-    for c := 'a'; c <= 'z'; c++ {
-        if strings.Contains(inputStr, string(c)) {
-            if strings.Index(inputStr, string(c)) == strings.LastIndex(inputStr, string(c)) {
-                firstUnique = min(firstUnique, strings.Index(inputStr, string(c)))
-            }
+    for _, letter := range letters {
+        count := strings.Count(s, string(letter))
+        if count == 1 {
+            firstUnique = append(firstUnique, strings.IndexRune(s, letter))
         }
     }
     
-    if firstUnique == math.MaxInt32 {
+    if len(firstUnique) == 0 {
         return -1
     }
-    return firstUnique
+    
+    minIndex := firstUnique[0]
+    for _, index := range firstUnique {
+        if index < minIndex {
+            minIndex = index
+        }
+    }
+    return minIndex
 }
