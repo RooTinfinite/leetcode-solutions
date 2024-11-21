@@ -14,28 +14,36 @@ private:
 
     static void set(const uint idx, const object_t v) noexcept {
         const uint shift = (idx & 31) << 1;
-        const uint64_t mask = 3ull << shift;
-        grid[idx >> 5] = (grid[idx >> 5] & ~mask) | (uint64_t(v) << shift);
+        grid[idx >> 5] = (grid[idx >> 5] & ~(3ull << shift)) | (uint64_t(v) << shift);
     }
 
 public:
-    static int countUnguarded(const uint m, const uint n, 
+    static int countUnguarded(uint m, uint n, 
                             const vector<vector<int>>& guards,
                             const vector<vector<int>>& walls) noexcept {
         const uint size = m * n;
         const uint qsize = (size + 31u) >> 5;
         
-        memset(grid, 0, qsize * sizeof(uint64_t));
+        __builtin_memset(grid, 0, qsize * sizeof(uint64_t));
 
-        for (const auto& w : walls) {
-            set(w[0] * n + w[1], wall);
+        const uint guard_size = guards.size();
+        const uint wall_size = walls.size();
+        
+        if (__builtin_expect(guard_size + wall_size == size, 0)) return 0;
+        
+        #pragma GCC unroll 4
+        for (uint i = 0; i < wall_size; ++i) {
+            set(walls[i][0] * n + walls[i][1], wall);
         }
-        for (const auto& g : guards) {
-            set(g[0] * n + g[1], guard);
+        
+        #pragma GCC unroll 4
+        for (uint i = 0; i < guard_size; ++i) {
+            set(guards[i][0] * n + guards[i][1], guard);
         }
 
-        for (const auto& g : guards) {
-            const uint x = g[0], y = g[1];
+        #pragma GCC unroll 2
+        for (uint g = 0; g < guard_size; ++g) {
+            const uint x = guards[g][0], y = guards[g][1];
             
             for (uint i = x - 1u, d = i * n + y; i + 1u && get(d) <= spied; i--, d -= n)
                 set(d, spied);
@@ -48,9 +56,9 @@ public:
         }
 
         uint guarded = 0;
-        for (uint k = 0; k < qsize; k++) {
-            const uint64_t q = grid[k];
-            guarded += __builtin_popcountll((q | (q >> 1)) & BIT_MASK);
+        #pragma GCC unroll 8
+        for (uint k = 0; k < qsize; ++k) {
+            guarded += __builtin_popcountll((grid[k] | (grid[k] >> 1)) & BIT_MASK);
         }
 
         return size - guarded;
@@ -59,7 +67,7 @@ public:
 
 alignas(64) uint64_t Solution::grid[MAXC];
 
-static auto init = []() {
+[[maybe_unused]] static const auto fast_io = []() noexcept {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
     return 0;
