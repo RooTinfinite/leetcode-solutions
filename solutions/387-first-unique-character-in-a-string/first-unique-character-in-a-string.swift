@@ -1,16 +1,20 @@
 class Solution {
     func firstUniqChar(_ s: String) -> Int {
-        var firstUnique: [Int] = []
-        
-        for letter in "abcdefghijklmnopqrstuvwxyz" {
-            let count = s.filter { $0 == letter }.count
-            if count == 1 {
-                if let index = s.firstIndex(of: letter) {
-                    firstUnique.append(s.distance(from: s.startIndex, to: index))
-                }
-            }
+        let str = Array(s.unicodeScalars)
+        var alphabet = [Int](repeating: 0, count: 26)
+        var index = 0
+
+        for i in str.indices {
+            alphabet[Int(str[i].value - 97)] += 1
         }
-        
-        return firstUnique.min() ?? -1
+
+        for i in str.indices {
+            if alphabet[Int(str[i].value - 97)] == 1 {
+                return index
+            }
+            index += 1
+        } 
+
+        return -1
     }
 }
