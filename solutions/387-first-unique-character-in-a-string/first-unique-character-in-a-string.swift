@@ -1,20 +1,17 @@
 class Solution {
     func firstUniqChar(_ s: String) -> Int {
-        let str = Array(s.unicodeScalars)
-        var alphabet = [Int](repeating: 0, count: 26)
-        var index = 0
-
-        for i in str.indices {
-            alphabet[Int(str[i].value - 97)] += 1
+        let char = Array(s.unicodeScalars)
+        var Freq = [Int](repeating: 0, count: 26)
+        
+        for first_unique_index in char.indices {
+            Freq[Int(char[first_unique_index].value - 97)] += 1
         }
-
-        for i in str.indices {
-            if alphabet[Int(str[i].value - 97)] == 1 {
-                return index
+        for first_unique_index in char.indices {
+            if Freq[Int(char[first_unique_index].value - 97)] == 1 {
+                return first_unique_index
             }
-            index += 1
-        } 
-
+        }
+        
         return -1
     }
 }
