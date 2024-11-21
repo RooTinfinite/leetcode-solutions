@@ -1,15 +1,14 @@
 public class Solution {
-    public int FirstUniqChar(string inputStr) {
-        int firstUnique = int.MaxValue;
+    public int FirstUniqChar(string s) {
+        List<int> firstUnique = new List<int>();
+        string letters = "abcdefghijklmnopqrstuvwxyz";
         
-        for (char c = 'a'; c <= 'z'; c++) {
-            if (inputStr.Contains(c)) {
-                if (inputStr.IndexOf(c) == inputStr.LastIndexOf(c)) {
-                    firstUnique = Math.Min(firstUnique, inputStr.IndexOf(c));
-                }
+        foreach (char letter in letters) {
+            if (s.Count(c => c == letter) == 1) {
+                firstUnique.Add(s.IndexOf(letter));
             }
         }
         
-        return firstUnique != int.MaxValue ? firstUnique : -1;
+        return firstUnique.Count > 0 ? firstUnique.Min() : -1;
     }
 }
