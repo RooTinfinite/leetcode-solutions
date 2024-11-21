@@ -11,7 +11,6 @@ class Solution {
                 return first_unique_index
             }
         }
-        
         return -1
     }
 }
