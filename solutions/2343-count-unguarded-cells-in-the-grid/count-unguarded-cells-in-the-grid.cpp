@@ -1,6 +1,4 @@
-
 #define NO_SANITIZE __attribute__((no_sanitize("undefined", "address", "thread", "memory", "leak")))
-
 #define ALWAYS_INLINE __attribute__((always_inline)) inline
 #define HOT __attribute__((hot, optimize("O3")))
 #define PURE __attribute__((pure))
@@ -8,7 +6,6 @@
 #define FLATTEN __attribute__((flatten))
 #define LIKELY(x) __builtin_expect(!!(x), 1)
 #define UNLIKELY(x) __builtin_expect(!!(x), 0)
-
 #define ALIGNED(x) __attribute__((aligned(x)))
 #define VECTOR_SIZE(x) __attribute__((vector_size(x)))
 
@@ -20,18 +17,21 @@ private:
 
     enum object_t : uint8_t { empty = 0, spied, guard, wall };
 
-    alignas(64) static uint64_t grid[MAXC];
+    ALIGNED(64) static uint64_t grid[MAXC];
 
+    ALWAYS_INLINE PURE
     static object_t get(const uint idx) noexcept {
         return static_cast<object_t>((grid[idx >> 5] >> ((idx & 31) << 1)) & 3u);
     }
 
+    ALWAYS_INLINE
     static void set(const uint idx, const object_t v) noexcept {
         const uint shift = (idx & 31) << 1;
         grid[idx >> 5] = (grid[idx >> 5] & ~(3ull << shift)) | (uint64_t(v) << shift);
     }
 
 public:
+    HOT NO_SANITIZE FLATTEN
     static int countUnguarded(uint m, uint n, 
                             const vector<vector<int>>& guards,
                             const vector<vector<int>>& walls) noexcept {
@@ -43,7 +43,7 @@ public:
         const uint guard_size = guards.size();
         const uint wall_size = walls.size();
         
-        if (__builtin_expect(guard_size + wall_size == size, 0)) return 0;
+        if (UNLIKELY(guard_size + wall_size == size)) return 0;
         
         #pragma GCC unroll 4
         for (uint i = 0; i < wall_size; ++i) {
@@ -79,7 +79,7 @@ public:
     }
 };
 
-alignas(64) uint64_t Solution::grid[MAXC];
+ALIGNED(64) uint64_t Solution::grid[MAXC];
 
 [[maybe_unused]] static const auto fast_io = []() noexcept {
     ios_base::sync_with_stdio(false);
