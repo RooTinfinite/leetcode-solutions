@@ -1,33 +1,19 @@
 class Solution {
     public int maxEqualRowsAfterFlips(int[][] matrix) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        Map<String, Integer> patterns = new HashMap<>();
+        int n = matrix.length;
+        int m = matrix[0].length;
+        Map<Integer, Integer> map = new HashMap<>();
+        int maxCount = 0;
         
-        StringBuilder keyBuilder = new StringBuilder(cols);
-        
-        for (int[] row : matrix) {
-            keyBuilder.setLength(0);
-            int flip = row[0];
-            
-            int j = 0;
-            for (; j + 3 < cols; j += 4) {
-                int val1 = row[j] ^ flip;
-                int val2 = row[j + 1] ^ flip;
-                int val3 = row[j + 2] ^ flip;
-                int val4 = row[j + 3] ^ flip;
-                
-                keyBuilder.append(val1).append(val2).append(val3).append(val4);
+        for (int i = 0; i < n; i++) {
+            if (matrix[i][m-1] == 1) {
+                for (int j = 0; j < m; j++) {
+                    matrix[i][j] ^= matrix[i][m-1];
+                }
             }
-            
-            for (; j < cols; j++) {
-                keyBuilder.append(row[j] ^ flip);
-            }
-            
-            String key = keyBuilder.toString();
-            patterns.merge(key, 1, Integer::sum);
+            int count = map.merge(Arrays.hashCode(matrix[i]), 1, Integer::sum);
+            maxCount = Math.max(maxCount, count);
         }
-        
-        return patterns.values().stream().mapToInt(Integer::intValue).max().orElse(0);
+        return maxCount;
     }
 }
