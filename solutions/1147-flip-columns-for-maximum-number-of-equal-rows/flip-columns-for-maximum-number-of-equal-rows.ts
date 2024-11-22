@@ -1,15 +1,12 @@
 // TypeScript
 
-function maxEqualRowsAfterFlips(mat: number[][]): number {
-    const patFreq = new Map<string, number>();
+function maxEqualRowsAfterFlips(matrix: number[][]): number {
+    const count = new Map<string, number>();
     
-    for (const row of mat) {
-        const pattern = row[0] === 0 
-            ? row.join('')
-            : row.map(bit => bit ^ 1).join('');
-            
-        patFreq.set(pattern, (patFreq.get(pattern) || 0) + 1);
+    for (const row of matrix) {
+        const key = row.map(n => row[0] ? 1 - n : n).join(',');
+        count.set(key, (count.get(key) || 0) + 1);
     }
     
-    return Math.max(...patFreq.values());
+    return Math.max(...count.values());
 }
