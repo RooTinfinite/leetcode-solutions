@@ -1,28 +1,21 @@
 class Solution {
-    public int maxEqualRowsAfterFlips(int[][] matrix) {
-        int n = matrix.length;
-        int m = matrix[0].length;
-        Map<String, Integer> map = new HashMap<>();
-        int maxCount = 0;
+    public int maxEqualRowsAfterFlips(int[][] mat) {
+        int res = 0;
+        int n = mat[0].length;
+        Map<BitSet, Integer> freq = new HashMap<>();
         
-        for (int[] row : matrix) {
-            StringBuilder normal = new StringBuilder();
-            StringBuilder flipped = new StringBuilder();
-            
-            for (int j = 0; j < m; j++) {
-                normal.append(row[j]);
-                flipped.append(row[j] ^ 1);
+        for (int[] row : mat) {
+            BitSet same = new BitSet(n);
+            same.set(0);
+            for (int i = 1; i < n; i++) {
+                if (row[0] != row[i]) {
+                    same.set(i);
+                }
             }
             
-            String pattern = normal.toString();
-            String flippedPattern = flipped.toString();
-            
-            if (pattern.compareTo(flippedPattern) > 0) {
-                pattern = flippedPattern;
-            }
-            
-            maxCount = Math.max(maxCount, map.merge(pattern, 1, Integer::sum));
+            int count = freq.merge(same, 1, Integer::sum);
+            res = Math.max(res, count);
         }
-        return maxCount;
+        return res;
     }
 }
