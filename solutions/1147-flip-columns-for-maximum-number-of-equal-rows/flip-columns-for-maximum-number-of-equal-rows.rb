@@ -1,13 +1,10 @@
-def max_equal_rows_after_flips(mat)
-    pat_freq = Hash.new(0)
+def max_equal_rows_after_flips(matrix)
+    count = Hash.new(0)
     
-    mat.each do |row|
-        pattern = row[0] == 0 ? 
-            row.join : 
-            row.map { |bit| bit ^ 1 }.join
-            
-        pat_freq[pattern] += 1
+    matrix.each do |row|
+        key = row.map { |n| row[0] == 1 ? 1 - n : n }
+        count[key] += 1
     end
     
-    pat_freq.values.max
+    count.values.max
 end
