@@ -1,20 +1,16 @@
 public class Solution {
-    public int MaxEqualRowsAfterFlips(int[][] mat) {
-        Dictionary<string, int> patFreq = new Dictionary<string, int>();
+    public int MaxEqualRowsAfterFlips(int[][] matrix) {
+        var count = new Dictionary<string, int>();
         
-        foreach (int[] row in mat) {
-            StringBuilder pattern = new StringBuilder();
-            if (row[0] == 0) {
-                foreach (int bit in row) pattern.Append(bit);
-            } else {
-                foreach (int bit in row) pattern.Append(bit ^ 1);
+        foreach (var row in matrix) {
+            var key = new int[row.Length];
+            for (int i = 0; i < row.Length; i++) {
+                key[i] = row[0] == 1 ? 1 - row[i] : row[i];
             }
-            
-            string key = pattern.ToString();
-            if (!patFreq.ContainsKey(key)) patFreq[key] = 0;
-            patFreq[key]++;
+            var rowKey = string.Join(",", key);
+            count[rowKey] = count.GetValueOrDefault(rowKey, 0) + 1;
         }
         
-        return patFreq.Values.Max();
+        return count.Values.Max();
     }
 }
