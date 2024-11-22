@@ -1,9 +1,12 @@
 class Solution:
     def maxEqualRowsAfterFlips(self, mat: List[List[int]]) -> int:
-        pat_freq = Counter()
+        pattern_map = {}
         
-        for r in mat:
-            pattern = tuple(r) if r[0] == 0 else tuple(bit ^ 1 for bit in r)
-            pat_freq[pattern] += 1
+        for row in mat:
+            pattern = ''.join(map(str, row))
+            flipped = ''.join('1' if x == '0' else '0' for x in pattern)
             
-        return max(pat_freq.values())
+            key = min(pattern, flipped)
+            pattern_map[key] = pattern_map.get(key, 0) + 1
+        
+        return max(pattern_map.values())
