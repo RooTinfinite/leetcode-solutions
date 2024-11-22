@@ -1,25 +1,23 @@
-func maxEqualRowsAfterFlips(mat [][]int) int {
-    patFreq := make(map[string]int)
+func maxEqualRowsAfterFlips(matrix [][]int) int {
+    count := make(map[string]int)
     
-    for _, row := range mat {
-        pattern := make([]byte, len(row))
-        if row[0] == 0 {
-            for i, bit := range row {
-                pattern[i] = byte(bit) + '0'
-            }
-        } else {
-            for i, bit := range row {
-                pattern[i] = byte(bit ^ 1) + '0'
+    for _, row := range matrix {
+        key := make([]byte, len(row))
+        for i, n := range row {
+            if row[0] == 1 {
+                key[i] = byte('0' + (1 - n))
+            } else {
+                key[i] = byte('0' + n)
             }
         }
-        patFreq[string(pattern)]++
+        count[string(key)]++
     }
     
-    maxFreq := 0
-    for _, freq := range patFreq {
-        if freq > maxFreq {
-            maxFreq = freq
+    maxCount := 0
+    for _, v := range count {
+        if v > maxCount {
+            maxCount = v
         }
     }
-    return maxFreq
+    return maxCount
 }
