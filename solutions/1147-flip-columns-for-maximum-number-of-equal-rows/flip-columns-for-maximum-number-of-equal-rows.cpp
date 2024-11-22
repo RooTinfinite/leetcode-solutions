@@ -1,24 +1,39 @@
 class Solution {
 public:
-    int maxEqualRowsAfterFlips(vector<vector<int>>& matrix) {
-        int n = matrix.size();
-        int m = matrix[0].size();
-        unordered_map<string, int> map;
-        int maxCount = 0;
+    int maxEqualRowsAfterFlips(vector<vector<int>>& mat) {
+        int res = 0;
+        const int n = mat[0].size();
+        unordered_map<string, int> freq;
+        string pattern;
+        pattern.reserve(n);
         
-        for (const auto& row : matrix) {
-            string pattern(m, '0');
-            int firstBit = row[0];
+        for (const auto& row : mat) {
+            pattern.clear();
+            const int firstBit = row[0];
             
-            for (int j = 0; j < m; j++) {
-                if (row[j] != firstBit) {
-                    pattern[j] = '1';
+            int i = 0;
+            for (; i + 7 < n; i += 8) {
+                char packed = 0;
+                for (int j = 0; j < 8; j++) {
+                    if (row[i + j] != firstBit) {
+                        packed |= (1 << j);
+                    }
                 }
+                pattern += packed;
             }
             
-            maxCount = max(maxCount, ++map[pattern]);
+            if (i < n) {
+                char packed = 0;
+                for (int j = 0; i + j < n; j++) {
+                    if (row[i + j] != firstBit) {
+                        packed |= (1 << j);
+                    }
+                }
+                pattern += packed;
+            }
+            
+            res = max(res, ++freq[pattern]);
         }
-        
-        return maxCount;
+        return res;
     }
 };
