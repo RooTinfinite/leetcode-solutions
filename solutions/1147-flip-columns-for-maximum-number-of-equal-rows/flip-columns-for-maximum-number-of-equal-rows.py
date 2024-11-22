@@ -1,11 +1,12 @@
 class Solution:
     def maxEqualRowsAfterFlips(self, mat: List[List[int]]) -> int:
-        freq = {}
+        res = 0
         n = len(mat[0])
+        freq = {}
         
         for row in mat:
-            pattern = []
             first_bit = row[0]
+            pattern = bytearray()
             
             i = 0
             while i + 7 < n:
@@ -22,8 +23,9 @@ class Solution:
                     if row[i + j] != first_bit:
                         packed |= (1 << j)
                 pattern.append(packed)
-                
-            pattern = tuple(pattern)
-            freq[pattern] = freq.get(pattern, 0) + 1
             
-        return max(freq.values())
+            pattern_bytes = bytes(pattern)
+            freq[pattern_bytes] = freq.get(pattern_bytes, 0) + 1
+            res = max(res, freq[pattern_bytes])
+            
+        return res
