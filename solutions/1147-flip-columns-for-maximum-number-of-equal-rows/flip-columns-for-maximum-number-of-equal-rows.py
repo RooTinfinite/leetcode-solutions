@@ -1,7 +1,7 @@
 class Solution:
     def maxEqualRowsAfterFlips(self, matrix: List[List[int]]) -> int:
-        pattern_frequency = {}
+        cnt = Counter()
         for row in matrix:
-            pattern = tuple(x == row[0] for x in row)
-            pattern_frequency[pattern] = pattern_frequency.get(pattern, 0) + 1
-        return max(pattern_frequency.values())
+            t = tuple(row) if row[0] == 0 else tuple(x ^ 1 for x in row)
+            cnt[t] += 1
+        return max(cnt.values())
