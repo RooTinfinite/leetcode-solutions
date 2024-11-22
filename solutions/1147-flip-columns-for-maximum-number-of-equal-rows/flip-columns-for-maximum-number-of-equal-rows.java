@@ -2,17 +2,26 @@ class Solution {
     public int maxEqualRowsAfterFlips(int[][] matrix) {
         int n = matrix.length;
         int m = matrix[0].length;
-        Map<Integer, Integer> map = new HashMap<>();
+        Map<String, Integer> map = new HashMap<>();
         int maxCount = 0;
         
-        for (int i = 0; i < n; i++) {
-            if (matrix[i][m-1] == 1) {
-                for (int j = 0; j < m; j++) {
-                    matrix[i][j] ^= matrix[i][m-1];
-                }
+        for (int[] row : matrix) {
+            StringBuilder normal = new StringBuilder();
+            StringBuilder flipped = new StringBuilder();
+            
+            for (int j = 0; j < m; j++) {
+                normal.append(row[j]);
+                flipped.append(row[j] ^ 1);
             }
-            int count = map.merge(Arrays.hashCode(matrix[i]), 1, Integer::sum);
-            maxCount = Math.max(maxCount, count);
+            
+            String pattern = normal.toString();
+            String flippedPattern = flipped.toString();
+            
+            if (pattern.compareTo(flippedPattern) > 0) {
+                pattern = flippedPattern;
+            }
+            
+            maxCount = Math.max(maxCount, map.merge(pattern, 1, Integer::sum));
         }
         return maxCount;
     }
