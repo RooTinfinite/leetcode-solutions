@@ -5,12 +5,14 @@ public:
         unordered_map<string, int> mp;
         mp.reserve(r);
         
+        string pattern;
+        pattern.reserve(c);
+        
         for (const auto& row : matrix) {
-            string pattern(c, '0');
-            bool flip = row[0];
-            
+            pattern.clear();
+            bool term0 = row[0];
             for (int j = 0; j < c; j++) {
-                pattern[j] = (row[j] ^ flip) + '0';
+                pattern.push_back('0' + (row[j] ^ term0));
             }
             mp[pattern]++;
         }
