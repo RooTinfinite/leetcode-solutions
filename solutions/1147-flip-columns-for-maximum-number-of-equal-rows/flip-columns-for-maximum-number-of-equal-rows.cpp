@@ -6,13 +6,9 @@ public:
         for (const auto& row : mat) {
             string pattern;
             if (row[0] == 0) {
-                for (int bit : row) {
-                    pattern += to_string(bit);
-                }
+                for (int bit : row) pattern += to_string(bit);
             } else {
-                for (int bit : row) {
-                    pattern += to_string(bit ^ 1);
-                }
+                for (int bit : row) pattern += to_string(bit ^ 1);
             }
             patFreq[pattern]++;
         }
@@ -21,7 +17,6 @@ public:
         for (const auto& pair : patFreq) {
             maxFreq = max(maxFreq, pair.second);
         }
-        
         return maxFreq;
     }
 };
