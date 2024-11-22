@@ -1,20 +1,26 @@
+import java.nio.charset.StandardCharsets;
+
 class Solution {
-    public int maxEqualRowsAfterFlips(int[][] matrix) {
-        Map<String, Integer> patterns = new HashMap<>();
-        int maxCount = 0;
-        
-        for (int[] row : matrix) {
-            StringBuilder pattern = new StringBuilder();
+    public int maxEqualRowsAfterFlips(int[][] mat) {
+        int res = 0;
+        int n = mat[0].length;
+        Map<String, Integer> freq = new HashMap<>();
+
+        byte[] pattern = new byte[(n + 7) / 8];  
+
+        for (int[] row : mat) {
             int firstBit = row[0];
-            
-            for (int bit : row) {
-                pattern.append(bit == firstBit ? '1' : '0');
+
+            Arrays.fill(pattern, (byte)0);
+
+            for (int i = 0; i < n; i++) {
+                if (row[i] != firstBit) {
+                    pattern[i / 8] |= (1 << (i % 8));
+                }
             }
-            
-            int count = patterns.merge(pattern.toString(), 1, Integer::sum);
-            maxCount = Math.max(maxCount, count);
+            String key = new String(pattern, StandardCharsets.ISO_8859_1);
+            res = Math.max(res, freq.merge(key, 1, Integer::sum));
         }
-        
-        return maxCount;
+        return res;
     }
 }
