@@ -1,36 +1,51 @@
-const packDGInOutDegreeMap = (gm, edges, dm) => { for (const [u, v] of edges) { if (!gm.has(u)) gm.set(u, []); gm.get(u).push(v); dm.set(u, (dm.get(u) || 0) + 1); dm.set(v, (dm.get(v) || 0) - 1); } };
-
-/**
- * @param {number[][]} pairs
- * @return {number[][]}
- */
-const validArrangement = (pairs) => {
-    let g = new Map(), deg = new Map(), res = [];
-    packDGInOutDegreeMap(g, pairs, deg);
-    let start = -1;
-    for (const [node, ] of deg) { // looking for starting node
-        if (start == -1 || deg.get(node) == 1) start = node;
+var validArrangement = function(pairs) {
+    const graph = new Map();
+    const indegree = new Map();
+    const outdegree = new Map();
+    
+    // Build graph and degrees
+    for (const [from, to] of pairs) {
+        if (!graph.has(from)) graph.set(from, []);
+        graph.get(from).push(to);
+        
+        outdegree.set(from, (outdegree.get(from) || 0) + 1);
+        indegree.set(to, (indegree.get(to) || 0) + 1);
     }
-    let path = eulerianPath(g, start);
-    path.reverse();
-    for (let i = 1; i < path.length; i++) {
-       res.push([path[i-1], path[i]]);
-    }
-    return res;
-};
-
-const eulerianPath = (g, start) => { // eulerian Path with Hierholzer’s Algorithm
-    let st = [start], path = [];
-    while (st.length) {
-        let u = st[st.length - 1], ua = g.get(u) || [];
-        if (ua.length) {
-            let v = ua.pop();
-            g.set(u, ua);
-            st.push(v);
-        } else {
-            path.push(u);
-            st.pop();
+    
+    let start = pairs[0][0];
+    for (const node of outdegree.keys()) {
+        const out = outdegree.get(node) || 0;
+        const inn = indegree.get(node) || 0;
+        if (out - inn === 1) {
+            start = node;
+            break;
         }
     }
-    return path;
+    
+    function hierholzer(node) {
+        const stack = [];
+        const path = [];
+        stack.push(node);
+        
+        while (stack.length) {
+            const current = stack[stack.length - 1];
+            if (!graph.has(current) || !graph.get(current).length) {
+                path.push(stack.pop());
+            } else {
+                const next = graph.get(current).pop();
+                stack.push(next);
+            }
+        }
+        
+        return path.reverse();
+    }
+    
+    const path = hierholzer(start);
+    const result = [];
+    
+    for (let i = 0; i < path.length - 1; i++) {
+        result.push([path[i], path[i + 1]]);
+    }
+    
+    return result;
 };
