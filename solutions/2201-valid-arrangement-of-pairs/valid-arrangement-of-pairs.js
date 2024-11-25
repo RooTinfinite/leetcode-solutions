@@ -18,7 +18,7 @@ const validArrangement = (pairs) => {
         }
     }
     
-    // Hierholzer's algorithm implementation
+    // Hierholzer's algorithm 
     const path = [];
     const traverse = (vertex) => {
         while (graph.has(vertex) && graph.get(vertex).length) {
