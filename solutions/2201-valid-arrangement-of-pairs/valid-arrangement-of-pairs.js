@@ -3,18 +3,19 @@ var validArrangement = function(pairs) {
     const inOutDegree = new Map();
     
     // Build graph and count in/out degrees
-    for (const pair of pairs) {
-        if (!adjacencyList.has(pair[0])) {
-            adjacencyList.set(pair[0], []);
+    for (const [from, to] of pairs) {
+        if (!adjacencyList.has(from)) {
+            adjacencyList.set(from, []);
         }
-        adjacencyList.get(pair[0]).push(pair[1]);
-        inOutDegree.set(pair[0], (inOutDegree.get(pair[0]) || 0) + 1);
-        inOutDegree.set(pair[1], (inOutDegree.get(pair[1]) || 0) - 1);
+        adjacencyList.get(from).push(to);
+        
+        inOutDegree.set(from, (inOutDegree.get(from) || 0) + 1);
+        inOutDegree.set(to, (inOutDegree.get(to) || 0) - 1);
     }
     
     // Find starting node
     let startNode = pairs[0][0];
-    for (const [node, degree] of inOutDegree.entries()) {
+    for (const [node, degree] of inOutDegree) {
         if (degree === 1) {
             startNode = node;
             break;
@@ -35,9 +36,7 @@ var validArrangement = function(pairs) {
     }
     
     const arrangement = [];
-    const pathSize = path.length;
-    
-    for (let i = pathSize - 1; i > 0; --i) {
+    for (let i = path.length - 1; i > 0; i--) {
         arrangement.push([path[i], path[i-1]]);
     }
     
