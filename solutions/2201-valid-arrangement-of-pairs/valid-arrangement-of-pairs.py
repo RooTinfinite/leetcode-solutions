@@ -3,11 +3,13 @@ class Solution:
         G = defaultdict(list)
         D = defaultdict(int)
         
+        # Direct graph building
         for u, v in pairs:
             G[u].append(v)
-            D[u] = (D[u] + 1) & 0xFFFFFFFF
-            D[v] = (D[v] - 1) & 0xFFFFFFFF
+            D[u] += 1
+            D[v] -= 1
         
+        # Find start node
         start = pairs[0][0]
         for node in D:
             if D[node] == 1:
