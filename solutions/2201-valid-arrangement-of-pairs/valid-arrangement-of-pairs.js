@@ -1,51 +1,33 @@
-var validArrangement = function(pairs) {
-    const graph = new Map();
-    const indegree = new Map();
-    const outdegree = new Map();
-    
+const validArrangement = (pairs) => {
     // Build graph and degrees
+    const graph = new Map();
+    const inDegree = new Map();
+    
     for (const [from, to] of pairs) {
         if (!graph.has(from)) graph.set(from, []);
         graph.get(from).push(to);
-        
-        outdegree.set(from, (outdegree.get(from) || 0) + 1);
-        indegree.set(to, (indegree.get(to) || 0) + 1);
+        inDegree.set(to, (inDegree.get(to) || 0) + 1);
     }
     
+    // Find start node
     let start = pairs[0][0];
-    for (const node of outdegree.keys()) {
-        const out = outdegree.get(node) || 0;
-        const inn = indegree.get(node) || 0;
-        if (out - inn === 1) {
-            start = node;
+    for (const [vertex, edges] of graph) {
+        if (edges.length - (inDegree.get(vertex) || 0) === 1) {
+            start = vertex;
             break;
         }
     }
     
-    function hierholzer(node) {
-        const stack = [];
-        const path = [];
-        stack.push(node);
-        
-        while (stack.length) {
-            const current = stack[stack.length - 1];
-            if (!graph.has(current) || !graph.get(current).length) {
-                path.push(stack.pop());
-            } else {
-                const next = graph.get(current).pop();
-                stack.push(next);
-            }
+    // Hierholzer's algorithm implementation
+    const path = [];
+    const traverse = (vertex) => {
+        while (graph.has(vertex) && graph.get(vertex).length) {
+            const next = graph.get(vertex).pop();
+            traverse(next);
+            path.push([vertex, next]);
         }
-        
-        return path.reverse();
-    }
+    };
     
-    const path = hierholzer(start);
-    const result = [];
-    
-    for (let i = 0; i < path.length - 1; i++) {
-        result.push([path[i], path[i + 1]]);
-    }
-    
-    return result;
+    traverse(start);
+    return path.reverse();
 };
