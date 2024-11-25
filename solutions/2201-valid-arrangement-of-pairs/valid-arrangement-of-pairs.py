@@ -1,27 +1,28 @@
 class Solution:
     def validArrangement(self, pairs: List[List[int]]) -> List[List[int]]:
-        G = defaultdict(list)
-        D = defaultdict(int)
-        
-        # Direct graph building
-        for u, v in pairs:
-            G[u].append(v)
-            D[u] += 1
-            D[v] -= 1
-        
-        # Find start node
-        start = pairs[0][0]
-        for node in D:
-            if D[node] == 1:
-                start = node
+        # graph represents adjacency list, inOutDeg tracks in/out degree difference
+        graph = defaultdict(list)
+        inOutDeg = defaultdict(int)
+
+        # Build graph and calculate in/out degrees
+        for start, end in pairs:
+            graph[start].append(end)
+            inOutDeg[start] += 1  # out-degree
+            inOutDeg[end] -= 1    # in-degree
+
+        # Find starting node (node with out-degree > in-degree)
+        startNode = pairs[0][0]  # default start
+        for node in inOutDeg:
+            if inOutDeg[node] == 1:
+                startNode = node
                 break
-        
-        res = []
-        def dfs(node):
-            while G[node]:
-                nbr = G[node].pop()
-                dfs(nbr)
-                res.append([node, nbr])
-        
-        dfs(start)
-        return res[::-1]
+
+        path = []
+        def dfs(curr):
+            while graph[curr]:
+                nextNode = graph[curr].pop()
+                dfs(nextNode)
+                path.append((curr, nextNode))
+
+        dfs(startNode)
+        return path[::-1]
