@@ -1,46 +1,53 @@
 class Solution:
     def slidingPuzzle(self, board: List[List[int]]) -> int:
-        m, n = 2, 3
-        seq = []
-        start, end = '', '123450'
-        for i in range(m):
-            for j in range(n):
+        rows, cols = 2, 3
+        nums = []
+        curr, target = '', '123450'
+        
+        for i in range(rows):
+            for j in range(cols):
                 if board[i][j] != 0:
-                    seq.append(board[i][j])
-                start += str(board[i][j])
-
-        def check(seq):
-            n = len(seq)
-            cnt = sum(seq[i] > seq[j] for i in range(n) for j in range(i, n))
-            return cnt % 2 == 0
-
-        def f(s):
-            ans = 0
-            for i in range(m * n):
-                if s[i] != '0':
-                    num = ord(s[i]) - ord('1')
-                    ans += abs(i // n - num // n) + abs(i % n - num % n)
-            return ans
-
-        if not check(seq):
+                    nums.append(board[i][j])
+                curr += str(board[i][j])
+        
+        def isValid(nums):
+            size = len(nums)
+            inversions = sum(nums[i] > nums[j] for i in range(size) for j in range(i, size))
+            return inversions % 2 == 0
+        
+        def heuristic(state):
+            cost = 0
+            for i in range(rows * cols):
+                if state[i] != '0':
+                    val = ord(state[i]) - ord('1')
+                    cost += abs(i // cols - val // cols) + abs(i % cols - val % cols)
+            return cost
+        
+        if not isValid(nums):
             return -1
-        q = [(f(start), start)]
-        dist = {start: 0}
-        while q:
-            _, state = heappop(q)
-            if state == end:
-                return dist[state]
-            p1 = state.index('0')
-            i, j = p1 // n, p1 % n
-            s = list(state)
-            for a, b in [[0, -1], [0, 1], [1, 0], [-1, 0]]:
-                x, y = i + a, j + b
-                if 0 <= x < m and 0 <= y < n:
-                    p2 = x * n + y
-                    s[p1], s[p2] = s[p2], s[p1]
-                    next = ''.join(s)
-                    s[p1], s[p2] = s[p2], s[p1]
-                    if next not in dist or dist[next] > dist[state] + 1:
-                        dist[next] = dist[state] + 1
-                        heappush(q, (dist[next] + f(next), next))
+            
+        queue = [(heuristic(curr), curr)]
+        moves = {curr: 0}
+        
+        while queue:
+            _, state = heappop(queue)
+            if state == target:
+                return moves[state]
+                
+            pos = state.index('0')
+            row, col = pos // cols, pos % cols
+            chars = list(state)
+            
+            for dx, dy in [[0, -1], [0, 1], [1, 0], [-1, 0]]:
+                newRow, newCol = row + dx, col + dy
+                if 0 <= newRow < rows and 0 <= newCol < cols:
+                    newPos = newRow * cols + newCol
+                    chars[pos], chars[newPos] = chars[newPos], chars[pos]
+                    nextState = ''.join(chars)
+                    chars[pos], chars[newPos] = chars[newPos], chars[pos]
+                    
+                    if nextState not in moves or moves[nextState] > moves[state] + 1:
+                        moves[nextState] = moves[state] + 1
+                        heappush(queue, (moves[nextState] + heuristic(nextState), nextState))
+        
         return -1
