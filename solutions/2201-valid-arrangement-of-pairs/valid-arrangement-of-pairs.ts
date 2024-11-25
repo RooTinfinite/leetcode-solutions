@@ -1,45 +1,45 @@
 function validArrangement(pairs: number[][]): number[][] {
-        const adjacencyList = new Map<number, number[]>();
-        const inOutDegree = new Map<number, number>();
-        
-        // Build graph and count in/out degrees
-        for (const pair of pairs) {
-            if (!adjacencyList.has(pair[0])) {
-                adjacencyList.set(pair[0], []);
-            }
-            adjacencyList.get(pair[0])!.push(pair[1]);
-            inOutDegree.set(pair[0], (inOutDegree.get(pair[0]) || 0) + 1);
-            inOutDegree.set(pair[1], (inOutDegree.get(pair[1]) || 0) - 1);
-        }
-        
-        // Find starting node
-        let startNode = pairs[0][0];
-        for (const [node, degree] of inOutDegree.entries()) {
-            if (degree === 1) {
-                startNode = node;
-                break;
-            }
-        }
-        
-        const path: number[] = [];
-        const nodeStack: number[] = [startNode];
-        
-        while (nodeStack.length > 0) {
-            const neighbors = adjacencyList.get(nodeStack[nodeStack.length - 1]) || [];
-            if (neighbors.length === 0) {
-                path.push(nodeStack.pop()!);
-            } else {
-                const nextNode = neighbors.pop()!;
-                nodeStack.push(nextNode);
-            }
-        }
-        
-        const arrangement: number[][] = [];
-        const pathSize = path.length;
-        
-        for (let i = pathSize - 1; i > 0; --i) {
-            arrangement.push([path[i], path[i-1]]);
-        }
-        
-        return arrangement;
+  const edgeCount: Map<number, number> = new Map<number, number>();
+  const graph: Map<number, number[]> = new Map<number, number[]>();
+  let result: number[] = [];
+
+  const search = (x: number) => {
+    while (graph.has(x) && graph.get(x)?.length) {
+      const y = graph.get(x)?.pop();
+      if (y != null) {
+        search(y);
+      }
     }
+
+    result.push(x);
+  };
+
+  pairs.forEach((pair, i) => {
+    const [x, y] = pair;
+    edgeCount.set(x, (edgeCount.get(x) || 0) + 1);
+    edgeCount.set(y, (edgeCount.get(y) || 0) - 1);
+
+    if (graph.has(x)) {
+      graph.get(x)?.push(y);
+    } else {
+      graph.set(x, [y]);
+    }
+  });
+
+  let start: number = pairs[0][0];
+  [...edgeCount.keys()].forEach((num) => {
+    const row = edgeCount.get(num);
+    if (row != null && row === 1) {
+      start = num;
+    }
+  });
+
+  search(start);
+
+  const reverse: number[][] = [];
+  for (let i = result.length - 1; i >= 1; i -= 1) {
+    reverse.push([result[i], result[i - 1]]);
+  }
+
+  return reverse;
+};
