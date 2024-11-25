@@ -1,44 +1,36 @@
-var validArrangement = function(pairs) {
-    const adjacencyList = new Map();
-    const inOutDegree = new Map();
-    
-    // Build graph and count in/out degrees
-    for (const [from, to] of pairs) {
-        if (!adjacencyList.has(from)) {
-            adjacencyList.set(from, []);
-        }
-        adjacencyList.get(from).push(to);
-        
-        inOutDegree.set(from, (inOutDegree.get(from) || 0) + 1);
-        inOutDegree.set(to, (inOutDegree.get(to) || 0) - 1);
+const packDGInOutDegreeMap = (gm, edges, dm) => { for (const [u, v] of edges) { if (!gm.has(u)) gm.set(u, []); gm.get(u).push(v); dm.set(u, (dm.get(u) || 0) + 1); dm.set(v, (dm.get(v) || 0) - 1); } };
+
+/**
+ * @param {number[][]} pairs
+ * @return {number[][]}
+ */
+const validArrangement = (pairs) => {
+    let g = new Map(), deg = new Map(), res = [];
+    packDGInOutDegreeMap(g, pairs, deg);
+    let start = -1;
+    for (const [node, ] of deg) { // looking for starting node
+        if (start == -1 || deg.get(node) == 1) start = node;
     }
-    
-    // Find starting node
-    let startNode = pairs[0][0];
-    for (const [node, degree] of inOutDegree) {
-        if (degree === 1) {
-            startNode = node;
-            break;
-        }
+    let path = eulerianPath(g, start);
+    path.reverse();
+    for (let i = 1; i < path.length; i++) {
+       res.push([path[i-1], path[i]]);
     }
-    
-    const path = [];
-    const nodeStack = [startNode];
-    
-    while (nodeStack.length > 0) {
-        const neighbors = adjacencyList.get(nodeStack[nodeStack.length - 1]) || [];
-        if (neighbors.length === 0) {
-            path.push(nodeStack.pop());
+    return res;
+};
+
+const eulerianPath = (g, start) => { // eulerian Path with Hierholzer’s Algorithm
+    let st = [start], path = [];
+    while (st.length) {
+        let u = st[st.length - 1], ua = g.get(u) || [];
+        if (ua.length) {
+            let v = ua.pop();
+            g.set(u, ua);
+            st.push(v);
         } else {
-            const nextNode = neighbors.pop();
-            nodeStack.push(nextNode);
+            path.push(u);
+            st.pop();
         }
     }
-    
-    const arrangement = [];
-    for (let i = path.length - 1; i > 0; i--) {
-        arrangement.push([path[i], path[i-1]]);
-    }
-    
-    return arrangement;
+    return path;
 };
