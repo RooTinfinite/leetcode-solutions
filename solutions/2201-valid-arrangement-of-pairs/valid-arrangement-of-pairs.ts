@@ -1,38 +1,45 @@
 function validArrangement(pairs: number[][]): number[][] {
-    // Use object instead of Map for faster access
-    const graph: Record<number, number[]> = {};
-    const indegree: Record<number, number> = {};
-    const outdegree: Record<number, number> = {};
+  const edgeCount: Map<number, number> = new Map<number, number>();
+  const graph: Map<number, number[]> = new Map<number, number[]>();
+  let result: number[] = [];
 
-    // Build graph and degrees in single pass
-    for (const [from, to] of pairs) {
-        graph[from] = graph[from] || [];
-        graph[from].push(to);
-        outdegree[from] = (outdegree[from] || 0) + 1;
-        indegree[to] = (indegree[to] || 0) + 1;
+  const search = (x: number) => {
+    while (graph.has(x) && graph.get(x)?.length) {
+      const y = graph.get(x)?.pop();
+      if (y != null) {
+        search(y);
+      }
     }
 
-    // Find start node - first node with outdegree - indegree = 1
-    let start = pairs[0][0];
-    for (const node in outdegree) {
-        if ((outdegree[node] || 0) - (indegree[node] || 0) === 1) {
-            start = Number(node);
-            break;
-        }
-    }
+    result.push(x);
+  };
 
-    const result: number[][] = [];
-    
-    // Hierholzer's Algorithm implementation
-    function dfs(node: number): void {
-        const neighbors = graph[node] = graph[node] || [];
-        while (neighbors.length > 0) {
-            const next = neighbors.pop()!;
-            dfs(next);
-            result.push([node, next]);
-        }
-    }
+  pairs.forEach((pair, i) => {
+    const [x, y] = pair;
+    edgeCount.set(x, (edgeCount.get(x) || 0) + 1);
+    edgeCount.set(y, (edgeCount.get(y) || 0) - 1);
 
-    dfs(start);
-    return result.reverse();
-}
+    if (graph.has(x)) {
+      graph.get(x)?.push(y);
+    } else {
+      graph.set(x, [y]);
+    }
+  });
+
+  let start: number = pairs[0][0];
+  [...edgeCount.keys()].forEach((num) => {
+    const row = edgeCount.get(num);
+    if (row != null && row === 1) {
+      start = num;
+    }
+  });
+
+  search(start);
+
+  const reverse: number[][] = [];
+  for (let i = result.length - 1; i >= 1; i -= 1) {
+    reverse.push([result[i], result[i - 1]]);
+  }
+
+  return reverse;
+};
