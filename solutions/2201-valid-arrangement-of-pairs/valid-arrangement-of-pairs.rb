@@ -2,12 +2,14 @@ def valid_arrangement(pairs)
     adjacency_list = Hash.new { |h, k| h[k] = [] }
     in_out_degree = Hash.new(0)
     
+    # Build graph and count in/out degrees
     pairs.each do |pair|
         adjacency_list[pair[0]] << pair[1]
-        in_out_degree[pair[0]] += 1
-        in_out_degree[pair[1]] -= 1
+        in_out_degree[pair[0]] += 1  # out-degree
+        in_out_degree[pair[1]] -= 1  # in-degree
     end
     
+    # Find starting node
     start_node = pairs[0][0]
     in_out_degree.each do |node, degree|
         if degree == 1
