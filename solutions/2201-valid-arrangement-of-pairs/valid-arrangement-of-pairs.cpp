@@ -1,51 +1,50 @@
 class Solution {
 public:
     vector<vector<int>> validArrangement(vector<vector<int>>& pairs) {
-        unordered_map<int, vector<int>> graph;
-        unordered_map<int, int> cnt;
+        unordered_map<int, vector<int>> adjacencyList;
+        unordered_map<int, int> inOutDegree;
         
         // Build graph and count in/out degrees
-        for (const auto& p : pairs) {
-            graph[p[0]].push_back(p[1]);
-            cnt[p[0]]++;
-            cnt[p[1]]--;
+        for (const auto& pair : pairs) {
+            adjacencyList[pair[0]].push_back(pair[1]);
+            inOutDegree[pair[0]]++;  // out-degree
+            inOutDegree[pair[1]]--;  // in-degree
         }
         
         // Find starting node (head)
-        int start = pairs[0][0];
-        for (const auto& [node, degree] : cnt) {
+        int startNode = pairs[0][0];
+        for (const auto& [node, degree] : inOutDegree) {
             if (degree == 1) {
-                start = node;
+                startNode = node;
                 break;
             }
         }
         
-        // Use bit shifting for stack operations
-        vector<int> route;
-        stack<int> st;
-        st.push(start);
+        vector<int> path;
+        stack<int> nodeStack;
+        nodeStack.push(startNode);
         
-        while (!st.empty()) {
-            auto& edges = graph[st.top()];
-            if (edges.empty()) {
-                route.push_back(st.top());
-                st.pop();
+        while (!nodeStack.empty()) {
+            auto& neighbors = adjacencyList[nodeStack.top()];
+            if (neighbors.empty()) {
+                path.push_back(nodeStack.top());
+                nodeStack.pop();
             } else {
-                int next = edges.back();
-                st.push(next);
-                edges.pop_back();
+                int nextNode = neighbors.back();
+                nodeStack.push(nextNode);
+                neighbors.pop_back();
             }
         }
         
-        // Build result using bit shifting for size calculations
-        vector<vector<int>> result;
-        int size = route.size();
-        result.reserve(size - 1);
+        vector<vector<int>> arrangement;
+        int pathSize = path.size();
+        arrangement.reserve(pathSize - 1);
         
-        for (int i = size - 1; i > 0; --i) {
-            result.push_back({route[i], route[i-1]});
+        for (int i = pathSize - 1; i > 0; --i) {
+            arrangement.push_back({path[i], path[i-1]});
         }
         
-        return result;
+        return arrangement;
     }
 };
+
