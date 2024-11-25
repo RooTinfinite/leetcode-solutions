@@ -3,36 +3,35 @@ from typing import List
 
 class Solution:
     def validArrangement(self, pairs: List[List[int]]) -> List[List[int]]:
-        # Create adjacency list and track in/out degrees
+        # Create detailed graph structures
         graph = defaultdict(list)
-        degree = defaultdict(int)
+        in_degree = defaultdict(int)
+        out_degree = defaultdict(int)
         
-        # Build graph in one pass
-        for u, v in pairs:
-            graph[u].append(v)
-            degree[u] += 1
-            degree[v] -= 1
+        # Build comprehensive graph information
+        for start, end in pairs:
+            graph[start].append(end)
+            out_degree[start] += 1
+            in_degree[end] += 1
         
-        # Find starting node - first node with out degree > in degree
-        start = pairs[0][0]  # Default to first node
-        for node, deg in degree.items():
-            if deg == 1:
-                start = node
+        # Carefully find the starting node
+        start_node = pairs[0][0]
+        for node in graph:
+            if out_degree[node] - in_degree[node] == 1:
+                start_node = node
                 break
         
-        # Iterative Euler path implementation using stack
-        stack = [start]
-        path = []
+        result = []
         
-        while stack:
-            curr = stack[-1]
-            if graph[curr]:
-                next_node = graph[curr].pop()
-                stack.append(next_node)
-            else:
-                node = stack.pop()
-                if stack:
-                    path.append([stack[-1], node])
+        # Methodical depth-first traversal
+        def explore_path(current_node):
+            while graph[current_node]:
+                next_node = graph[current_node].pop()
+                explore_path(next_node)
+                result.append([current_node, next_node])
         
-        return path[::-1]
-
+        # Execute traversal
+        explore_path(start_node)
+        
+        # Return reversed path for correct order
+        return result[::-1]
