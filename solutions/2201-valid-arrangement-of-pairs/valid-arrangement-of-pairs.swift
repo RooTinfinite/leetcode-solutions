@@ -1,3 +1,5 @@
+// Ver. Eulerian path + Hierholzer's algorithm 193ms 
+// (Swift like that https://github.com/swiftlang/swift/blob/main/docs/OptimizationTips.rst)
 class Solution {
     func validArrangement(_ pairs: [[Int]]) -> [[Int]] {
         // build a graph
@@ -7,11 +9,11 @@ class Solution {
             adjList[pair[0], default:[]].append(pair[1])
             inDegree[pair[1], default:0] += 1
         }
-        
-        var start = pairs[0][0] // start anywhere if it's an Eulerian cycle
+        // Eulerian path
+        var start = pairs[0][0] 
         for (v, outEdges) in adjList {
             if outEdges.count - inDegree[v, default:0] == 1 { 
-                start = v; break // it's an Eulerian trail, have to start here
+                start = v; break 
             }
         }
         
