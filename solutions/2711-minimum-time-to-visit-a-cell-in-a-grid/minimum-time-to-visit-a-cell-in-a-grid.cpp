@@ -1,64 +1,66 @@
-#define F first
-#define S second
-
-const vector<vector<int>> neighbours = {
-    {0, 1},
-    {1, 0},
-    {0, -1},
-    {-1, 0}
-};
-
-struct Node {
-    int time;
-    int row, col;
-    
-    Node (int _time, int _row, int _col) : time(_time), row(_row), col(_col) {}
-    
-    bool operator < (const Node& rhs) const {
-        if (time != rhs.time) return time < rhs.time;
-        if (row != rhs.row) return row < rhs.row;
-        return col < rhs.col;
-    }
-};
-
 class Solution {
 public:
     int minimumTime(vector<vector<int>>& grid) {
-        int rows = grid.size();
-        int cols = grid[0].size(); 
-        
-        if (grid[0][1] > 1 && grid[1][0] > 1) return -1;
-        
-        vector<vector<int>> time_to_reach(rows, vector<int>(cols, 1e9));
-        time_to_reach[0][0] = 0;
-        
-        set<Node> q;
-        for (int r = 0; r < rows; r ++) {
-            for (int c = 0; c < cols; c ++) {
-                q.insert(Node(time_to_reach[r][c], r, c));
-            }
-        }
-        
-        while (!q.empty()) {
-            Node cur = *q.begin();
-            q.erase (q.begin());
-            
-            for (auto i : neighbours) {
-                int r = cur.row + i[0], c = cur.col + i[1];
-                if (r < 0 || r >= rows || c < 0 || c >= cols) continue;
                 
-                int wait_time = max(0, grid[r][c] - cur.time - 1);
-                if (wait_time % 2 != 0) wait_time ++;
+        int m = grid.size();
+        int n = grid[0].size();
+        
+        vector<int> visited(m * n, -1);
+    
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q;
+        
+        
+        q.push({0,0});
+        visited[0] = 0;
+        vector<int> dir = {0, -1, 0, 1, 0};
+        
+        if(grid[1][0] > 1 && grid[0][1] > 1)
+            return -1;
+        
+        while(q.size() > 0){
+                
+            auto node = q.top();
+            q.pop();
             
-                int new_time  = cur.time + wait_time + 1;
-                if (time_to_reach[r][c] > new_time) {
-                    q.erase (Node(time_to_reach[r][c], r, c));
-                    time_to_reach[r][c] = new_time;
-                    q.insert (Node(time_to_reach[r][c], r, c));
-                }
+            int row = node.second / n;
+            int col = node.second % n;
+            
+            int val = node.second;
+            
+            int t = node.first;
+                        
+            if(row == m - 1 && col == n-1)
+            {
+                return t;
             }
+            for(int j = 0 ; j < 4 ; j++){
+
+                int new_row = row + dir[j];
+                int new_col = col + dir[j + 1];
+
+                if(new_row < 0 || new_row >= m || new_col < 0 || new_col >= n)
+                    continue;
+                    
+                int val = new_row * n + new_col;
+                if(visited[val] != -1)
+                    continue;
+                
+                if(grid[new_row][new_col] <= t + 1)
+                    visited[val] = t + 1;
+                else if((t + 1) % 2 != grid[new_row][new_col] % 2)
+                    visited[val] = grid[new_row][new_col] + 1;
+                else
+                    visited[val] = grid[new_row][new_col];
+                q.push({visited[val], val});
+                
+            }
+  
         }
         
-        return time_to_reach[rows-1][cols-1];
+        
+        
+        return -1;
+        
+        
     }
 };
