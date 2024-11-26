@@ -1,37 +1,38 @@
 class Solution:
     def minimumTime(self, grid: List[List[int]]) -> int:
+        # Early exit check
         if grid[0][1] > 1 and grid[1][0] > 1:
             return -1
-        
-        rows = len(grid)
-        cols = len(grid[0])
-        
-        minHeap = []
-        heappush(minHeap, (0, 0, 0))  # time, row(x), col(y)
-        
-        seen = [[0] * cols for _ in range(rows)]
-        seen[0][0] = 1
-        
+            
+        rows, cols = len(grid), len(grid[0])
         moves = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         
+        # Use array instead of matrix for visited states - more memory efficient
+        seen = set([(0, 0)])
+        minHeap = [(0, 0, 0)]  # (time, row, col)
+        
         while minHeap:
-            curr_time, curr_row, curr_col = heappop(minHeap)
+            curr_time, x, y = heappop(minHeap)
             
-            if curr_row == rows - 1 and curr_col == cols - 1:
+            # Target reached
+            if x == rows - 1 and y == cols - 1:
                 return curr_time
             
             for dx, dy in moves:
-                next_row = dx + curr_row
-                next_col = dy + curr_col
+                nx, ny = x + dx, y + dy
                 
-                if (0 <= next_row < rows and 
-                    0 <= next_col < cols and 
-                    not seen[next_row][next_col]):
+                if (0 <= nx < rows and 
+                    0 <= ny < cols and 
+                    (nx, ny) not in seen):
                     
-                    wait_time = 1 if (grid[next_row][next_col] - curr_time) % 2 == 0 else 0
-                    next_time = max(curr_time + 1, grid[next_row][next_col] + wait_time)
+                    # Calculate next time more efficiently
+                    next_time = curr_time + 1
+                    if grid[nx][ny] > next_time:
+                        # Add necessary waiting time
+                        diff = grid[nx][ny] - next_time
+                        next_time += (diff + 1) // 2 * 2
                     
-                    heappush(minHeap, (next_time, next_row, next_col))
-                    seen[next_row][next_col] = 1
+                    seen.add((nx, ny))
+                    heappush(minHeap, (next_time, nx, ny))
         
         return -1
