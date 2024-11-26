@@ -3,40 +3,45 @@ public:
     int minimumTime(vector<vector<int>>& grid) {
         if (grid[0][1] > 1 && grid[1][0] > 1) return -1;
         
-        const int rows = grid.size();
-        const int cols = grid[0].size();
-        static const int dx[] = {0, 0, 1, -1};
-        static const int dy[] = {1, -1, 0, 0};
+        int rows = grid.size();
+        int cols = grid[0].size();
+        int maxPos = rows * cols;
         
-        vector<vector<bool>> seen(rows, vector<bool>(cols));
-        seen[0][0] = true;
+        priority_queue<pair<int, int>, 
+                      vector<pair<int, int>>, 
+                      greater<pair<int, int>>> minHeap;
         
-        using State = pair<int, pair<int, int>>;
-        priority_queue<State, vector<State>, greater<State>> pq;
-        pq.emplace(0, make_pair(0, 0));
+        minHeap.push({0, 0});
         
-        while (!pq.empty()) {
-            const int time = pq.top().first;
-            const int row = pq.top().second.first;
-            const int col = pq.top().second.second;
-            pq.pop();
+        vector<bool> seen(maxPos, false); 
+        seen[0] = true;
+        
+        const int moves[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        
+        while (!minHeap.empty()) {
+            auto [currTime, pos] = minHeap.top();
+            int currRow = pos / cols;
+            int currCol = pos % cols;
             
-            if (row == rows - 1 && col == cols - 1) 
-                return time;
+            minHeap.pop();
             
-            for (int i = 0; i < 4; ++i) {
-                const int newRow = row + dx[i];
-                const int newCol = col + dy[i];
+            if (currRow == rows - 1 && currCol == cols - 1) 
+                return currTime;
+            
+            for (const auto& move : moves) {
+                int nextRow = move[0] + currRow;
+                int nextCol = move[1] + currCol;
+                int nextPos = nextRow * cols + nextCol;
                 
-                if (unsigned(newRow) < unsigned(rows) && 
-                    unsigned(newCol) < unsigned(cols) && 
-                    !seen[newRow][newCol]) {
+                if (nextRow >= 0 && nextCol >= 0 && 
+                    nextRow < rows && nextCol < cols && 
+                    !seen[nextPos]) {
                     
-                    int nextTime = max(time + 1, grid[newRow][newCol]);
-                    nextTime += (nextTime ^ (time + 1)) & 1;
+                    int waitTime = ((grid[nextRow][nextCol] - currTime) % 2 == 0) ? 1 : 0;
+                    int nextTime = max(currTime + 1, grid[nextRow][nextCol] + waitTime);
                     
-                    pq.emplace(nextTime, make_pair(newRow, newCol));
-                    seen[newRow][newCol] = true;
+                    minHeap.push({nextTime, nextPos});
+                    seen[nextPos] = true;
                 }
             }
         }
