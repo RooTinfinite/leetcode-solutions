@@ -1,38 +1,32 @@
 class Solution:
     def minimumTime(self, grid: List[List[int]]) -> int:
-        # Early exit check
+        DIRS = ((-1, 0), (0, 1), (1, 0), (0, -1))
+        
         if grid[0][1] > 1 and grid[1][0] > 1:
             return -1
-            
+        
         rows, cols = len(grid), len(grid[0])
-        moves = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        pq = [(0, 0, 0)]  # (time, row, col)
+        seen = [[False] * cols for _ in range(rows)]
+        seen[0][0] = True
         
-        # Use array instead of matrix for visited states - more memory efficient
-        seen = set([(0, 0)])
-        minHeap = [(0, 0, 0)]  # (time, row, col)
-        
-        while minHeap:
-            curr_time, x, y = heappop(minHeap)
+        while pq:
+            time, row, col = heappop(pq)
             
-            # Target reached
-            if x == rows - 1 and y == cols - 1:
-                return curr_time
+            if row == rows - 1 and col == cols - 1:
+                return time
             
-            for dx, dy in moves:
-                nx, ny = x + dx, y + dy
+            for dr, dc in DIRS:
+                newRow, newCol = row + dr, col + dc
                 
-                if (0 <= nx < rows and 
-                    0 <= ny < cols and 
-                    (nx, ny) not in seen):
+                if (0 <= newRow < rows and 
+                    0 <= newCol < cols and 
+                    not seen[newRow][newCol]):
                     
-                    # Calculate next time more efficiently
-                    next_time = curr_time + 1
-                    if grid[nx][ny] > next_time:
-                        # Add necessary waiting time
-                        diff = grid[nx][ny] - next_time
-                        next_time += (diff + 1) // 2 * 2
+                    waitTime = 1 if (grid[newRow][newCol] - time) % 2 == 0 else 0
+                    newTime = max(time + 1, grid[newRow][newCol] + waitTime)
                     
-                    seen.add((nx, ny))
-                    heappush(minHeap, (next_time, nx, ny))
+                    seen[newRow][newCol] = True
+                    heappush(pq, (newTime, newRow, newCol))
         
         return -1
