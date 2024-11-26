@@ -1,5 +1,3 @@
-from heapq import heappush, heappop
-
 class Solution:
     def minimumTime(self, grid: List[List[int]]) -> int:
         DIR = ((-1, 0), (0, 1), (1, 0), (0, -1))
