@@ -1,27 +1,20 @@
 func findChampion(n int, edges [][]int) int {
-    isUndefeated := make([]bool, n)
-    for i := range isUndefeated {
-        isUndefeated[i] = true
-    }
+    incoming := make([]int, n)
     
     for _, edge := range edges {
-        _, loser := edge[0], edge[1]
-        isUndefeated[loser] = false
+        incoming[edge[1]]++
     }
     
-    champion := -1
-    championCount := 0
-    
-    for team := 0; team < n; team++ {
-        if isUndefeated[team] {
-            champion = team
-            championCount++
+    champions := []int{}
+    for i, count := range incoming {
+        if count == 0 {
+            champions = append(champions, i)
         }
     }
     
-    if championCount == 1 {
-        return champion
+    if len(champions) > 1 {
+        return -1
     }
-    return -1
+    
+    return champions[0]
 }
-
