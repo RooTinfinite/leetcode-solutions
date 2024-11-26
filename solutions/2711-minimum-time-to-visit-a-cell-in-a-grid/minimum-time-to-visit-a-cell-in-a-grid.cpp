@@ -3,44 +3,40 @@ public:
     int minimumTime(vector<vector<int>>& grid) {
         if (grid[0][1] > 1 && grid[1][0] > 1) return -1;
         
-        int rows = grid.size();
-        int cols = grid[0].size();
+        const int rows = grid.size();
+        const int cols = grid[0].size();
+        const vector<pair<int, int>> moves = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         
-        priority_queue<pair<int, pair<int, int>>, 
-                      vector<pair<int, pair<int, int>>>, 
-                      greater<pair<int, pair<int, int>>>> minHeap;
+        vector<vector<bool>> seen(rows, vector<bool>(cols, false));
+        seen[0][0] = true;
         
-        minHeap.push({0, {0, 0}}); // time, row(x), col(y)
+        using State = pair<int, pair<int, int>>;
+        priority_queue<State, vector<State>, greater<State>> pq;
+        pq.push({0, {0, 0}});
         
-        vector<vector<int>> seen(rows, vector<int>(cols, 0));
-        seen[0][0] = 1;
-        
-        vector<pair<int, int>> moves = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
-        
-        while (!minHeap.empty()) {
-            auto curr = minHeap.top();
-            int currTime = curr.first;
-            int currRow = curr.second.first;
-            int currCol = curr.second.second;
+        while (!pq.empty()) {
+            auto [time, pos] = pq.top();
+            auto [row, col] = pos;
+            pq.pop();
             
-            minHeap.pop();
+            if (row == rows - 1 && col == cols - 1) 
+                return time;
             
-            if (currRow == rows - 1 && currCol == cols - 1) 
-                return currTime;
-            
-            for (auto move : moves) {
-                int nextRow = move.first + currRow;
-                int nextCol = move.second + currCol;
+            for (const auto& [dx, dy] : moves) {
+                int newRow = row + dx;
+                int newCol = col + dy;
                 
-                if (nextRow >= 0 && nextCol >= 0 && 
-                    nextRow < rows && nextCol < cols && 
-                    !seen[nextRow][nextCol]) {
+                if (newRow >= 0 && newCol >= 0 && 
+                    newRow < rows && newCol < cols && 
+                    !seen[newRow][newCol]) {
                     
-                    int waitTime = ((grid[nextRow][nextCol] - currTime) % 2 == 0) ? 1 : 0;
-                    int nextTime = max(currTime + 1, grid[nextRow][nextCol] + waitTime);
+                    int nextTime = max(time + 1, grid[newRow][newCol]);
+                    if (nextTime % 2 != (time + 1) % 2) {
+                        nextTime++;
+                    }
                     
-                    minHeap.push({nextTime, {nextRow, nextCol}});
-                    seen[nextRow][nextCol] = 1;
+                    pq.push({nextTime, {newRow, newCol}});
+                    seen[newRow][newCol] = true;
                 }
             }
         }
