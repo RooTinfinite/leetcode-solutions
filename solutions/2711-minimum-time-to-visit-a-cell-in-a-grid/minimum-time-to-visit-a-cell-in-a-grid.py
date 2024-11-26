@@ -1,3 +1,6 @@
+from typing import List
+from heapq import heappush, heappop
+
 class Solution:
     def minimumTime(self, grid: List[List[int]]) -> int:
         if grid[0][1] > 1 and grid[1][0] > 1:
