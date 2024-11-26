@@ -1,46 +1,35 @@
-
 class Solution:
     def minimumTime(self, grid: List[List[int]]) -> int:
-        m = len(grid)
-        n = len(grid[0])
-        
-        visited = [-1] * (m * n)
-        q = []
-        
-        heapq.heappush(q, (0, 0))
-        visited[0] = 0
-        dir = [0, -1, 0, 1, 0]
-        
-        if grid[1][0] > 1 and grid[0][1] > 1:
+        if grid[0][1] > 1 and grid[1][0] > 1:
             return -1
         
-        while q:
-            t, node = heapq.heappop(q)
+        rows, cols = len(grid), len(grid[0])
+        dx = [0, 0, 1, -1]
+        dy = [1, -1, 0, 0]
+        
+        seen = [[False] * cols for _ in range(rows)]
+        seen[0][0] = True
+        
+        pq = [(0, 0, 0)]  # time, row, col
+        
+        while pq:
+            time, row, col = heappop(pq)
             
-            row = node // n
-            col = node % n
+            if row == rows - 1 and col == cols - 1:
+                return time
             
-            if row == m - 1 and col == n - 1:
-                return t
+            for i in range(4):
+                new_row = row + dx[i]
+                new_col = col + dy[i]
                 
-            for j in range(4):
-                new_row = row + dir[j]
-                new_col = col + dir[j + 1]
-                
-                if new_row < 0 or new_row >= m or new_col < 0 or new_col >= n:
-                    continue
+                if (0 <= new_row < rows and 
+                    0 <= new_col < cols and 
+                    not seen[new_row][new_col]):
                     
-                val = new_row * n + new_col
-                if visited[val] != -1:
-                    continue
-                
-                if grid[new_row][new_col] <= t + 1:
-                    visited[val] = t + 1
-                elif (t + 1) % 2 != grid[new_row][new_col] % 2:
-                    visited[val] = grid[new_row][new_col] + 1
-                else:
-                    visited[val] = grid[new_row][new_col]
+                    next_time = max(time + 1, grid[new_row][new_col])
+                    next_time += (next_time ^ (time + 1)) & 1
                     
-                heapq.heappush(q, (visited[val], val))
+                    heappush(pq, (next_time, new_row, new_col))
+                    seen[new_row][new_col] = True
         
         return -1
