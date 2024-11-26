@@ -1,21 +1,18 @@
 // TypeScript
 
 function findChampion(n: number, edges: number[][]): number {
-    const isUndefeated: boolean[] = new Array(n).fill(true);
+    const incoming: number[] = new Array(n).fill(0);
     
-    for (const [winner, loser] of edges) {
-        isUndefeated[loser] = false;
+    for (const [src, dst] of edges) {
+        incoming[dst]++;
     }
     
-    let champion: number = -1;
-    let championCount: number = 0;
-    
-    for (let team = 0; team < n; team++) {
-        if (isUndefeated[team]) {
-            champion = team;
-            championCount++;
+    const champions: number[] = [];
+    incoming.forEach((count, i) => {
+        if (count === 0) {
+            champions.push(i);
         }
-    }
+    });
     
-    return championCount === 1 ? champion : -1;
+    return champions.length > 1 ? -1 : champions[0];
 }
