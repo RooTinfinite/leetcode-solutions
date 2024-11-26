@@ -4,7 +4,8 @@ public class Solution {
         Array.Fill(isUndefeated, true);
         
         foreach (var edge in edges) {
-            int winner = edge[0], loser = edge[1];
+            int winner = edge[0];
+            int loser = edge[1];
             isUndefeated[loser] = false;
         }
         
