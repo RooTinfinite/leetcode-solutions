@@ -1,21 +1,18 @@
 // JavaScript
 
 var findChampion = function(n, edges) {
-    const isUndefeated = new Array(n).fill(true);
+    const incoming = new Array(n).fill(0);
     
-    for (const [winner, loser] of edges) {
-        isUndefeated[loser] = false;
+    for (const [src, dst] of edges) {
+        incoming[dst]++;
     }
     
-    let champion = -1;
-    let championCount = 0;
-    
-    for (let team = 0; team < n; team++) {
-        if (isUndefeated[team]) {
-            champion = team;
-            championCount++;
+    const champions = [];
+    for (let i = 0; i < incoming.length; i++) {
+        if (incoming[i] === 0) {
+            champions.push(i);
         }
     }
     
-    return championCount === 1 ? champion : -1;
+    return champions.length > 1 ? -1 : champions[0];
 };
