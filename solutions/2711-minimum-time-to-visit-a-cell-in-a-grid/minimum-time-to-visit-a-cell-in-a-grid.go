@@ -24,7 +24,7 @@ func minimumTime(grid [][]int) int {
     rows, cols := len(grid), len(grid[0])
     minHeap := &PriorityQueue{}
     heap.Init(minHeap)
-    heap.Push(minHeap, Cell{0, 0, 0})
+    heap.Push(minHeap, Cell{0, 0, 0}) // time, row, col
     
     seen := make([][]int, rows)
     for i := range seen {
