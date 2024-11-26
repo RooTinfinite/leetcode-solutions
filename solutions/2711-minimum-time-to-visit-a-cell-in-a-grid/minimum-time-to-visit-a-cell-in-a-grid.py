@@ -1,32 +1,48 @@
+from typing import List
+import heapq
+
 class Solution:
     def minimumTime(self, grid: List[List[int]]) -> int:
-        DIR = ((-1, 0), (0, 1), (1, 0), (0, -1))
+        m = len(grid)
+        n = len(grid[0])
         
-        if grid[0][1] > 1 and grid[1][0] > 1:
+        visited = [-1] * (m * n)
+        q = []
+        
+        heapq.heappush(q, (0, 0))
+        visited[0] = 0
+        dir = [0, -1, 0, 1, 0]
+        
+        if grid[1][0] > 1 and grid[0][1] > 1:
             return -1
-            
-        n, m = len(grid), len(grid[0])
-        q = [(0, 0, 0)]  # (time, x, y)
-        visit = [[False] * m for _ in range(n)]
-        visit[0][0] = True
         
         while q:
-            t, x, y = heappop(q)
+            t, node = heapq.heappop(q)
             
-            for dx, dy in DIR:
-                nx, ny = x + dx, y + dy
+            row = node // n
+            col = node % n
+            
+            if row == m - 1 and col == n - 1:
+                return t
                 
-                if nx < 0 or nx >= n or ny < 0 or ny >= m or visit[nx][ny]:
+            for j in range(4):
+                new_row = row + dir[j]
+                new_col = col + dir[j + 1]
+                
+                if new_row < 0 or new_row >= m or new_col < 0 or new_col >= n:
                     continue
-
-                nt = t + 1
-                if grid[nx][ny] > nt:
-                    nt += ((grid[nx][ny] - nt + 1) // 2) * 2
-
-                if nx == n - 1 and ny == m - 1:
-                    return nt
                     
-                visit[nx][ny] = True
-                heappush(q, (nt, nx, ny))
+                val = new_row * n + new_col
+                if visited[val] != -1:
+                    continue
                 
+                if grid[new_row][new_col] <= t + 1:
+                    visited[val] = t + 1
+                elif (t + 1) % 2 != grid[new_row][new_col] % 2:
+                    visited[val] = grid[new_row][new_col] + 1
+                else:
+                    visited[val] = grid[new_row][new_col]
+                    
+                heapq.heappush(q, (visited[val], val))
+        
         return -1
