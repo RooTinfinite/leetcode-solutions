@@ -8,9 +8,8 @@ public:
         static const int dx[] = {0, 0, 1, -1};
         static const int dy[] = {1, -1, 0, 0};
         
-        const int total_size = rows * cols;
-        vector<bool> seen(total_size);
-        seen[0] = true;
+        vector<vector<bool>> seen(rows, vector<bool>(cols));
+        seen[0][0] = true;
         
         using State = pair<int, pair<int, int>>;
         priority_queue<State, vector<State>, greater<State>> pq;
@@ -30,15 +29,14 @@ public:
                 const int newCol = col + dy[i];
                 
                 if (unsigned(newRow) < unsigned(rows) && 
-                    unsigned(newCol) < unsigned(cols)) {
-                    const int idx = newRow * cols + newCol;
-                    if (!seen[idx]) {
-                        int nextTime = max(time + 1, grid[newRow][newCol]);
-                        nextTime += (nextTime ^ (time + 1)) & 1;
-                        
-                        pq.emplace(nextTime, make_pair(newRow, newCol));
-                        seen[idx] = true;
-                    }
+                    unsigned(newCol) < unsigned(cols) && 
+                    !seen[newRow][newCol]) {
+                    
+                    int nextTime = max(time + 1, grid[newRow][newCol]);
+                    nextTime += (nextTime ^ (time + 1)) & 1;
+                    
+                    pq.emplace(nextTime, make_pair(newRow, newCol));
+                    seen[newRow][newCol] = true;
                 }
             }
         }
