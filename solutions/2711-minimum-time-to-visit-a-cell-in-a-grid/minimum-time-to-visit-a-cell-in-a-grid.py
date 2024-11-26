@@ -1,34 +1,36 @@
+from typing import List
+from heapq import heappush, heappop
+
 class Solution:
     def minimumTime(self, grid: List[List[int]]) -> int:
-        DIRS = ((-1, 0), (0, 1), (1, 0), (0, -1))
+        DIR = ((-1, 0), (0, 1), (1, 0), (0, -1))
         
         if grid[0][1] > 1 and grid[1][0] > 1:
             return -1
             
-        rows, cols = len(grid), len(grid[0])
-        pq = [(0, 0, 0)]  # (time, row, col)
-        seen = [[False] * cols for _ in range(rows)]
-        seen[0][0] = True
+        n, m = len(grid), len(grid[0])
+        q = [(0, 0, 0)]  # (time, x, y)
+        visit = [[False] * m for _ in range(n)]
+        visit[0][0] = True
         
-        while pq:
-            time, row, col = heappop(pq)
+        while q:
+            t, x, y = heappop(q)
             
-            for dr, dc in DIRS:
-                newRow, newCol = row + dr, col + dc
+            for dx, dy in DIR:
+                nx, ny = x + dx, y + dy
                 
-                if (newRow < 0 or newRow >= rows or 
-                    newCol < 0 or newCol >= cols or 
-                    seen[newRow][newCol]):
+                if nx < 0 or nx >= n or ny < 0 or ny >= m or visit[nx][ny]:
                     continue
-                
-                newTime = time + 1
-                if grid[newRow][newCol] > newTime:
-                    newTime += (grid[newRow][newCol] - time) // 2 * 2
-                
-                if newRow == rows - 1 and newCol == cols - 1:
-                    return newTime
+
+                nt = t + 1
+                if grid[nx][ny] > nt:
+                    nt += ((grid[nx][ny] - nt + 1) // 2) * 2
+
+                if nx == n - 1 and ny == m - 1:
+                    return nt
                     
-                seen[newRow][newCol] = True
-                heappush(pq, (newTime, newRow, newCol))
+                visit[nx][ny] = True
+                heappush(q, (nt, nx, ny))
                 
+        return -1
         return -1
