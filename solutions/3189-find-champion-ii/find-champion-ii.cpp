@@ -1,7 +1,7 @@
 class Solution {
 public:
     int findChampion(int n, vector<vector<int>>& edges) {
-        bitset<1000> losses; 
+        bitset<100> losses; 
         
         for (const auto& edge : edges) {
             losses.set(edge[1]);
