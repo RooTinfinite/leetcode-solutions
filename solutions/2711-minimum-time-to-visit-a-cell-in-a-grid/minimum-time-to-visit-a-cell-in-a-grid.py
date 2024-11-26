@@ -1,38 +1,37 @@
-from typing import List
-from heapq import heappush, heappop
-
 class Solution:
     def minimumTime(self, grid: List[List[int]]) -> int:
         if grid[0][1] > 1 and grid[1][0] > 1:
             return -1
         
-        rows, cols = len(grid), len(grid[0])
-        dx = [0, 0, 1, -1]
-        dy = [1, -1, 0, 0]
+        rows = len(grid)
+        cols = len(grid[0])
         
-        seen = [[False] * cols for _ in range(rows)]
-        seen[0][0] = True
+        minHeap = []
+        heappush(minHeap, (0, 0, 0))  # time, row(x), col(y)
         
-        pq = [(0, 0, 0)]  # time, row, col
+        seen = [[0] * cols for _ in range(rows)]
+        seen[0][0] = 1
         
-        while pq:
-            time, row, col = heappop(pq)
+        moves = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        
+        while minHeap:
+            curr_time, curr_row, curr_col = heappop(minHeap)
             
-            if row == rows - 1 and col == cols - 1:
-                return time
+            if curr_row == rows - 1 and curr_col == cols - 1:
+                return curr_time
             
-            for i in range(4):
-                new_row = row + dx[i]
-                new_col = col + dy[i]
+            for dx, dy in moves:
+                next_row = dx + curr_row
+                next_col = dy + curr_col
                 
-                if (0 <= new_row < rows and 
-                    0 <= new_col < cols and 
-                    not seen[new_row][new_col]):
+                if (0 <= next_row < rows and 
+                    0 <= next_col < cols and 
+                    not seen[next_row][next_col]):
                     
-                    next_time = max(time + 1, grid[new_row][new_col])
-                    next_time += (next_time ^ (time + 1)) & 1
+                    wait_time = 1 if (grid[next_row][next_col] - curr_time) % 2 == 0 else 0
+                    next_time = max(curr_time + 1, grid[next_row][next_col] + wait_time)
                     
-                    heappush(pq, (next_time, new_row, new_col))
-                    seen[new_row][new_col] = True
+                    heappush(minHeap, (next_time, next_row, next_col))
+                    seen[next_row][next_col] = 1
         
         return -1
