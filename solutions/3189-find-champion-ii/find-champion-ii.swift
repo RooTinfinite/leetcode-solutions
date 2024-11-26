@@ -1,22 +1,18 @@
 class Solution {
     func findChampion(_ n: Int, _ edges: [[Int]]) -> Int {
-        var isUndefeated = Array(repeating: true, count: n)
+        var incoming = Array(repeating: 0, count: n)
         
         for edge in edges {
-            let winner = edge[0], loser = edge[1]
-            isUndefeated[loser] = false
+            incoming[edge[1]] += 1
         }
         
-        var champion = -1
-        var championCount = 0
-        
-        for team in 0..<n {
-            if isUndefeated[team] {
-                champion = team
-                championCount += 1
+        var champions: [Int] = []
+        for (i, count) in incoming.enumerated() {
+            if count == 0 {
+                champions.append(i)
             }
         }
         
-        return championCount == 1 ? champion : -1
+        return champions.count > 1 ? -1 : champions[0]
     }
 }
