@@ -1,4 +1,3 @@
-from typing import List
 from heapq import heappush, heappop
 
 class Solution:
