@@ -1,19 +1,14 @@
 def find_champion(n, edges)
-    is_undefeated = Array.new(n, true)
+    incoming = Array.new(n, 0)
     
-    edges.each do |winner, loser|
-        is_undefeated[loser] = false
+    edges.each do |src, dst|
+        incoming[dst] += 1
     end
     
-    champion = -1
-    champion_count = 0
-    
-    n.times do |team|
-        if is_undefeated[team]
-            champion = team
-            champion_count += 1
-        end
+    champions = []
+    incoming.each_with_index do |count, i|
+        champions << i if count == 0
     end
     
-    champion_count == 1 ? champion : -1
+    champions.length > 1 ? -1 : champions[0]
 end
