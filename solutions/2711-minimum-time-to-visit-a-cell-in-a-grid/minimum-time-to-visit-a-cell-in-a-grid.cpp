@@ -5,37 +5,37 @@ public:
         
         const int rows = grid.size();
         const int cols = grid[0].size();
-        const vector<pair<int, int>> moves = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        static const int dx[] = {0, 0, 1, -1};
+        static const int dy[] = {1, -1, 0, 0};
         
-        vector<vector<bool>> seen(rows, vector<bool>(cols, false));
+        vector<vector<bool>> seen(rows, vector<bool>(cols));
         seen[0][0] = true;
         
         using State = pair<int, pair<int, int>>;
         priority_queue<State, vector<State>, greater<State>> pq;
-        pq.push({0, {0, 0}});
+        pq.emplace(0, make_pair(0, 0));
         
         while (!pq.empty()) {
-            auto [time, pos] = pq.top();
-            auto [row, col] = pos;
+            const int time = pq.top().first;
+            const int row = pq.top().second.first;
+            const int col = pq.top().second.second;
             pq.pop();
             
             if (row == rows - 1 && col == cols - 1) 
                 return time;
             
-            for (const auto& [dx, dy] : moves) {
-                int newRow = row + dx;
-                int newCol = col + dy;
+            for (int i = 0; i < 4; ++i) {
+                const int newRow = row + dx[i];
+                const int newCol = col + dy[i];
                 
-                if (newRow >= 0 && newCol >= 0 && 
-                    newRow < rows && newCol < cols && 
+                if (unsigned(newRow) < unsigned(rows) && 
+                    unsigned(newCol) < unsigned(cols) && 
                     !seen[newRow][newCol]) {
                     
                     int nextTime = max(time + 1, grid[newRow][newCol]);
-                    if (nextTime % 2 != (time + 1) % 2) {
-                        nextTime++;
-                    }
+                    nextTime += (nextTime ^ (time + 1)) & 1;
                     
-                    pq.push({nextTime, {newRow, newCol}});
+                    pq.emplace(nextTime, make_pair(newRow, newCol));
                     seen[newRow][newCol] = true;
                 }
             }
