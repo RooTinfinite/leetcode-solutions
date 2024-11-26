@@ -33,4 +33,3 @@ class Solution:
                 heappush(q, (nt, nx, ny))
                 
         return -1
-        return -1
