@@ -1,20 +1,23 @@
 class Solution {
 public:
     int findChampion(int n, vector<vector<int>>& edges) {
-        vector<int> losses(n);
+        vector<int> incoming(n, 0);
         
         for (const auto& edge : edges) {
-            losses[edge[1]]++;
+            incoming[edge[1]]++;
         }
         
-        int champion = -1;
+        vector<int> champions;
         for (int i = 0; i < n; i++) {
-            if (losses[i] == 0) {
-                if (champion != -1) return -1;
-                champion = i;
+            if (incoming[i] == 0) {
+                champions.push_back(i);
             }
         }
         
-        return champion;
+        if (champions.size() > 1) {
+            return -1;
+        }
+        
+        return champions[0];
     }
 };
