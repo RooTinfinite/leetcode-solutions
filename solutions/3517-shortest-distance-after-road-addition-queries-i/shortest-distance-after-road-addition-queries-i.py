@@ -1,27 +1,28 @@
 class Solution:
-    def dfs(self, tree, c, dp):
-        d = dp[c] + 1
-        for x in tree[c]:
-            if dp[x] <= d:
+    def updateDistances(self, graph, current, distances):
+        newDist = distances[current] + 1
+        
+        for neighbor in graph[current]:
+            if distances[neighbor] <= newDist:
                 continue
-            dp[x] = d
-            self.dfs(tree, x, dp)
+                
+            distances[neighbor] = newDist
+            self.updateDistances(graph, neighbor, distances)
     
     def shortestDistanceAfterQueries(self, n: int, queries: List[List[int]]) -> List[int]:
-        dp = [n-1-i for i in range(n)]
-        tree = [[] for _ in range(n)]
+        distances = [n - 1 - i for i in range(n)]
         
+        graph = [[] for _ in range(n)]
         for i in range(n-1):
-            tree[i+1].append(i)
-            
-        m = len(queries)
-        res = [0] * m
+            graph[i + 1].append(i)
         
-        for i, q in enumerate(queries):
-            a, b = q[0], q[1]
-            tree[b].append(a)
-            dp[a] = min(dp[a], dp[b] + 1)
-            self.dfs(tree, a, dp)
-            res[i] = dp[0]
+        answer = []
+        
+        for source, target in queries:
+            graph[target].append(source)
+            distances[source] = min(distances[source], distances[target] + 1)
+            self.updateDistances(graph, source, distances)
             
-        return res
+            answer.append(distances[0])
+        
+        return answer
