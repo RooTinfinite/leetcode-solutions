@@ -27,15 +27,17 @@ private:
         const uint64_t *p = (const uint64_t*)(g + c);
         
         for (uint8_t j = 0; j < nq; j++) {
-            const uint16_t b = j << 6;
-            for (uint64_t q = p[j]; q; ) {
-                const uint8_t i = countr_zero(q);
-                const uint16_t k = b + i;
+            uint64_t q = p[j];
+            while (q) {
+                const uint64_t isolated_bit = q & -q;
+                const uint8_t i = __builtin_ctzll(q);
+                const uint16_t k = (j << 6) + i;
+                
                 if (uint16_t &dk = d[k]; dk > dc) {
                     dk = dc;
                     update(n, k, d);
                 }
-                q ^= 1ull << i;
+                q &= (q - 1);
             }
         }
     }
@@ -50,7 +52,7 @@ public:
         
         const uint16_t a = r[0], b = r[1];
         g[b].set(a);
-        d[a] = min(d[a] + 0u, d[b] + 1u);
+        d[a] = std::min<uint16_t>(d[a], static_cast<uint16_t>(d[b] + 1u));
         update(n, a, d);
         r.clear();
         r.reserve(m);
@@ -59,7 +61,7 @@ public:
         for (uint16_t i = 1; i < m; i++) {
             const uint16_t a = q[i][0], b = q[i][1];
             g[b].set(a);
-            d[a] = min(d[a] + 0u, d[b] + 1u);
+            d[a] = std::min<uint16_t>(d[a], static_cast<uint16_t>(d[b] + 1u));
             update(n, a, d);
             r.push_back(*d);
         }
