@@ -82,5 +82,5 @@ auto init = []() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     Solution::init();
-    return 0;
+    return 'p';
 }();
