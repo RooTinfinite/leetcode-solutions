@@ -1,44 +1,40 @@
 class Solution {
-    private void updateDistances(List<List<Integer>> graph, int current, int[] distances) {
-        int newDist = distances[current] + 1;
-        
-        for (int neighbor : graph.get(current)) {
-            if (distances[neighbor] <= newDist) continue;
-            
-            distances[neighbor] = newDist;
-            updateDistances(graph, neighbor, distances);
+    public int[] shortestDistanceAfterQueries(int n, int[][] queries) {
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            adj.add(new ArrayList<>());
+            adj.get(i).add(i + 1);
         }
+        
+        List<Integer> resList = new ArrayList<>();
+        for (int[] query : queries) {
+            adj.get(query[0]).add(query[1]);
+            resList.add(shortestPath(adj, n));
+        }
+        
+        return resList.stream().mapToInt(Integer::intValue).toArray();
     }
     
-    public int[] shortestDistanceAfterQueries(int n, int[][] queries) {
-        int[] distances = new int[n];
-        for (int i = 0; i < n; ++i) {
-            distances[i] = n - 1 - i;
-        }
+    private int shortestPath(List<List<Integer>> adj, int n) {
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{0, 0}); // node, length
+        Set<Integer> visit = new HashSet<>();
+        visit.add(0);
         
-        List<List<Integer>> graph = new ArrayList<>();
-        for (int i = 0; i < n; ++i) {
-            graph.add(new ArrayList<>());
-        }
-        
-        for (int i = 0; i + 1 < n; ++i) {
-            graph.get(i + 1).add(i);
-        }
-        
-        int[] answer = new int[queries.length];
-        int queryIdx = 0;
-        
-        for (int[] query : queries) {
-            int source = query[0];
-            int target = query[1];
+        while (!q.isEmpty()) {
+            int[] curr = q.poll();
+            int cur = curr[0];
+            int length = curr[1];
             
-            graph.get(target).add(source);
-            distances[source] = Math.min(distances[source], distances[target] + 1);
-            updateDistances(graph, source, distances);
+            if (cur == n - 1) return length;
             
-            answer[queryIdx++] = distances[0];
+            for (int nei : adj.get(cur)) {
+                if (!visit.contains(nei)) {
+                    q.offer(new int[]{nei, length + 1});
+                    visit.add(nei);
+                }
+            }
         }
-        
-        return answer;
+        return -1;
     }
 }
