@@ -1,43 +1,38 @@
 class Solution {
+    void updateDistances(vector<vector<int>>& graph, int current, vector<int>& distances) {
+        int newDist = distances[current] + 1;
+        for (int neighbor : graph[current]) {
+            if (distances[neighbor] <= newDist) continue;
+            distances[neighbor] = newDist;
+            updateDistances(graph, neighbor, distances);
+        }
+    }
 public:
     vector<int> shortestDistanceAfterQueries(int n, vector<vector<int>>& queries) {
-        unordered_map<int, vector<int>> adj;
-        for (int i = 0; i < n-1; i++) {
-            adj[i].push_back(i+1);
+        vector<int> distances(n);
+        for (int i = 0; i < n; ++i) {
+            distances[i] = n - 1 - i;
         }
         
-        vector<int> depth(n);
-        for (int i = 0; i < n; i++) {
-            depth[i] = i;
+        vector<vector<int>> graph(n);
+        for (int i = 0; i + 1 < n; ++i) {
+            graph[i + 1].push_back(i);
         }
         
-        auto bfs = [&](int node) {
-            queue<int> q;
-            q.push(node);
-            while (!q.empty()) {
-                int curr = q.front();
-                q.pop();
-                for (int nei : adj[curr]) {
-                    if (depth[nei] > depth[curr] + 1) {
-                        depth[nei] = depth[curr] + 1;
-                        q.push(nei);
-                    }
-                }
-            }
-        };
+        vector<int> answer(queries.size());
+        int queryIdx = 0;
         
-        vector<int> ans;
         for (const auto& query : queries) {
-            int s = query[0], e = query[1];
-            adj[s].push_back(e);
-            if (depth[e] > depth[s] + 1) {
-                depth[e] = depth[s] + 1;
-                bfs(e);
-            }
-            ans.push_back(depth[n-1]);
+            int source = query[0];
+            int target = query[1];
+            
+            graph[target].push_back(source);
+            distances[source] = min(distances[source], distances[target] + 1);
+            updateDistances(graph, source, distances);
+            
+            answer[queryIdx++] = distances[0];
         }
         
-        return ans;
+        return answer;
     }
 };
-
