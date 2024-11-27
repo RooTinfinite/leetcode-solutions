@@ -6,38 +6,29 @@
 class Solution {
 private:
     static constexpr uint16_t N = 500;
-    static bitset<N> g[N];
-    static uint16_t d[N];
+    alignas(64) static bitset<N> g[N];
+    alignas(64) static uint16_t d[N];
 
     static void reset(const uint16_t n) ATTR {
-        const uint8_t nq = (n + 63u) >> 6;
-        uint64_t *p = (uint64_t*)g;
-        fill(p, p + nq, 0);
-        
+        memset(g, 0, sizeof(bitset<N>) * n);
         for (uint16_t i = 1; i < n; i++) {
-            p = (uint64_t*)(g + i);
-            fill(p, p + nq, 0);
             g[i].set(i - 1u);
         }
     }
 
-    static void update(const uint16_t n, const uint16_t c, uint16_t d[]) ATTR {
+    static void update(const uint16_t n, const uint16_t c) ATTR {
         const uint16_t dc = d[c] + 1u;
         const uint8_t nq = (n + 63u) >> 6;
         const uint64_t *p = (const uint64_t*)(g + c);
         
+        uint64_t q;
         for (uint8_t j = 0; j < nq; j++) {
-            uint64_t q = p[j];
-            while (q) {
-                const uint64_t isolated_bit = q & -q;
-                const uint8_t i = __builtin_ctzll(q);
-                const uint16_t k = (j << 6) + i;
-                
-                if (uint16_t &dk = d[k]; dk > dc) {
-                    dk = dc;
-                    update(n, k, d);
+            for (q = p[j]; q; q &= q - 1) {
+                const uint16_t k = (j << 6) + __builtin_ctzll(q);
+                if (d[k] > dc) {
+                    d[k] = dc;
+                    update(n, k);
                 }
-                q &= (q - 1);
             }
         }
     }
@@ -45,32 +36,47 @@ private:
 public:
     static vector<int> shortestDistanceAfterQueries(const uint16_t n, vector<vector<int>>& q) ATTR {
         uint16_t v = n;
-        generate_n(d, n, [&v]() noexcept { return --v; });
+        for (uint16_t i = 0; i < n; ++i) d[i] = --v;
 
         const uint16_t m = q.size();
-        vector<int> r;
-        r.reserve(m);
+        vector<int>& r = q.front();
         
-        for (const auto& query : q) {
-            const uint16_t a = query[0], b = query[1];
+        {
+            const uint16_t a = r[0], b = r[1];
             g[b].set(a);
-            d[a] = min<uint16_t>(d[a], d[b] + 1u);
-            update(n, a, d);
+            if (d[a] > d[b] + 1u) {
+                d[a] = d[b] + 1u;
+                update(n, a);
+            }
+        }
+        
+        r.clear();
+        r.reserve(m);
+        r.push_back(d[0]);
+
+        for (uint16_t i = 1; i < m; ++i) {
+            const uint16_t a = q[i][0], b = q[i][1];
+            g[b].set(a);
+            if (d[a] > d[b] + 1u) {
+                d[a] = d[b] + 1u;
+                update(n, a);
+            }
             r.push_back(d[0]);
         }
         
         reset(n);
-        return r;
+        return std::move(r);
     }
 
     static void init() ATTR {
-        for (uint16_t i = 1; i < N; i++)
+        for (uint16_t i = 1; i < N; i++) {
             g[i].set(i - 1u);
+        }
     }
 };
 
-bitset<Solution::N> Solution::g[Solution::N];
-uint16_t Solution::d[Solution::N];
+alignas(64) bitset<Solution::N> Solution::g[Solution::N];
+alignas(64) uint16_t Solution::d[Solution::N];
 
 auto init = []() {
     ios::sync_with_stdio(false);
