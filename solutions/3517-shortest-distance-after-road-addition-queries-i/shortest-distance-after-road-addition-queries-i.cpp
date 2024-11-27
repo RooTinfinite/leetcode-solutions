@@ -7,7 +7,7 @@
 
 class Solution {
 private:
-    static constexpr uint16_t MAXN = 50000;
+    static constexpr uint16_t MAXN = 5000;
     static vector<vector<int>> graph;
     
     static void updateDistances(int current, vector<int>& distances) OUTL_ATTR {
