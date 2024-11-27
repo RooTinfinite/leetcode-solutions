@@ -10,32 +10,20 @@ private:
     static uint16_t d[N];
 
     static void reset(const uint16_t n) ATTR {
-        const uint8_t nq = (n + 63u) >> 6;
-        uint64_t *p = (uint64_t*)g;
-        fill(p, p + nq, 0);
-        
+        for (uint16_t i = 0; i < n; i++) {
+            g[i].reset();
+        }
         for (uint16_t i = 1; i < n; i++) {
-            p = (uint64_t*)(g + i);
-            fill(p, p + nq, 0);
             g[i].set(i - 1u);
         }
     }
 
-    static void update(const uint16_t n, const uint16_t r, uint16_t d[]) ATTR {
-        const uint16_t dc = d[r] + 1u;
-        const uint8_t nq = (n + 63u) >> 6;
-        const uint64_t *p = (const uint64_t*)(g + r);
-        
-        for (uint8_t j = 0; j < nq; j++) {
-            const uint16_t b = j << 6;
-            for (uint64_t q = p[j]; q; ) {
-                const uint8_t i = countr_zero(q);
-                const uint16_t k = b + i;
-                if (uint16_t &dk = d[k]; dk > dc) {
-                    dk = dc;
-                    update(n, k, d);
-                }
-                q ^= 1ull << i;
+    static void update(const uint16_t n, const uint16_t c, uint16_t d[]) ATTR {
+        const uint16_t dc = d[c] + 1u;
+        for (uint16_t k = 0; k < n; k++) {
+            if (g[c][k] && d[k] > dc) {
+                d[k] = dc;
+                update(n, k, d);
             }
         }
     }
@@ -45,41 +33,34 @@ public:
         uint16_t v = n;
         generate_n(d, n, [&v]() noexcept { return --v; });
 
-        const uint16_t m = q.size();
-        vector<int> &r = q.front();
+        vector<int> r;
+        r.reserve(q.size());
         
-        const uint16_t a = r[0], b = r[1];
-        g[b].set(a);
-        d[a] = min(d[a] + 0u, d[b] + 1u);
-        update(n, a, d);
-        r.clear();
-        r.reserve(m);
-        r.push_back(*d);
-
-        for (uint16_t i = 1; i < m; i++) {
-            const uint16_t a = q[i][0], b = q[i][1];
+        for (const auto& query : q) {
+            const uint16_t a = query[0], b = query[1];
             g[b].set(a);
-            d[a] = min(d[a] + 0u, d[b] + 1u);
+            d[a] = min<uint16_t>(d[a], d[b] + 1u);
             update(n, a, d);
-            r.push_back(*d);
+            r.push_back(d[0]);
         }
+        
         reset(n);
-        return std::move(r);
+        return r;
     }
 
     static void init() ATTR {
-        for (uint16_t i = 1; i < N; i++)
+        for (uint16_t i = 1; i < N; i++) {
             g[i].set(i - 1u);
+        }
     }
 };
 
 bitset<Solution::N> Solution::g[Solution::N];
 uint16_t Solution::d[Solution::N];
 
-auto init = []() {
-    ios::sync_with_stdio(false);
+static const auto init = []() {
+    ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
-    cout.tie(nullptr);
     Solution::init();
-    return 'r';
+    return 0;
 }();
