@@ -1,40 +1,37 @@
-func updateDistances(graph [][]int, current int, distances []int) {
-    newDist := distances[current] + 1
-    
-    for _, neighbor := range graph[current] {
-        if distances[neighbor] <= newDist {
-            continue
-        }
-        
-        distances[neighbor] = newDist
-        updateDistances(graph, neighbor, distances)
-    }
-}
-
 func shortestDistanceAfterQueries(n int, queries [][]int) []int {
-    distances := make([]int, n)
-    for i := range distances {
-        distances[i] = n - 1 - i
+    adj := make([][]int, n)
+    for i := range adj {
+        adj[i] = []int{i + 1}
     }
     
-    graph := make([][]int, n)
-    for i := 0; i < n-1; i++ {
-        graph[i+1] = append(graph[i+1], i)
-    }
-    
-    answer := make([]int, 0, len(queries))
-    
-    for _, query := range queries {
-        source, target := query[0], query[1]
-        graph[target] = append(graph[target], source)
+    shortestPath := func() int {
+        q := [][]int{{0, 0}} // node, length
+        visit := make(map[int]bool)
+        visit[0] = true
         
-        if distances[target]+1 < distances[source] {
-            distances[source] = distances[target] + 1
+        for len(q) > 0 {
+            cur, length := q[0][0], q[0][1]
+            q = q[1:]
+            
+            if cur == n-1 {
+                return length
+            }
+            
+            for _, nei := range adj[cur] {
+                if !visit[nei] {
+                    q = append(q, []int{nei, length + 1})
+                    visit[nei] = true
+                }
+            }
         }
-        
-        updateDistances(graph, source, distances)
-        answer = append(answer, distances[0])
+        return -1
     }
     
-    return answer
+    res := make([]int, 0)
+    for _, query := range queries {
+        src, dst := query[0], query[1]
+        adj[src] = append(adj[src], dst)
+        res = append(res, shortestPath())
+    }
+    return res
 }
