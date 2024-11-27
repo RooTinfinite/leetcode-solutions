@@ -1,31 +1,27 @@
-def update_distances(graph, current, distances)
-    new_dist = distances[current] + 1
-    
-    graph[current].each do |neighbor|
-        next if distances[neighbor] <= new_dist
-        
-        distances[neighbor] = new_dist
-        update_distances(graph, neighbor, distances)
-    end
-end
-
 def shortest_distance_after_queries(n, queries)
-    distances = (0...n).map { |i| n - 1 - i }
+    adj = Array.new(n) { |i| [i + 1] }
     
-    graph = Array.new(n) { [] }
-    (0...n-1).each do |i|
-        graph[i + 1] << i
-    end
-    
-    answer = []
-    
-    queries.each do |source, target|
-        graph[target] << source
-        distances[source] = [distances[source], distances[target] + 1].min
-        update_distances(graph, source, distances)
+    def shortest_path(adj, n)
+        q = [[0, 0]]  # [node, length]
+        visit = Set.new([0])
         
-        answer << distances[0]
+        while !q.empty?
+            cur, length = q.shift
+            return length if cur == n - 1
+            
+            adj[cur].each do |nei|
+                if !visit.include?(nei)
+                    q.push([nei, length + 1])
+                    visit.add(nei)
+                end
+            end
+        end
     end
     
-    answer
+    res = []
+    queries.each do |src, dst|
+        adj[src].push(dst)
+        res.push(shortest_path(adj, n))
+    end
+    res
 end
