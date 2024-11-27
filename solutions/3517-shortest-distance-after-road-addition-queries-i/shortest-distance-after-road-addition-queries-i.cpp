@@ -1,38 +1,38 @@
 class Solution {
-    void updateDistances(vector<vector<int>>& graph, int current, vector<int>& distances) {
-        int newDist = distances[current] + 1;
-        for (int neighbor : graph[current]) {
-            if (distances[neighbor] <= newDist) continue;
-            distances[neighbor] = newDist;
-            updateDistances(graph, neighbor, distances);
-        }
-    }
 public:
     vector<int> shortestDistanceAfterQueries(int n, vector<vector<int>>& queries) {
-        vector<int> distances(n);
-        for (int i = 0; i < n; ++i) {
-            distances[i] = n - 1 - i;
+        vector<vector<int>> adj(n);
+        for (int i = 0; i < n; i++) {
+            adj[i].push_back(i + 1);
         }
         
-        vector<vector<int>> graph(n);
-        for (int i = 0; i + 1 < n; ++i) {
-            graph[i + 1].push_back(i);
-        }
+        auto shortest_path = [&]() {
+            queue<pair<int, int>> q;
+            q.push({0, 0}); // node, length
+            unordered_set<int> visit;
+            visit.insert(0);
+            
+            while (!q.empty()) {
+                auto [cur, length] = q.front();
+                q.pop();
+                
+                if (cur == n - 1) return length;
+                
+                for (int nei : adj[cur]) {
+                    if (visit.find(nei) == visit.end()) {
+                        q.push({nei, length + 1});
+                        visit.insert(nei);
+                    }
+                }
+            }
+            return -1;
+        };
         
-        vector<int> answer(queries.size());
-        int queryIdx = 0;
-        
+        vector<int> res;
         for (const auto& query : queries) {
-            int source = query[0];
-            int target = query[1];
-            
-            graph[target].push_back(source);
-            distances[source] = min(distances[source], distances[target] + 1);
-            updateDistances(graph, source, distances);
-            
-            answer[queryIdx++] = distances[0];
+            adj[query[0]].push_back(query[1]);
+            res.push_back(shortest_path());
         }
-        
-        return answer;
+        return res;
     }
 };
