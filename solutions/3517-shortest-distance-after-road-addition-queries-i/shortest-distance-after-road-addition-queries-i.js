@@ -1,33 +1,32 @@
-var updateDistances = function(graph, current, distances) {
-    const newDist = distances[current] + 1;
+var shortestDistanceAfterQueries = function(n, queries) {
+    const adj = Array.from({length: n}, (_, i) => [i + 1]);
     
-    for (const neighbor of graph[current]) {
-        if (distances[neighbor] <= newDist) {
-            continue;
-        }
+    const shortestPath = () => {
+        const q = [[0, 0]]; // node, length
+        const visit = new Set();
+        visit.add(0);
         
-        distances[neighbor] = newDist;
-        updateDistances(graph, neighbor, distances);
+        while (q.length > 0) {
+            const [cur, length] = q.shift();
+            if (cur === n - 1) {
+                return length;
+            }
+            
+            for (const nei of adj[cur]) {
+                if (!visit.has(nei)) {
+                    q.push([nei, length + 1]);
+                    visit.add(nei);
+                }
+            }
+        }
+    };
+    
+    const res = [];
+    for (const [src, dst] of queries) {
+        adj[src].push(dst);
+        res.push(shortestPath());
     }
+    
+    return res;
 };
 
-var shortestDistanceAfterQueries = function(n, queries) {
-    const distances = Array(n).fill(0).map((_, i) => n - 1 - i);
-    
-    const graph = Array(n).fill(0).map(() => []);
-    for (let i = 0; i < n-1; i++) {
-        graph[i + 1].push(i);
-    }
-    
-    const answer = [];
-    
-    for (const [source, target] of queries) {
-        graph[target].push(source);
-        distances[source] = Math.min(distances[source], distances[target] + 1);
-        updateDistances(graph, source, distances);
-        
-        answer.push(distances[0]);
-    }
-    
-    return answer;
-};
