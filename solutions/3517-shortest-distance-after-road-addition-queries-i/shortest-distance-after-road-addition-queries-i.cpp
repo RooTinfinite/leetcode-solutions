@@ -1,92 +1,85 @@
-#define SANITIZER_DISABLE __attribute__((no_sanitize("undefined", "address", "coverage", "thread")))
-#define FORCE_INLINE __attribute__((always_inline))
-#define OPTIMIZE_HOT __attribute__((hot))
-#define INLINE_OPTIMIZED noexcept FORCE_INLINE SANITIZER_DISABLE OPTIMIZE_HOT
-#define OUTLINE_OPTIMIZED noexcept SANITIZER_DISABLE OPTIMIZE_HOT
-#define LAMBDA_OPTIMIZED FORCE_INLINE SANITIZER_DISABLE OPTIMIZE_HOT noexcept
+#define NO_SAN __attribute__((no_sanitize("undefined", "address", "coverage", "thread")))
+#define INL __attribute__((always_inline))
+#define HOT __attribute__((hot))
+#define ATTR noexcept INL NO_SAN HOT
 
 class Solution {
 private:
-    static constexpr uint16_t MAX_SIZE = 500;
-    static bitset<MAX_SIZE> adjacencyMatrix[MAX_SIZE];
+    static constexpr uint16_t N = 500;
+    static bitset<N> g[N];
+    static uint16_t d[N];
 
-    static void resetMatrix(const uint16_t size) INLINE_OPTIMIZED {
-        const uint8_t blockCount = (size + 63u) >> 6;
+    static void reset(const uint16_t n) ATTR {
+        const uint8_t nq = (n + 63u) >> 6;
+        uint64_t *p = (uint64_t*)g;
+        fill(p, p + nq, 0);
         
-        uint64_t* firstRow = (uint64_t*)adjacencyMatrix;
-        fill(firstRow, firstRow + blockCount, 0);
-
-        for (uint16_t row = 1; row < size; row++) {
-            uint64_t* currentRow = (uint64_t*)(adjacencyMatrix + row);
-            fill(currentRow, currentRow + blockCount, 0);
-            adjacencyMatrix[row].set(row - 1u);
+        for (uint16_t i = 1; i < n; i++) {
+            p = (uint64_t*)(g + i);
+            fill(p, p + nq, 0);
+            g[i].set(i - 1u);
         }
     }
 
-    static void updateDistances(const uint16_t size, const uint16_t current, uint16_t distances[]) OUTLINE_OPTIMIZED {
-        const uint16_t newDistance = distances[current] + 1u;
-        const uint8_t blockCount = (size + 63u) >> 6;
-        const uint64_t* currentRow = (const uint64_t*)(adjacencyMatrix + current);
-
-        for (uint8_t block = 0; block < blockCount; block++) {
-            const uint16_t baseIndex = block << 6;
-            for (uint64_t bits = currentRow[block]; bits; ) {
-                const uint8_t offset = countr_zero(bits);
-                const uint16_t neighbor = baseIndex + offset;
-                
-                uint16_t& neighborDist = distances[neighbor];
-                if (neighborDist > newDistance) {
-                    neighborDist = newDistance;
-                    updateDistances(size, neighbor, distances);
+    static void update(const uint16_t n, const uint16_t c, uint16_t d[]) ATTR {
+        const uint16_t dc = d[c] + 1u;
+        const uint8_t nq = (n + 63u) >> 6;
+        const uint64_t *p = (const uint64_t*)(g + c);
+        
+        for (uint8_t j = 0; j < nq; j++) {
+            const uint16_t b = j << 6;
+            for (uint64_t q = p[j]; q; ) {
+                const uint8_t i = countr_zero(q);
+                const uint16_t k = b + i;
+                if (uint16_t &dk = d[k]; dk > dc) {
+                    dk = dc;
+                    update(n, k, d);
                 }
-                bits ^= 1ull << offset;
+                q ^= 1ull << i;
             }
         }
     }
 
 public:
-    static vector<int> shortestDistanceAfterQueries(const uint16_t size, vector<vector<int>>& queries) OUTLINE_OPTIMIZED {
-        uint16_t distances[size], value = size;
-        generate_n(distances, size, [&value]() LAMBDA_OPTIMIZED { return --value; });
+    static vector<int> shortestDistanceAfterQueries(const uint16_t n, vector<vector<int>>& q) ATTR {
+        uint16_t v = n;
+        generate_n(d, n, [&v]() noexcept { return --v; });
 
-        const uint16_t queryCount = queries.size();
-        vector<int>& result = queries.front();
+        const uint16_t m = q.size();
+        vector<int> &r = q.front();
         
-        {
-            const uint16_t source = result[0], target = result[1];
-            adjacencyMatrix[target].set(source);
-            distances[source] = min(distances[source] + 0u, distances[target] + 1u);
-            updateDistances(size, source, distances);
-            
-            result.clear();
-            result.reserve(queryCount);
-            result.push_back(*distances);
-        }
+        const uint16_t a = r[0], b = r[1];
+        g[b].set(a);
+        d[a] = min(d[a] + 0u, d[b] + 1u);
+        update(n, a, d);
+        r.clear();
+        r.reserve(m);
+        r.push_back(*d);
 
-        for (uint16_t i = 1; i < queryCount; i++) {
-            const uint16_t source = queries[i][0], target = queries[i][1];
-            adjacencyMatrix[target].set(source);
-            distances[source] = min(distances[source] + 0u, distances[target] + 1u);
-            updateDistances(size, source, distances);
-            result.push_back(*distances);
+        for (uint16_t i = 1; i < m; i++) {
+            const uint16_t a = q[i][0], b = q[i][1];
+            g[b].set(a);
+            d[a] = min(d[a] + 0u, d[b] + 1u);
+            update(n, a, d);
+            r.push_back(*d);
         }
-
-        resetMatrix(size);
-        return move(result);
+        reset(n);
+        return std::move(r);
     }
 
-    static void initialize() INLINE_OPTIMIZED {
-        for (uint16_t i = 1; i < MAX_SIZE; i++)
-            adjacencyMatrix[i].set(i - 1u);
+    static void init() ATTR {
+        for (uint16_t i = 1; i < N; i++)
+            g[i].set(i - 1u);
     }
 };
 
-bitset<Solution::MAX_SIZE> Solution::adjacencyMatrix[MAX_SIZE];
+bitset<Solution::N> Solution::g[Solution::N];
+uint16_t Solution::d[Solution::N];
 
-auto initialize = []() {
+auto init = []() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     cout.tie(nullptr);
-    Solution::initialize();
+    Solution::init();
     return 'c';
 }();
