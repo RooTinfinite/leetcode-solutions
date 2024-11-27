@@ -1,45 +1,37 @@
 public class Solution {
-    private void UpdateDistances(List<int>[] graph, int current, int[] distances) {
-        int newDist = distances[current] + 1;
+    public int[] ShortestDistanceAfterQueries(int n, int[][] queries) {
+        List<List<int>> adj = new List<List<int>>();
         
-        foreach (int neighbor in graph[current]) {
-            if (distances[neighbor] <= newDist) {
-                continue;
-            }
-            
-            distances[neighbor] = newDist;
-            UpdateDistances(graph, neighbor, distances);
+        for (int i = 0; i < n; i++) {
+            adj.Add(new List<int> { i + 1 });
         }
+        
+        List<int> res = new List<int>();
+        foreach (var query in queries) {
+            adj[query[0]].Add(query[1]);
+            res.Add(ShortestPath(adj, n));
+        }
+        
+        return res.ToArray();
     }
     
-    public int[] ShortestDistanceAfterQueries(int n, int[][] queries) {
-        int[] distances = new int[n];
-        for (int i = 0; i < n; i++) {
-            distances[i] = n - 1 - i;
-        }
+    private int ShortestPath(List<List<int>> adj, int n) {
+        Queue<(int node, int length)> q = new Queue<(int, int)>();
+        q.Enqueue((0, 0));
+        HashSet<int> visit = new HashSet<int> { 0 };
         
-        List<int>[] graph = new List<int>[n];
-        for (int i = 0; i < n; i++) {
-            graph[i] = new List<int>();
-        }
-        
-        for (int i = 0; i < n - 1; i++) {
-            graph[i + 1].Add(i);
-        }
-        
-        List<int> answer = new List<int>();
-        
-        foreach (var query in queries) {
-            int source = query[0];
-            int target = query[1];
+        while (q.Count > 0) {
+            var (cur, length) = q.Dequeue();
             
-            graph[target].Add(source);
-            distances[source] = Math.Min(distances[source], distances[target] + 1);
-            UpdateDistances(graph, source, distances);
+            if (cur == n - 1) return length;
             
-            answer.Add(distances[0]);
+            foreach (int nei in adj[cur]) {
+                if (!visit.Contains(nei)) {
+                    q.Enqueue((nei, length + 1));
+                    visit.Add(nei);
+                }
+            }
         }
-        
-        return answer.ToArray();
+        return -1;
     }
 }
