@@ -6,7 +6,7 @@ public:
             adj[i].push_back(i + 1);
         }
         
-        auto shortest_path = [&]() {
+        auto shortest_path = [&]() -> int {
             queue<pair<int, int>> q;
             q.push({0, 0}); // node, length
             unordered_set<int> visit;
@@ -16,7 +16,9 @@ public:
                 auto [cur, length] = q.front();
                 q.pop();
                 
-                if (cur == n - 1) return length;
+                if (cur == n - 1) {
+                    return length;
+                }
                 
                 for (int nei : adj[cur]) {
                     if (visit.find(nei) == visit.end()) {
@@ -30,9 +32,12 @@ public:
         
         vector<int> res;
         for (const auto& query : queries) {
-            adj[query[0]].push_back(query[1]);
+            int src = query[0];
+            int dst = query[1];
+            adj[src].push_back(dst);
             res.push_back(shortest_path());
         }
+        
         return res;
     }
 };
