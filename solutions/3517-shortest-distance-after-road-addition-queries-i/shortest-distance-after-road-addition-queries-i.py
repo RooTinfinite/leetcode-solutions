@@ -1,28 +1,27 @@
 class Solution:
-    def updateDistances(self, graph, current, distances):
-        newDist = distances[current] + 1
-        
-        for neighbor in graph[current]:
-            if distances[neighbor] <= newDist:
-                continue
-                
-            distances[neighbor] = newDist
-            self.updateDistances(graph, neighbor, distances)
-    
     def shortestDistanceAfterQueries(self, n: int, queries: List[List[int]]) -> List[int]:
-        distances = [n - 1 - i for i in range(n)]
+        graph = {i: [] for i in range(n)}
+        for i in range(n - 1):
+            graph[i].append((i + 1, 1))
         
-        graph = [[] for _ in range(n)]
-        for i in range(n-1):
-            graph[i + 1].append(i)
-        
-        answer = []
-        
-        for source, target in queries:
-            graph[target].append(source)
-            distances[source] = min(distances[source], distances[target] + 1)
-            self.updateDistances(graph, source, distances)
-            
-            answer.append(distances[0])
-        
-        return answer
+        def ans():
+            distance=[float('inf')]*n
+            distance[0]=0
+            dn=[(0,0)]
+            while dn:
+                current , u= heapq.heappop(dn)
+                if current<distance[u]:
+                    continue
+                for v, w in graph[u]:
+                    d= current+w
+                    if d < distance[v]:
+                        distance[v] = d
+                        heapq.heappush(dn, (d, v))
+            return distance[n - 1]
+
+        result=[]
+        for u ,v in queries:
+            graph[u].append((v, 1))
+            spl=ans()
+            result.append(spl)
+        return result
