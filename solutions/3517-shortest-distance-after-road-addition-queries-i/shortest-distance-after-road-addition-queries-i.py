@@ -1,23 +1,28 @@
 class Solution:
+    def updateDistances(self, graph, current, distances):
+        newDist = distances[current] + 1
+        
+        for neighbor in graph[current]:
+            if distances[neighbor] <= newDist:
+                continue
+                
+            distances[neighbor] = newDist
+            self.updateDistances(graph, neighbor, distances)
+    
     def shortestDistanceAfterQueries(self, n: int, queries: List[List[int]]) -> List[int]:
-        adj = [[i + 1] for i in range(n)]
-
-        def shortest_path():
-            q = deque()
-            q.append((0, 0))  # node, length
-            visit = set()
-            visit.add((0, 0))
-            while q:
-                cur, length = q.popleft()
-                if cur == n - 1:
-                    return length
-                for nei in adj[cur]:
-                    if nei not in visit:
-                        q.append((nei, length + 1))
-                        visit.add(nei)
-
-        res = []
-        for src, dst in queries:
-            adj[src].append(dst)
-            res.append(shortest_path())
-        return res
+        distances = [n - 1 - i for i in range(n)]
+        
+        graph = [[] for _ in range(n)]
+        for i in range(n-1):
+            graph[i + 1].append(i)
+        
+        answer = []
+        
+        for source, target in queries:
+            graph[target].append(source)
+            distances[source] = min(distances[source], distances[target] + 1)
+            self.updateDistances(graph, source, distances)
+            
+            answer.append(distances[0])
+        
+        return answer
