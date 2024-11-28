@@ -1,65 +1,50 @@
+using int3 = tuple<int, int, int>; // (dist, i, j)
+const static int d[5] = {0, 1, 0, -1, 0};
 class Solution {
 public:
-    int minimumObstacles(vector<vector<int>>& grid) {
-        
-      int m=grid.size();
-      int n=grid[0].size();
-      int i,j;
-      vector<vector<pair< int, int> >> adj(m*n);
+    inline static bool isOutside(int i, int j, int n, int m) {
+        return i < 0 || i >= n || j < 0 || j >= m;
+    }
 
-      for(i=0;i<m;i++){
-          for(j=0;j<n;j++){
-      
-      int c=n*i+j;
-    
-           if(i!=0){
-            adj[c].push_back(make_pair(grid[i-1][j],n*(i-1)+j));
-           }
-           if(i!=m-1){
-           adj[c].push_back(make_pair(grid[i+1][j],n*(i+1)+j));
-           }
-           if(j!=0){
-           adj[c].push_back(make_pair(grid[i][j-1],n*i+j-1));
-           }
-           if(j!=n-1){
-           adj[c].push_back(make_pair(grid[i][j+1],n*i+j+1 ));
-           }
+    static int minimumObstacles(vector<vector<int>>& grid) {
+        int n = grid.size(), m = grid[0].size();
+        vector<vector<int>> dist(n, vector<int>(m, INT_MAX));
+        priority_queue<int3, vector<int3>, greater<int3>> pq;
 
-          }
-      }
+        pq.emplace(0, 0, 0);
+        dist[0][0] = 0;
 
-      set<pair<int,int>> s;
-      
-      s.insert(make_pair(0,0));
-      vector<int> visited(m*n);
-      for(i=0;i<m*n;i++){
-          visited[i]=0;
-      }
-      visited[0]=1;
-    
-      while(s.empty()!=1){
-       
-       pair<int,int> p=*(s.begin());
+        while (!pq.empty()) {
+            auto [currD, i, j] = pq.top();
+            pq.pop();
 
-       visited[p.second]=1;
-       if(p.second==m*n-1){
-           return p.first;
-       }
-       s.erase(s.begin());
-      for(j=0;j<adj[p.second].size();j++){
+            // reach the target
+            if (i == n - 1 && j == m - 1)
+                return currD;
 
-         
-           if(visited[adj[p.second][j].second]==0){
-             s.insert(make_pair(p.first+adj[p.second][j].first,adj[p.second][j].second));
-            
-           }
-      }
+            // Traverse all four directions
+            for (int a = 0; a < 4; a++) {
+                int r = i + d[a], s = j + d[a + 1];
+                if (isOutside(r, s, n, m))
+                    continue;
 
+                // minimum distance to reach (r, s)
+                int nextD = grid[r][s] + currD;
 
-      }
-
-
-     return (n+m-3);
-
+                // update if this path having shorter distance
+                if (nextD < dist[r][s]) {
+                    dist[r][s] = nextD;
+                    pq.emplace(nextD, r, s);
+                }
+            }
+        }
+        return -1; // never reach
     }
 };
+
+auto init = []() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+    return 'c';
+}();
