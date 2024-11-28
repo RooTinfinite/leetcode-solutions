@@ -1,50 +1,65 @@
-using int3 = tuple<int, int, int>; // (dist, i, j)
+using int2 = pair<int, int>; 
 const static int d[5] = {0, 1, 0, -1, 0};
+
 class Solution {
 public:
     inline static bool isOutside(int i, int j, int n, int m) {
         return i < 0 || i >= n || j < 0 || j >= m;
     }
+    inline static int idx(int i, int j, int m) {
+        return i * m + j;
+    }
 
     static int minimumObstacles(vector<vector<int>>& grid) {
-        int n = grid.size(), m = grid[0].size();
-        vector<vector<int>> dist(n, vector<int>(m, INT_MAX));
-        priority_queue<int3, vector<int3>, greater<int3>> pq;
+        const int n = grid.size(), m = grid[0].size(), N=100000;
+        unsigned dist[N];
+        fill(dist, dist + n*m, INT_MAX);
 
-        pq.emplace(0, 0, 0);
-        dist[0][0] = 0;
+        int2 q[N]; 
+        int back = N/2, front = N/2; 
 
-        while (!pq.empty()) {
-            auto [currD, i, j] = pq.top();
-            pq.pop();
+        q[back++] = {0, 0}; 
+        dist[0] = 0;
 
-            // reach the target
+        while (back != front) {
+            auto [currD, ij] = q[front]; 
+            front=(front==N-1)?0:front+1;
+            auto [i, j] = div(ij, m);
+
             if (i == n - 1 && j == m - 1)
                 return currD;
 
-            // Traverse all four directions
             for (int a = 0; a < 4; a++) {
                 int r = i + d[a], s = j + d[a + 1];
                 if (isOutside(r, s, n, m))
                     continue;
 
-                // minimum distance to reach (r, s)
-                int nextD = grid[r][s] + currD;
+                int nextD = currD + grid[r][s];
+                int rs = idx(r, s, m);
 
-                // update if this path having shorter distance
-                if (nextD < dist[r][s]) {
-                    dist[r][s] = nextD;
-                    pq.emplace(nextD, r, s);
+                if (nextD < dist[rs]) {
+                    dist[rs] = nextD;
+                    int2 next = {dist[rs], rs};
+
+                    if (grid[r][s] == 0) {
+                        front=(front==0)?N-1:front-1;
+                        q[front] = next; 
+                    } 
+                    else {
+                        q[back] = next; 
+                        back=(back==N-1)?0:back+1;
+                    }
                 }
             }
         }
-        return -1; // never reach
+        return -1;
     }
 };
+
 
 auto init = []() {
     ios::sync_with_stdio(0);
     cin.tie(0);
     cout.tie(0);
-    return 'c';
+    return '0';
 }();
