@@ -14,7 +14,6 @@ struct ring_queue {
     void push(const T v) INL_ATTR {
         elem[end++] = v;
         if (end >= cap) end = 0;
-        // assert(!empty());
     }
 
     T pop() INL_ATTR {
@@ -40,6 +39,7 @@ public:
         uint cost = 0;
         bool a = false;
         grid.front().front() = -1;
+        
         while (!que[a].empty()) {
             while (!que[a].empty()) {
                 const uint coo = que[a].pop();
@@ -68,7 +68,7 @@ public:
             cost++;
             a = !a;
         }
-        return -1; // unreachable
+        return -1;
     }
 };
 
