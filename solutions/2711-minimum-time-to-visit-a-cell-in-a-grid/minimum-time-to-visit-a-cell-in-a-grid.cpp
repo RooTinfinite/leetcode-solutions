@@ -1,47 +1,36 @@
 class Solution {
 public:
     int minimumTime(vector<vector<int>>& grid) {
-        if (grid[0][1] > 1 && grid[1][0] > 1) return -1;
+        if (min(grid[0][1], grid[1][0]) > 1) {
+            return -1;
+        }
         
-        int rows = grid.size();
-        int cols = grid[0].size();
-        
-        priority_queue<pair<int, pair<int, int>>, 
-                      vector<pair<int, pair<int, int>>>, 
-                      greater<pair<int, pair<int, int>>>> minHeap;
-        
-        minHeap.push({0, {0, 0}}); // time, row(x), col(y)
-        
-        vector<vector<int>> seen(rows, vector<int>(cols, 0));
-        seen[0][0] = 1;
-        
-        vector<pair<int, int>> moves = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        int ROWS = grid.size(), COLS = grid[0].size();
+        priority_queue<vector<int>, vector<vector<int>>, greater<>> minHeap;
+        minHeap.push({0, 0, 0}); // {time, r, c}
+        set<pair<int, int>> visit;
         
         while (!minHeap.empty()) {
             auto curr = minHeap.top();
-            int currTime = curr.first;
-            int currRow = curr.second.first;
-            int currCol = curr.second.second;
-            
             minHeap.pop();
+            int t = curr[0], r = curr[1], c = curr[2];
             
-            if (currRow == rows - 1 && currCol == cols - 1) 
-                return currTime;
+            if (r == ROWS - 1 && c == COLS - 1) {
+                return t;
+            }
             
-            for (auto move : moves) {
-                int nextRow = move.first + currRow;
-                int nextCol = move.second + currCol;
-                
-                if (nextRow >= 0 && nextCol >= 0 && 
-                    nextRow < rows && nextCol < cols && 
-                    !seen[nextRow][nextCol]) {
-                    
-                    int waitTime = ((grid[nextRow][nextCol] - currTime) % 2 == 0) ? 1 : 0;
-                    int nextTime = max(currTime + 1, grid[nextRow][nextCol] + waitTime);
-                    
-                    minHeap.push({nextTime, {nextRow, nextCol}});
-                    seen[nextRow][nextCol] = 1;
+            vector<pair<int, int>> dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+            for (auto [dr, dc] : dirs) {
+                int nr = r + dr, nc = c + dc;
+                if (nr < 0 || nc < 0 || nr == ROWS || nc == COLS || 
+                    visit.count({nr, nc})) {
+                    continue;
                 }
+                
+                int wait = (abs(grid[nr][nc] - t) % 2 == 0) ? 1 : 0;
+                int nTime = max(grid[nr][nc] + wait, t + 1);
+                minHeap.push({nTime, nr, nc});
+                visit.insert({nr, nc});
             }
         }
         return -1;
