@@ -10,24 +10,27 @@ public:
                       vector<pair<int, pair<int, int>>>, 
                       greater<pair<int, pair<int, int>>>> minHeap;
         
-        minHeap.push({0, {0, 0}}); // time, {row, col}
+        minHeap.push({0, {0, 0}}); // time, row(x), col(y)
         
-        vector<vector<bool>> seen(rows, vector<bool>(cols, false));
-        seen[0][0] = true;
+        vector<vector<int>> seen(rows, vector<int>(cols, 0));
+        seen[0][0] = 1;
         
-        const int moves[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        vector<pair<int, int>> moves = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
         
         while (!minHeap.empty()) {
-            auto [currTime, coord] = minHeap.top();
-            auto [currRow, currCol] = coord;
+            auto curr = minHeap.top();
+            int currTime = curr.first;
+            int currRow = curr.second.first;
+            int currCol = curr.second.second;
+            
             minHeap.pop();
             
             if (currRow == rows - 1 && currCol == cols - 1) 
                 return currTime;
             
-            for (const auto& move : moves) {
-                int nextRow = move[0] + currRow;
-                int nextCol = move[1] + currCol;
+            for (auto move : moves) {
+                int nextRow = move.first + currRow;
+                int nextCol = move.second + currCol;
                 
                 if (nextRow >= 0 && nextCol >= 0 && 
                     nextRow < rows && nextCol < cols && 
@@ -37,7 +40,7 @@ public:
                     int nextTime = max(currTime + 1, grid[nextRow][nextCol] + waitTime);
                     
                     minHeap.push({nextTime, {nextRow, nextCol}});
-                    seen[nextRow][nextCol] = true;
+                    seen[nextRow][nextCol] = 1;
                 }
             }
         }
