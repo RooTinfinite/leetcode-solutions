@@ -1,38 +1,66 @@
 class Solution {
 public:
     int minimumTime(vector<vector<int>>& grid) {
-        if (min(grid[0][1], grid[1][0]) > 1) {
+                
+        int m = grid.size();
+        int n = grid[0].size();
+        
+        vector<int> visited(m * n, -1);
+    
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q;
+        
+        
+        q.push({0,0});
+        visited[0] = 0;
+        vector<int> dir = {0, -1, 0, 1, 0};
+        
+        if(grid[1][0] > 1 && grid[0][1] > 1)
             return -1;
-        }
         
-        int ROWS = grid.size(), COLS = grid[0].size();
-        priority_queue<vector<int>, vector<vector<int>>, greater<>> minHeap;
-        minHeap.push({0, 0, 0}); // {time, r, c}
-        set<pair<int, int>> visit;
-        
-        while (!minHeap.empty()) {
-            auto curr = minHeap.top();
-            minHeap.pop();
-            int t = curr[0], r = curr[1], c = curr[2];
+        while(q.size() > 0){
+                
+            auto node = q.top();
+            q.pop();
             
-            if (r == ROWS - 1 && c == COLS - 1) {
+            int row = node.second / n;
+            int col = node.second % n;
+            
+            int val = node.second;
+            
+            int t = node.first;
+                        
+            if(row == m - 1 && col == n-1)
+            {
                 return t;
             }
-            
-            vector<pair<int, int>> dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-            for (auto [dr, dc] : dirs) {
-                int nr = r + dr, nc = c + dc;
-                if (nr < 0 || nc < 0 || nr == ROWS || nc == COLS || 
-                    visit.count({nr, nc})) {
+            for(int j = 0 ; j < 4 ; j++){
+
+                int new_row = row + dir[j];
+                int new_col = col + dir[j + 1];
+
+                if(new_row < 0 || new_row >= m || new_col < 0 || new_col >= n)
                     continue;
-                }
+                    
+                int val = new_row * n + new_col;
+                if(visited[val] != -1)
+                    continue;
                 
-                int wait = (abs(grid[nr][nc] - t) % 2 == 0) ? 1 : 0;
-                int nTime = max(grid[nr][nc] + wait, t + 1);
-                minHeap.push({nTime, nr, nc});
-                visit.insert({nr, nc});
+                if(grid[new_row][new_col] <= t + 1)
+                    visited[val] = t + 1;
+                else if((t + 1) % 2 != grid[new_row][new_col] % 2)
+                    visited[val] = grid[new_row][new_col] + 1;
+                else
+                    visited[val] = grid[new_row][new_col];
+                q.push({visited[val], val});
+                
             }
+  
         }
+        
+        
+        
         return -1;
+        
+        
     }
 };
