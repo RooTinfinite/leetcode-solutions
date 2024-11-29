@@ -1,48 +1,40 @@
-use std::collections::BinaryHeap;
-use std::cmp::Reverse;
+use std::collections::{BinaryHeap,HashSet};
+
+type Grid = Vec<Vec<i32>>;
+type Queue = BinaryHeap<(i32,(isize,isize))>;
+type Visited = HashSet<(isize,isize)>;
 
 impl Solution {
-    pub fn minimum_time(grid: Vec<Vec<i32>>) -> i32 {
-        let moves = [(-1, 0), (0, 1), (1, 0), (0, -1)];
-        
-        if grid[0][1] > 1 && grid[1][0] > 1 {
-            return -1;
+    pub fn minimum_time(grid: Grid) -> i32 {
+        let mut queue:Queue = BinaryHeap::from_iter(vec![(0,(0,0))]);
+        let mut result = i32::MAX;
+        let mut visited:Visited = HashSet::from_iter(vec![(0,0)]);
+        if grid[0][1] > 1 && grid[1][0] > 1 { return -1;}
+        while !queue.is_empty() {
+            let (time, (row,col)) = queue.pop().unwrap();
+            let time = time*-1;
+            if time > result { continue; }
+            if row == grid.len() as isize - 1 && col == grid[0].len() as isize - 1 {
+                result = result.min(time);
+                continue;
+            }   
+            vec![(-1,0),(0,-1),(1,0),(0,1)].iter().for_each(|(add_r,add_c)| {
+                process_cell(row+add_r, col+add_c, time, &grid, &mut queue, &mut visited);
+            });       
         }
-        
-        let (rows, cols) = (grid.len(), grid[0].len());
-        let mut pq = BinaryHeap::new();
-        let mut seen = vec![vec![false; cols]; rows];
-        
-        pq.push(Reverse((0, 0, 0))); // (time, row, col)
-        seen[0][0] = true;
-        
-        while let Some(Reverse((time, row, col))) = pq.pop() {
-            for &(dr, dc) in &moves {
-                let new_row = row as i32 + dr;
-                let new_col = col as i32 + dc;
-                
-                if new_row < 0 || new_row >= rows as i32 || 
-                   new_col < 0 || new_col >= cols as i32 ||
-                   seen[new_row as usize][new_col as usize] {
-                    continue;
+
+        fn process_cell(row:isize,col:isize,time:i32,grid:&Grid,queue: &mut Queue, visited:&mut Visited) {
+            if row >= 0 && col >= 0 && row < grid.len() as isize && col < grid[0].len() as isize && !visited.contains(&(row,col)) {                
+                if time+1 >= grid[row as usize][col as usize] {
+                    queue.push(((time+1)*-1,(row,col)));
+                } else {
+                    let mut new_time = grid[row as usize][col as usize];
+                    if (grid[row as usize][col as usize] - time) % 2 == 0 { new_time += 1;}                    
+                    queue.push((new_time*-1,(row,col)));
                 }
-                
-                let mut new_time = time + 1;
-                let cell_value = grid[new_row as usize][new_col as usize];
-                
-                if cell_value > new_time {
-                    new_time += ((cell_value - time) / 2) * 2;
-                }
-                
-                if new_row as usize == rows - 1 && new_col as usize == cols - 1 {
-                    return new_time;
-                }
-                
-                seen[new_row as usize][new_col as usize] = true;
-                pq.push(Reverse((new_time, new_row as usize, new_col as usize)));
-            }
+                visited.insert((row,col));
+            };
         }
-        
-        -1
+        result
     }
 }
