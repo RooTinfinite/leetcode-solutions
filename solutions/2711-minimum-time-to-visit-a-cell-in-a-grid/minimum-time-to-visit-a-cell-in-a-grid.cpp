@@ -1,51 +1,61 @@
+using info = pair<int, int>; // (time, position)
+const static int d[5] = {0, 1, 0, -1, 0};
+
 class Solution {
+    template<typename T>
+    struct Grid {
+        vector<T> data;
+        int m;
+        
+        Grid(int n, int m, T init): data(n * m, init), m(m) {}
+        T& operator()(int i, int j) { return data[i * m + j]; }
+        const T& operator()(int i, int j) const { return data[i * m + j]; }
+    };
+    
+    static bool isValid(int i, int j, int n, int m) {
+        return i >= 0 && i < n && j >= 0 && j < m;
+    }
+
 public:
     int minimumTime(vector<vector<int>>& grid) {
-        const int m = grid.size();
-        const int n = grid[0].size();
+        const int n = grid.size(), m = grid[0].size();
         
-        if (grid[1][0] > 1 && grid[0][1] > 1) {
-            return -1;
-        }
+        // Early exit check
+        if (grid[1][0] > 1 && grid[0][1] > 1) return -1;
         
-        vector<int> visited(m * n, -1);
-        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-        const vector<int> directions = {0, -1, 0, 1, 0};
+        // Initialize distance grid
+        Grid<int> dist(n, m, INT_MAX);
+        dist(0, 0) = 0;
         
-        pq.push({0, 0});
-        visited[0] = 0;
+        // Priority queue for Dijkstra
+        priority_queue<info, vector<info>, greater<>> pq;
+        pq.emplace(0, 0);
         
         while (!pq.empty()) {
             auto [time, pos] = pq.top();
             pq.pop();
             
-            int row = pos / n;
-            int col = pos % n;
+            int i = pos / m, j = pos % m;
             
-            if (row == m - 1 && col == n - 1) {
-                return time;
-            }
+            // Skip if we found a better path already
+            if (time > dist(i, j)) continue;
             
-            for (int i = 0; i < 4; i++) {
-                int newRow = row + directions[i];
-                int newCol = col + directions[i + 1];
-                int newPos = newRow * n + newCol;
+            if (i == n-1 && j == m-1) return time;
+            
+            for (int k = 0; k < 4; k++) {
+                int ni = i + d[k];
+                int nj = j + d[k+1];
                 
-                if (newRow < 0 || newRow >= m || newCol < 0 || newCol >= n || visited[newPos] != -1) {
-                    continue;
+                if (!isValid(ni, nj, n, m)) continue;
+                
+                // Calculate minimum time needed to move to next cell
+                int w = ((grid[ni][nj] - time) & 1) ? 0 : 1;
+                int nextTime = max(time + 1, grid[ni][nj] + w);
+                
+                if (nextTime < dist(ni, nj)) {
+                    dist(ni, nj) = nextTime;
+                    pq.emplace(nextTime, ni * m + nj);
                 }
-                
-                int newTime;
-                if (grid[newRow][newCol] <= time + 1) {
-                    newTime = time + 1;
-                } else if ((time + 1) % 2 != grid[newRow][newCol] % 2) {
-                    newTime = grid[newRow][newCol] + 1;
-                } else {
-                    newTime = grid[newRow][newCol];
-                }
-                
-                visited[newPos] = newTime;
-                pq.push({newTime, newPos});
             }
         }
         
