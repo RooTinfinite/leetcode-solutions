@@ -1,6 +1,6 @@
 class Solution {
     static constexpr int d[5] = {0, 1, 0, -1, 0};
-    static constexpr int N = 1000;
+    static constexpr int N = 100;
     
     static inline bool isOutside(int i, int j, int n, int m) {
         return (unsigned)i >= (unsigned)n || (unsigned)j >= (unsigned)m;
