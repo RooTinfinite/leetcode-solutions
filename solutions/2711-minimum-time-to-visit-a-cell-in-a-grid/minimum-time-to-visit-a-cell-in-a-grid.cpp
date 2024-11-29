@@ -1,64 +1,56 @@
-using info = pair<int, int>; // (time, position)
-const static int d[5] = {0, 1, 0, -1, 0};
-
 class Solution {
-    template<typename T>
-    struct Grid {
-        vector<T> data;
-        int m;
-        
-        Grid(int n, int m, T init): data(n * m, init), m(m) {}
-        T& operator()(int i, int j) { return data[i * m + j]; }
-        const T& operator()(int i, int j) const { return data[i * m + j]; }
-    };
-    
-    static bool isValid(int i, int j, int n, int m) {
-        return i >= 0 && i < n && j >= 0 && j < m;
-    }
-
+    constexpr static int d[5] = {0, 1, 0, -1, 0};
 public:
+    inline static bool isOutside(int i, int j, int n, int m) {
+        return i < 0 || i >= n || j < 0 || j >= m;
+    }
+    inline static int idx(int i, int j, int m) { return i * m + j; }
+
     int minimumTime(vector<vector<int>>& grid) {
-        const int n = grid.size(), m = grid[0].size();
-        
-        // Early exit check
-        if (grid[1][0] > 1 && grid[0][1] > 1) return -1;
-        
-        // Initialize distance grid
-        Grid<int> dist(n, m, INT_MAX);
-        dist(0, 0) = 0;
-        
-        // Priority queue for Dijkstra
-        priority_queue<info, vector<info>, greater<>> pq;
-        pq.emplace(0, 0);
-        
-        while (!pq.empty()) {
-            auto [time, pos] = pq.top();
-            pq.pop();
-            
-            int i = pos / m, j = pos % m;
-            
-            // Skip if we found a better path already
-            if (time > dist(i, j)) continue;
-            
-            if (i == n-1 && j == m-1) return time;
-            
-            for (int k = 0; k < 4; k++) {
-                int ni = i + d[k];
-                int nj = j + d[k+1];
-                
-                if (!isValid(ni, nj, n, m)) continue;
-                
-                // Calculate minimum time needed to move to next cell
-                int w = ((grid[ni][nj] - time) & 1) ? 0 : 1;
-                int nextTime = max(time + 1, grid[ni][nj] + w);
-                
-                if (nextTime < dist(ni, nj)) {
-                    dist(ni, nj) = nextTime;
-                    pq.emplace(nextTime, ni * m + nj);
+        if (grid[1][0] > 1 && grid[0][1] > 1)
+            return -1;
+
+        const int n = grid.size(), m = grid[0].size(), N = 100000;
+        int time[N];
+        fill(time, time + n * m, INT_MAX);
+        uint64_t pq[N];
+        int back = 0;
+
+        pq[back++] = 0;
+        time[0] = 0;
+        while (back > 0) {
+            pop_heap(pq, pq + back, greater<>{});
+            auto tij = pq[--back];
+            int t = tij >> 32, ij = tij & ((1 << 30) - 1), i = ij / m,
+                j = ij - i * m;
+
+            if (i == n - 1 && j == m - 1)
+                return t;
+
+            for (int a = 0; a < 4; a++) {
+                int r = i + d[a], s = j + d[a + 1];
+                if (isOutside(r, s, n, m))
+                    continue;
+
+                int wait_time = ((grid[r][s] ^ t) & 1) ^ 1;
+                int nextTime = max(t + 1, grid[r][s] + wait_time);
+
+                int rs = idx(r, s, m);
+                if (nextTime < time[rs]) {
+                    time[rs] = nextTime;
+                    pq[back++] = ((uint64_t)nextTime << 32) + rs;
+                    push_heap(pq, pq + back, greater<>{});
                 }
             }
         }
-        
+
         return -1;
     }
 };
+
+auto init = []() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+    return 'c';
+}();
