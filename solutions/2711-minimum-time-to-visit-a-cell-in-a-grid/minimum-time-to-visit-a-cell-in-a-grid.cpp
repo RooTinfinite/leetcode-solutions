@@ -1,56 +1,65 @@
 class Solution {
-    constexpr static int d[5] = {0, 1, 0, -1, 0};
-public:
-    inline static bool isOutside(int i, int j, int n, int m) {
-        return i < 0 || i >= n || j < 0 || j >= m;
+    static constexpr int d[5] = {0, 1, 0, -1, 0};
+    static constexpr int N = 100000;
+    
+    static inline bool isOutside(int i, int j, int n, int m) {
+        return (unsigned)i >= (unsigned)n || (unsigned)j >= (unsigned)m;
     }
-    inline static int idx(int i, int j, int m) { return i * m + j; }
+    
+    static inline int idx(int i, int j, int m) { 
+        return i * m + j; 
+    }
 
+public:
     int minimumTime(vector<vector<int>>& grid) {
         if (grid[1][0] > 1 && grid[0][1] > 1)
             return -1;
 
-        const int n = grid.size(), m = grid[0].size(), N = 100000;
-        int time[N];
-        fill(time, time + n * m, INT_MAX);
-        uint64_t pq[N];
-        int back = 0;
+        const int n = grid.size(), m = grid[0].size();
+        vector<int> time(n * m, INT_MAX);
+        vector<uint64_t> pq;
+        pq.reserve(N);
 
-        pq[back++] = 0;
+        pq.push_back(0);
         time[0] = 0;
-        while (back > 0) {
-            pop_heap(pq, pq + back, greater<>{});
-            auto tij = pq[--back];
-            int t = tij >> 32, ij = tij & ((1 << 30) - 1), i = ij / m,
-                j = ij - i * m;
+        
+        while (!pq.empty()) {
+            pop_heap(pq.begin(), pq.end(), greater<>{});
+            uint64_t tij = pq.back();
+            pq.pop_back();
+            
+            const int t = tij >> 32;
+            const int ij = tij & 0x3FFFFFFF;
+            const int i = ij / m;
+            const int j = ij % m;
 
             if (i == n - 1 && j == m - 1)
                 return t;
 
-            for (int a = 0; a < 4; a++) {
-                int r = i + d[a], s = j + d[a + 1];
+            for (int k = 0; k < 4; ++k) {
+                const int r = i + d[k];
+                const int s = j + d[k + 1];
+                
                 if (isOutside(r, s, n, m))
                     continue;
 
-                int wait_time = ((grid[r][s] ^ t) & 1) ^ 1;
-                int nextTime = max(t + 1, grid[r][s] + wait_time);
+                const int wait_time = ((grid[r][s] ^ t) & 1) ^ 1;
+                const int nextTime = max(t + 1, grid[r][s] + wait_time);
+                const int rs = idx(r, s, m);
 
-                int rs = idx(r, s, m);
                 if (nextTime < time[rs]) {
                     time[rs] = nextTime;
-                    pq[back++] = ((uint64_t)nextTime << 32) + rs;
-                    push_heap(pq, pq + back, greater<>{});
+                    pq.push_back(((uint64_t)nextTime << 32) | rs);
+                    push_heap(pq.begin(), pq.end(), greater<>{});
                 }
             }
         }
-
         return -1;
     }
 };
 
-auto init = []() {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-    return 'c';
+static const int fast_io = []() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    return 0;
 }();
