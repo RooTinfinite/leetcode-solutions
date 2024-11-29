@@ -1,47 +1,37 @@
 var minimumTime = function(grid) {
-    const MOVES = [[-1, 0], [0, 1], [1, 0], [0, -1]];
-    
-    if (grid[0][1] > 1 && grid[1][0] > 1) {
+    if (Math.min(grid[0][1], grid[1][0]) > 1) {
         return -1;
     }
     
-    const rows = grid.length;
-    const cols = grid[0].length;
-    const seen = Array(rows).fill().map(() => Array(cols).fill(false));
-    seen[0][0] = true;
+    const ROWS = grid.length;
+    const COLS = grid[0].length;
+    const minHeap = new MinPriorityQueue({ priority: x => x[0] });
+    minHeap.enqueue([0, 0, 0]); // [time, r, c]
+    const visited = new Set();
     
-    // MinHeap implementation
-    const pq = new MinPriorityQueue({
-        priority: x => x[0]
-    });
-    pq.enqueue([0, 0, 0]); // time, row, col
+    const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
     
-    while (!pq.isEmpty()) {
-        const [time, row, col] = pq.dequeue().element;
+    while (!minHeap.isEmpty()) {
+        const [t, r, c] = minHeap.dequeue().element;
         
-        for (const [dr, dc] of MOVES) {
-            const newRow = row + dr;
-            const newCol = col + dc;
+        if (r === ROWS - 1 && c === COLS - 1) {
+            return t;
+        }
+        
+        for (const [dr, dc] of dirs) {
+            const nr = r + dr;
+            const nc = c + dc;
+            const key = `${nr},${nc}`;
             
-            if (newRow < 0 || newRow >= rows || 
-                newCol < 0 || newCol >= cols || 
-                seen[newRow][newCol]) {
+            if (nr < 0 || nc < 0 || nr === ROWS || nc === COLS || visited.has(key)) {
                 continue;
             }
             
-            let newTime = time + 1;
-            if (grid[newRow][newCol] > newTime) {
-                newTime += Math.floor((grid[newRow][newCol] - time) / 2) * 2;
-            }
-            
-            if (newRow === rows - 1 && newCol === cols - 1) {
-                return newTime;
-            }
-            
-            seen[newRow][newCol] = true;
-            pq.enqueue([newTime, newRow, newCol]);
+            const wait = Math.abs(grid[nr][nc] - t) % 2 === 0 ? 1 : 0;
+            const nTime = Math.max(grid[nr][nc] + wait, t + 1);
+            minHeap.enqueue([nTime, nr, nc], nTime);
+            visited.add(key);
         }
     }
-    
     return -1;
 };
