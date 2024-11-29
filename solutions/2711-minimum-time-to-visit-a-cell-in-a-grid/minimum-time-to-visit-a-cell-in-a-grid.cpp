@@ -1,66 +1,54 @@
 class Solution {
 public:
     int minimumTime(vector<vector<int>>& grid) {
-                
-        int m = grid.size();
-        int n = grid[0].size();
+        const int m = grid.size();
+        const int n = grid[0].size();
         
-        vector<int> visited(m * n, -1);
-    
-        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q;
-        
-        
-        q.push({0,0});
-        visited[0] = 0;
-        vector<int> dir = {0, -1, 0, 1, 0};
-        
-        if(grid[1][0] > 1 && grid[0][1] > 1)
+        if (grid[1][0] > 1 && grid[0][1] > 1) {
             return -1;
-        
-        while(q.size() > 0){
-                
-            auto node = q.top();
-            q.pop();
-            
-            int row = node.second / n;
-            int col = node.second % n;
-            
-            int val = node.second;
-            
-            int t = node.first;
-                        
-            if(row == m - 1 && col == n-1)
-            {
-                return t;
-            }
-            for(int j = 0 ; j < 4 ; j++){
-
-                int new_row = row + dir[j];
-                int new_col = col + dir[j + 1];
-
-                if(new_row < 0 || new_row >= m || new_col < 0 || new_col >= n)
-                    continue;
-                    
-                int val = new_row * n + new_col;
-                if(visited[val] != -1)
-                    continue;
-                
-                if(grid[new_row][new_col] <= t + 1)
-                    visited[val] = t + 1;
-                else if((t + 1) % 2 != grid[new_row][new_col] % 2)
-                    visited[val] = grid[new_row][new_col] + 1;
-                else
-                    visited[val] = grid[new_row][new_col];
-                q.push({visited[val], val});
-                
-            }
-  
         }
         
+        vector<int> visited(m * n, -1);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        const vector<int> directions = {0, -1, 0, 1, 0};
         
+        pq.push({0, 0});
+        visited[0] = 0;
+        
+        while (!pq.empty()) {
+            auto [time, pos] = pq.top();
+            pq.pop();
+            
+            int row = pos / n;
+            int col = pos % n;
+            
+            if (row == m - 1 && col == n - 1) {
+                return time;
+            }
+            
+            for (int i = 0; i < 4; i++) {
+                int newRow = row + directions[i];
+                int newCol = col + directions[i + 1];
+                int newPos = newRow * n + newCol;
+                
+                if (newRow < 0 || newRow >= m || newCol < 0 || newCol >= n || visited[newPos] != -1) {
+                    continue;
+                }
+                
+                int newTime;
+                if (grid[newRow][newCol] <= time + 1) {
+                    newTime = time + 1;
+                } else if ((time + 1) % 2 != grid[newRow][newCol] % 2) {
+                    newTime = grid[newRow][newCol] + 1;
+                } else {
+                    newTime = grid[newRow][newCol];
+                }
+                
+                visited[newPos] = newTime;
+                pq.push({newTime, newPos});
+            }
+        }
         
         return -1;
-        
-        
     }
 };
