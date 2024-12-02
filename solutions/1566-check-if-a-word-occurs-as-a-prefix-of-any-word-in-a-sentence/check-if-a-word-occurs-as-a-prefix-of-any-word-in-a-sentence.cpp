@@ -1,15 +1,10 @@
 class Solution {
 public:
-    int isPrefixOfWord(string sentence, string searchWord) {
-        istringstream iss(sentence);
-        string word;
-        int index = 1;
-        while (iss >> word) {
-            if (word.substr(0, searchWord.length()) == searchWord) {
-                return index;
-            }
-            index++;
-        }
+    int isPrefixOfWord(string s, string w) {
+        stringstream ss(s);
+        string t;
+        for(int i = 1; ss >> t; i++)
+            if(t.substr(0, w.length()) == w) return i;
         return -1;
     }
 };
