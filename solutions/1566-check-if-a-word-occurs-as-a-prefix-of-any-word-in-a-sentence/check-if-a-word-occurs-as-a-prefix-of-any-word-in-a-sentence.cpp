@@ -1,15 +1,15 @@
 class Solution {
 public:
     int isPrefixOfWord(string sentence, string searchWord) {
-        int i = -1;
-        int wordPos = 0;
-        do {
-            ++i;
-            ++wordPos;
-            if(sentence.substr(i, searchWord.size()) == searchWord) {
-                return wordPos;
+        istringstream iss(sentence);
+        string word;
+        int index = 1;
+        while (iss >> word) {
+            if (word.substr(0, searchWord.length()) == searchWord) {
+                return index;
             }
-        } while((i = sentence.find(' ', i)) != string::npos);
+            index++;
+        }
         return -1;
     }
 };
