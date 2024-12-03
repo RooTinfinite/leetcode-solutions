@@ -1,22 +1,20 @@
 // TypeScript
 
 function addSpaces(s: string, spaces: number[]): string {
-    let i = 0, j = 0;
-    const res: string[] = [];
+    const result: string[] = new Array(s.length + spaces.length);
+    let writePos: number = 0;
+    let readPos: number = 0;
     
-    while (i < s.length && j < spaces.length) {
-        if (i < spaces[j]) {
-            res.push(s[i]);
-            i++;
-        } else {
-            res.push(" ");
-            j++;
+    for (const spacePos of spaces) {
+        while (readPos < spacePos) {
+            result[writePos++] = s[readPos++];
         }
+        result[writePos++] = ' ';
     }
     
-    if (i < s.length) {
-        res.push(s.slice(i));
+    while (readPos < s.length) {
+        result[writePos++] = s[readPos++];
     }
     
-    return res.join("");
+    return result.join('');
 }
