@@ -1,22 +1,20 @@
 class Solution {
     public String addSpaces(String s, int[] spaces) {
-        int i = 0, j = 0;
-        StringBuilder res = new StringBuilder();
+        char[] result = new char[s.length() + spaces.length];
+        int writePos = 0;
+        int readPos = 0;
         
-        while (i < s.length() && j < spaces.length) {
-            if (i < spaces[j]) {
-                res.append(s.charAt(i));
-                i++;
-            } else {
-                res.append(' ');
-                j++;
+        for (int spacePos : spaces) {
+            while (readPos < spacePos) {
+                result[writePos++] = s.charAt(readPos++);
             }
+            result[writePos++] = ' ';
         }
         
-        if (i < s.length()) {
-            res.append(s.substring(i));
+        while (readPos < s.length()) {
+            result[writePos++] = s.charAt(readPos++);
         }
         
-        return res.toString();
+        return new String(result);
     }
 }
