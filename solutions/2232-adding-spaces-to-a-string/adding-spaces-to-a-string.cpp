@@ -1,17 +1,17 @@
 class Solution {
 public:
     string addSpaces(string s, vector<int>& spaces) {
-        int totalLength = s.size() + spaces.size(); 
-        char result[totalLength]; 
-        int sIndex = 0, spacesIndex = 0, resultIndex = 0;
-
-        while (sIndex < s.size()) {
-            if (spacesIndex < spaces.size() && sIndex == spaces[spacesIndex]) {
-                result[resultIndex++] = ' '; 
-                spacesIndex++;
-            }
-            result[resultIndex++] = s[sIndex++]; 
+        string result;
+        result.reserve(s.length() + spaces.size());
+        
+        int currentPos = 0;
+        for (int spacePos : spaces) {
+            result.append(s.substr(currentPos, spacePos - currentPos));
+            result.push_back(' ');
+            currentPos = spacePos;
         }
-        return string(result, totalLength); 
+        
+        result.append(s.substr(currentPos));
+        return result;
     }
 };
