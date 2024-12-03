@@ -1,24 +1,26 @@
 impl Solution {
     pub fn add_spaces(s: String, spaces: Vec<i32>) -> String {
-        let mut i = 0;
-        let mut j = 0;
-        let mut res = Vec::new();
-        let s_chars: Vec<char> = s.chars().collect();
+        let mut result = vec![0u8; s.len() + spaces.len()];
+        let mut write_pos = 0;
+        let mut read_pos = 0;
+        let s_bytes = s.as_bytes();
         
-        while i < s.len() && j < spaces.len() {
-            if i < spaces[j] as usize {
-                res.push(s_chars[i]);
-                i += 1;
-            } else {
-                res.push(' ');
-                j += 1;
+        for space_pos in spaces {
+            while read_pos < space_pos as usize {
+                result[write_pos] = s_bytes[read_pos];
+                write_pos += 1;
+                read_pos += 1;
             }
+            result[write_pos] = b' ';
+            write_pos += 1;
         }
         
-        if i < s.len() {
-            res.extend(&s_chars[i..]);
+        while read_pos < s.len() {
+            result[write_pos] = s_bytes[read_pos];
+            write_pos += 1;
+            read_pos += 1;
         }
         
-        res.into_iter().collect()
+        String::from_utf8(result).unwrap()
     }
 }
