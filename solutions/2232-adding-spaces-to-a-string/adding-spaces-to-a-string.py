@@ -1,10 +1,10 @@
 class Solution:
     def addSpaces(self, s: str, spaces: List[int]) -> str:
-        index, result = 0, []
+        i, res = 0, []
 
         for space in spaces:
-            result.append(s[index : space])
-            index = space
-        
-        result.append(s[index :])
-        return " ".join(result)
+            res.append(s[i : space])
+            i = space
+            
+        res.append(s[i :])
+        return " ".join(res)
