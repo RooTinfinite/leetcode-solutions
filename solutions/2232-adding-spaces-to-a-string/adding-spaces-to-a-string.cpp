@@ -1,24 +1,21 @@
 class Solution {
 public:
     string addSpaces(string s, vector<int>& spaces) {
-        int i = 0, j = 0;
-        string res;
-        res.reserve(s.length() + spaces.size());
+        string result;
+        int i = 0;
         
-        while (i < s.length() && j < spaces.size()) {
-            if (i < spaces[j]) {
-                res += s[i];
-                i++;
-            } else {
-                res += ' ';
-                j++;
-            }
+        for (int space : spaces) {
+            result += s.substr(i, space - i);
+            result += " ";
+            i = space;
         }
         
-        if (i < s.length()) {
-            res += s.substr(i);
+        result += s.substr(i);
+        
+        if (!result.empty() && result.back() == ' ') {
+            result.pop_back();
         }
         
-        return res;
+        return result;
     }
 };
