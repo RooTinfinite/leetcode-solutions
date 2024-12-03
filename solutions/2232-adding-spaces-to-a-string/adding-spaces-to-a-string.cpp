@@ -1,26 +1,27 @@
 class Solution {
 public:
     string addSpaces(string& s, vector<int>& spaces) {
-        const int m = spaces.size();
-        const int n = s.size();
-        const int finalSize = n + m;
-        
+        const size_t finalSize = s.size() + spaces.size();
         string result;
         result.reserve(finalSize);
         
-        int spaceIdx = 0;
-        int currentPos = 0;
+        size_t spaceIdx = 0;
+        size_t currentPos = 0;
         
-        while (spaceIdx < m && currentPos < n) {
-            if (currentPos == spaces[spaceIdx]) {
-                result.push_back(' ');
-                spaceIdx++;
-            }
-            result.push_back(s[currentPos++]);
+        string_view sv(s);
+        
+        while (spaceIdx < spaces.size()) {
+            size_t nextSpace = spaces[spaceIdx];
+            result.append(sv.substr(currentPos, nextSpace - currentPos));
+            result += ' ';
+            currentPos = nextSpace;
+            ++spaceIdx;
         }
-        while (currentPos < n) {
-            result.push_back(s[currentPos++]);
+        
+        if (currentPos < s.size()) {
+            result.append(sv.substr(currentPos));
         }
+        
         return result;
     }
 };
