@@ -1,16 +1,26 @@
 class Solution {
 public:
     string addSpaces(string& s, vector<int>& spaces) {
-        const int m = spaces.size(), n = s.size();
-        string t(n + m, ' ');
+        const int m = spaces.size();
+        const int n = s.size();
+        const int finalSize = n + m;
         
-        int j = 0; // Pointer for spaces
-        for (int i = 0; i < n; i++) {
-            if (j < m && i == spaces[j]) 
-                j++;      // Move to the next space index
-            
-            t[i+j]=s[i]; // Add the character from the original string
+        string result;
+        result.reserve(finalSize);
+        
+        int spaceIdx = 0;
+        int currentPos = 0;
+        
+        while (spaceIdx < m && currentPos < n) {
+            if (currentPos == spaces[spaceIdx]) {
+                result.push_back(' ');
+                spaceIdx++;
+            }
+            result.push_back(s[currentPos++]);
         }
-        return t;
+        while (currentPos < n) {
+            result.push_back(s[currentPos++]);
+        }
+        return result;
     }
 };
