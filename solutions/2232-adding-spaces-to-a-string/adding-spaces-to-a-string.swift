@@ -1,18 +1,15 @@
 class Solution {
     func addSpaces(_ s: String, _ spaces: [Int]) -> String {
-        let m = spaces.count
-        let n = s.count
-        var t = Array(repeating: " ", count: n + m)
-        var j = 0
-        
-        let sArray = Array(s)
-        for i in 0..<n {
-            if j < m && i == spaces[j] {
-                j += 1
-            }
-            t[i + j] = String(sArray[i])
+       var result = ""
+       var s = Array(s)
+       var sIndex = 0
+       for i in 0..<s.count {
+        if sIndex < spaces.count && i == spaces[sIndex] {
+            result += " "
+            sIndex += 1
         }
-        
-        return t.joined()
+        result.append(s[i])
+       }
+       return result
     }
 }
