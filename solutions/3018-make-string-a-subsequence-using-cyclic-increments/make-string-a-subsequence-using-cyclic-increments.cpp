@@ -6,7 +6,8 @@ public:
         int i, j;
         for(i=0, j=0; i<n1 && j<n2; i++){
             char c1=str1[i];
-            if (c1==c2 ||c1+1==c2 || (c1=='z' && c2=='a')) c2=str2[++j];
+            if (c1==c2 ||c1+1==c2 || (c1=='z' && c2=='a')) 
+                c2=str2[++j];
         }
         return j==n2; 
     }
