@@ -1,10 +1,17 @@
 class Solution:
-    def canMakeSubsequence(self, str1: str, str2: str) -> bool:
-        def match(a, b):
-            ca, cb = ord(a)-ord('a'), ord(b)-ord('a')
-            return ca == cb or (ca + 1) % 26 == cb
-        j = 0
-        for c in str1:
-            if match(c, str2[j]): j += 1
-            if j == len(str2): return True
-        return False
+    def canMakeSubsequence(self, source: str, target: str) -> bool:
+        src_len = len(source)
+        tgt_len = len(target)
+        src_idx = 0
+        tgt_idx = 0
+        
+        while src_idx < src_len and tgt_idx < tgt_len:
+            if (source[src_idx] == target[tgt_idx] or 
+                (source[src_idx] == 'z' and target[tgt_idx] == 'a') or 
+                (ord(source[src_idx]) + 1 == ord(target[tgt_idx]))):
+                src_idx += 1
+                tgt_idx += 1
+            else:
+                src_idx += 1
+                
+        return tgt_idx == tgt_len
