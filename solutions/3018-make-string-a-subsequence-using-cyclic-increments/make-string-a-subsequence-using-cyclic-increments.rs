@@ -1,21 +1,21 @@
 impl Solution {
     pub fn can_make_subsequence(source: String, target: String) -> bool {
-        let src_chars: Vec<char> = source.chars().collect();
-        let tgt_chars: Vec<char> = target.chars().collect();
-        let (src_len, tgt_len) = (src_chars.len(), tgt_chars.len());
+        let src_bytes = source.as_bytes();
+        let tgt_bytes = target.as_bytes();
+        let (src_len, tgt_len) = (src_bytes.len(), tgt_bytes.len());
         
-        let mut target_char = tgt_chars[0];
+        let mut target_byte = tgt_bytes[0];
         let mut tgt_idx = 0;
         
-        for src_char in src_chars {
-            if src_char == target_char || 
-               ((src_char as u8 + 1) as char == target_char) ||
-               (src_char == 'z' && target_char == 'a') {
+        for &src_byte in src_bytes {
+            let next_byte = if src_byte == b'z' { b'a' } else { src_byte + 1 };
+            
+            if src_byte == target_byte || next_byte == target_byte {
                 tgt_idx += 1;
                 if tgt_idx == tgt_len {
                     break;
                 }
-                target_char = tgt_chars[tgt_idx];
+                target_byte = tgt_bytes[tgt_idx];
             }
         }
         
