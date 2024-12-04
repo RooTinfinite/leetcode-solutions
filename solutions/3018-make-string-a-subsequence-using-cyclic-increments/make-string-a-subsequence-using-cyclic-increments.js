@@ -1,15 +1,25 @@
 // JavaScript
 
 var canMakeSubsequence = function(source, target) {
-    let targetIdx = 0;
-    const targetLen = target.length;
+    const srcLen = source.length;
+    const tgtLen = target.length;
+    let targetChar = target[0];
     
-    for (let currChar of source) {
-        if (targetIdx < targetLen && 
-            ((target.charCodeAt(targetIdx) - currChar.charCodeAt(0) + 26) % 26 <= 1)) {
-            targetIdx++;
+    let srcIdx = 0, tgtIdx = 0;
+    while (srcIdx < srcLen && tgtIdx < tgtLen) {
+        const srcChar = source[srcIdx];
+        
+        if (srcChar === targetChar || 
+            String.fromCharCode(srcChar.charCodeAt(0) + 1) === targetChar ||
+            (srcChar === 'z' && targetChar === 'a')) {
+            tgtIdx++;
+            if (tgtIdx < tgtLen) {
+                targetChar = target[tgtIdx];
+            }
         }
+        
+        srcIdx++;
     }
     
-    return targetIdx === targetLen;
+    return tgtIdx === tgtLen;
 };
