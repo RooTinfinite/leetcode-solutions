@@ -5,13 +5,17 @@ public:
         if (srcLen < tgtLen) return false;
         
         int tgtIdx = 0;
-        char targetChar = target[0];
+        uint32_t targetMask = 1u << (target[0] - 'a');
         
         for(int srcIdx = 0; srcIdx < srcLen && tgtIdx < tgtLen; srcIdx++) {
-            int diff = ((target[tgtIdx] - source[srcIdx]) + 26) % 26;
-            if (diff == 0 || diff == 1) {
+            uint32_t srcMask = 1u << (source[srcIdx] - 'a');
+            uint32_t nextMask = 1u << ((source[srcIdx] - 'a' + 1) % 26);
+            
+            if ((targetMask & (srcMask | nextMask)) != 0) {
                 tgtIdx++;
-                if (tgtIdx < tgtLen) targetChar = target[tgtIdx];
+                if (tgtIdx < tgtLen) {
+                    targetMask = 1u << (target[tgtIdx] - 'a');
+                }
             }
         }
         
