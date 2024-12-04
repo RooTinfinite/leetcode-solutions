@@ -10,7 +10,8 @@ def can_make_subsequence(source, target)
         src_char = source[src_idx]
         
         if src_char == target_char || 
-           ((src_char.ord + 1 - 'a'.ord) % 26 + 'a'.ord).chr == target_char
+           src_char.next[0] == target_char || 
+           (src_char == 'z' && target_char == 'a')
             tgt_idx += 1
             target_char = target[tgt_idx] if tgt_idx < tgt_len
         end
