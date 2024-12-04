@@ -1,23 +1,12 @@
 class Solution {
     public boolean canMakeSubsequence(String source, String target) {
-        int srcLen = source.length();
-        int tgtLen = target.length();
-        int srcIdx = 0;
-        int tgtIdx = 0;
+        int targetIdx = 0, targetLen = target.length();
         
-        while (srcIdx < srcLen && tgtIdx < tgtLen) {
-            char srcChar = source.charAt(srcIdx);
-            char tgtChar = target.charAt(tgtIdx);
-            
-            if (srcChar == tgtChar || 
-                (srcChar == 'z' && tgtChar == 'a') || 
-                (srcChar + 1 == tgtChar)) {
-                srcIdx++;
-                tgtIdx++;
-            } else {
-                srcIdx++;
+        for (char currChar : source.toCharArray()) {
+            if (targetIdx < targetLen && (target.charAt(targetIdx) - currChar + 26) % 26 <= 1) {
+                targetIdx++;
             }
         }
-        return tgtIdx == tgtLen;
+        return targetIdx == targetLen;
     }
 }
