@@ -1,19 +1,23 @@
 class Solution:
-    def canMakeSubsequence(self, source: str, target: str) -> bool:
+    @staticmethod
+    def canMakeSubsequence(source: str, target: str) -> bool:
         src_len, tgt_len = len(source), len(target)
-        target_char = target[0]
+        if src_len < tgt_len:
+            return False
         
-        src_idx = tgt_idx = 0
-        while src_idx < src_len and tgt_idx < tgt_len:
-            src_char = source[src_idx]
+        tgt_idx = 0
+        target_mask = 1 << (ord(target[0]) - ord('a'))
+        
+        for src_idx in range(src_len):
+            if tgt_idx >= tgt_len:
+                break
+                
+            src_mask = 1 << (ord(source[src_idx]) - ord('a'))
+            next_mask = 1 << ((ord(source[src_idx]) - ord('a') + 1) % 26)
             
-            if (src_char == target_char or 
-                chr(ord(src_char) + 1) == target_char or 
-                (src_char == 'z' and target_char == 'a')):
+            if (target_mask & (src_mask | next_mask)) != 0:
                 tgt_idx += 1
                 if tgt_idx < tgt_len:
-                    target_char = target[tgt_idx]
-            
-            src_idx += 1
-            
+                    target_mask = 1 << (ord(target[tgt_idx]) - ord('a'))
+        
         return tgt_idx == tgt_len
