@@ -1,6 +1,5 @@
 class Solution:
-    @staticmethod
-    def canMakeSubsequence(source: str, target: str) -> bool:
+    def canMakeSubsequence(self, source: str, target: str) -> bool:
         src_len, tgt_len = len(source), len(target)
         target_char = target[0]
         
