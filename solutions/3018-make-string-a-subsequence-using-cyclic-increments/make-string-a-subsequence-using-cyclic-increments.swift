@@ -1,14 +1,28 @@
 class Solution {
     func canMakeSubsequence(_ source: String, _ target: String) -> Bool {
-        var targetIdx = 0
-        let targetLen = target.count
+        let srcLen = source.count
+        let tgtLen = target.count
+        var targetChar = target.first!
+        
+        var srcIdx = 0
+        var tgtIdx = 0
+        let sourceArray = Array(source)
         let targetArray = Array(target)
         
-        for currChar in source {
-            if targetIdx < targetLen && (Int(targetArray[targetIdx].asciiValue!) - Int(currChar.asciiValue!) + 26) % 26 <= 1 {
-                targetIdx += 1
+        while srcIdx < srcLen && tgtIdx < tgtLen {
+            let srcChar = sourceArray[srcIdx]
+            
+            if srcChar == targetChar ||
+               srcChar.asciiValue! + 1 == targetChar.asciiValue! ||
+               (srcChar == "z" && targetChar == "a") {
+                tgtIdx += 1
+                if tgtIdx < tgtLen {
+                    targetChar = targetArray[tgtIdx]
+                }
             }
+            srcIdx += 1
         }
-        return targetIdx == targetLen
+        
+        return tgtIdx == tgtLen
     }
 }
