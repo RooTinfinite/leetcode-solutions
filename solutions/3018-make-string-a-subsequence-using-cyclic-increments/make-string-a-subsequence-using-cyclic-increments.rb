@@ -1,12 +1,22 @@
 def can_make_subsequence(source, target)
-    target_idx = 0
-    target_len = target.length
+    src_len = source.length
+    tgt_len = target.length
+    target_char = target[0]
     
-    source.each_char do |curr_char|
-        if target_idx < target_len && (target[target_idx].ord - curr_char.ord) % 26 <= 1
-            target_idx += 1
+    src_idx = 0
+    tgt_idx = 0
+    
+    while src_idx < src_len && tgt_idx < tgt_len
+        src_char = source[src_idx]
+        
+        if src_char == target_char || 
+           ((src_char.ord + 1 - 'a'.ord) % 26 + 'a'.ord).chr == target_char
+            tgt_idx += 1
+            target_char = target[tgt_idx] if tgt_idx < tgt_len
         end
+        
+        src_idx += 1
     end
     
-    target_idx == target_len
+    tgt_idx == tgt_len
 end
