@@ -1,19 +1,18 @@
- class Solution {
+class Solution {
 public:
     bool canMakeSubsequence(string str1, string str2) {
-        int n = str1.size(),m = str2.size();
-        int i = 0,j = 0;
-        
-        while(i<n && j<m)
-        {
-            if((str1[i]==str2[j]) || (str1[i]=='z' && str2[j]=='a') || (str1[i]+1==str2[j]))
-            {
-                i++;
-                j++;
+        int m = str1.size(), n = str2.size();
+        if (m < n) return false;
+
+        int idx2 = 0;
+        for (int idx1 = 0; idx1 < m && idx2 < n; idx1++) {
+            if (str1[idx1] == str2[idx2] ||
+                str1[idx1] + 1 == str2[idx2] ||
+                str1[idx1] - 25 == str2[idx2]) {
+                idx2++;
             }
-            else i++;
         }
-        return j==m;
-        
+
+        return idx2 == n;
     }
 };
