@@ -1,10 +1,22 @@
 func canMakeSubsequence(source string, target string) bool {
-    targetIdx, targetLen := 0, len(target)
+    srcLen, tgtLen := len(source), len(target)
+    targetChar := target[0]
     
-    for _, currChar := range source {
-        if targetIdx < targetLen && (int(target[targetIdx]) - int(currChar) + 26) % 26 <= 1 {
-            targetIdx++
+    srcIdx, tgtIdx := 0, 0
+    for srcIdx < srcLen && tgtIdx < tgtLen {
+        srcChar := source[srcIdx]
+        
+        if srcChar == targetChar || 
+           srcChar + 1 == targetChar || 
+           (srcChar == 'z' && targetChar == 'a') {
+            tgtIdx++
+            if tgtIdx < tgtLen {
+                targetChar = target[tgtIdx]
+            }
         }
+        
+        srcIdx++
     }
-    return targetIdx == targetLen
+    
+    return tgtIdx == tgtLen
 }
