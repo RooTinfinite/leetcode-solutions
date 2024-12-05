@@ -3,40 +3,39 @@ class Solution {
         if (start.equals(target)) {
             return true;
         }
-        
-        int pendingL = 0;
-        int waitingR = 0;
+        int waitL = 0;
+        int waitR = 0;
         
         for (int i = 0; i < start.length(); i++) {
             char curr = start.charAt(i);
             char goal = target.charAt(i);
             
             if (curr == 'R') {
-                if (pendingL > 0) {
+                if (waitL > 0) {
                     return false;
                 }
-                waitingR++;
+                waitR++;
             }
             if (goal == 'L') {
-                if (waitingR > 0) {
+                if (waitR > 0) {
                     return false;
                 }
-                pendingL++;
+                waitL++;
             }
             if (goal == 'R') {
-                if (waitingR == 0) {
+                if (waitR == 0) {
                     return false;
                 }
-                waitingR--;
+                waitR--;
             }
             if (curr == 'L') {
-                if (pendingL == 0) {
+                if (waitL == 0) {
                     return false;
                 }
-                pendingL--;
+                waitL--;
             }
         }
         
-        return pendingL == 0 && waitingR == 0;
+        return waitL == 0 && waitR == 0;
     }
 }
