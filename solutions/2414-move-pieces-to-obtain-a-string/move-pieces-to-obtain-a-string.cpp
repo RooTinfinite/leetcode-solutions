@@ -4,37 +4,37 @@ public:
         if (start == target) {
             return true;
         }
-        int pending_L = 0;
-        int waiting_R = 0;
+        int waitL = 0;
+        int waitR = 0;
         
         for (int i = 0; i < start.length(); i++) {
             char curr = start[i];
             char goal = target[i];
             if (curr == 'R') {
-                if (pending_L > 0) {
+                if (waitL > 0) {
                     return false;
                 }
-                waiting_R++;
+                waitR++;
             }
             if (goal == 'L') {
-                if (waiting_R > 0) {
+                if (waitR > 0) {
                     return false;
                 }
-                pending_L++;
+                waitL++;
             }
             if (goal == 'R') {
-                if (waiting_R == 0) {
+                if (waitR == 0) {
                     return false;
                 }
-                waiting_R--;
+                waitR--;
             }
             if (curr == 'L') {
-                if (pending_L == 0) {
+                if (waitL == 0) {
                     return false;
                 }
-                pending_L--;
+                waitL--;
             }
         }
-        return pending_L == 0 && waiting_R == 0;
+        return waitL == 0 && waitR == 0;
     }
 };
