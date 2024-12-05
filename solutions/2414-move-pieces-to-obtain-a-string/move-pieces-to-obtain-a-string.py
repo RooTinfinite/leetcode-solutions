@@ -2,24 +2,24 @@ class Solution:
     def canChange(self, start: str, target: str) -> bool:
         if start == target:
             return True
-        pending_L = 0   
-        waiting_R = 0    
+        waitL = 0   
+        waitR = 0    
 
         for curr, goal in zip(start, target):
             if curr == 'R':
-                if pending_L > 0:
+                if waitL > 0:
                     return False
-                waiting_R += 1  
+                waitR += 1  
             if goal == 'L':
-                if waiting_R > 0:
+                if waitR > 0:
                     return False
-                pending_L += 1
+                waitL += 1
             if goal == 'R':
-                if waiting_R == 0:
+                if waitR == 0:
                     return False
-                waiting_R -= 1 
+                waitR -= 1 
             if curr == 'L':
-                if pending_L == 0:
+                if waitL == 0:
                     return False
-                pending_L -= 1    
-        return pending_L == 0 and waiting_R == 0
+                waitL -= 1    
+        return waitL == 0 and waitR == 0
