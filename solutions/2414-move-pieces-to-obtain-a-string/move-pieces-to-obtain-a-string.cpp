@@ -1,36 +1,29 @@
 class Solution {
 public:
     bool canChange(string start, string target) {
-        // Queue to store characters and indices from both strings
-        queue<pair<char, int>> startQueue, targetQueue;
+        int pos = 0;
+        int rCnt = 0, lCnt = 0;
+        int len = target.length();
+        
+        for (int i = 0, j = 0; i < len; i++) {
+            if (start[i] == 'R') rCnt++;
+            if (start[i] == 'L') lCnt++;
+            if (target[i] == 'R') rCnt--;
+            if (target[i] == 'L') lCnt--;
 
-        // Record non-underscore characters and their indices
-        for (int i = 0; i < start.size(); i++) {
             if (start[i] != '_') {
-                startQueue.push({start[i], i});
-            }
-            if (target[i] != '_') {
-                targetQueue.push({target[i], i});
+                pos = i;
+                while (j < len && target[j] == '_') j++;
+                
+                if (start[i] != target[j] || 
+                    (start[i] == 'R' && pos > j) || 
+                    (start[i] == 'L' && pos < j)) {
+                    return false;
+                }
+                j++;
             }
         }
 
-        // If number of pieces don't match, return false
-        if (startQueue.size() != targetQueue.size()) return false;
-
-        // Compare each piece's type and position
-        while (!startQueue.empty()) {
-            auto [startChar, startIndex] = startQueue.front();
-            startQueue.pop();
-            auto [targetChar, targetIndex] = targetQueue.front();
-            targetQueue.pop();
-
-            // Check character match and movement rules
-            if (startChar != targetChar ||
-                (startChar == 'L' && startIndex < targetIndex) ||
-                (startChar == 'R' && startIndex > targetIndex))
-                return false;
-        }
-
-        return true;
+        return rCnt == 0 && lCnt == 0;
     }
 };
