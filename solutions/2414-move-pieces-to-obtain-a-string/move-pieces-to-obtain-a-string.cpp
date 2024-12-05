@@ -1,29 +1,23 @@
 class Solution {
 public:
     bool canChange(string start, string target) {
-        int pos = 0;
-        int rCnt = 0, lCnt = 0;
-        int len = target.length();
-        
-        for (int i = 0, j = 0; i < len; i++) {
-            if (start[i] == 'R') rCnt++;
-            if (start[i] == 'L') lCnt++;
-            if (target[i] == 'R') rCnt--;
-            if (target[i] == 'L') lCnt--;
+        int index , r = 0, l = 0;
+        int size = target.length();
+        for (int i = 0, j = 0; i < size; i++){
+            if (start[i]=='R') r++;
+            if (start[i]=='L') l++;
+            if (target[i]=='R') r--;
+            if (target[i]=='L') l--;
 
-            if (start[i] != '_') {
-                pos = i;
-                while (j < len && target[j] == '_') j++;
-                
-                if (start[i] != target[j] || 
-                    (start[i] == 'R' && pos > j) || 
-                    (start[i] == 'L' && pos < j)) {
-                    return false;
-                }
+            if (start[i]!='_'){
+                index = i;
+                while (j < size && target[j]=='_') j++;
+                if(start[i]!=target[j] || (start[i]=='R' && index > j) || (start[i]=='L' && index < j)) return false;
                 j++;
             }
         }
 
-        return rCnt == 0 && lCnt == 0;
+        if (r == 0 && l == 0) return true;
+        else return false;
     }
 };
