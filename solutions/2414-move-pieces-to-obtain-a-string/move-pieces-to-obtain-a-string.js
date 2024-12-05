@@ -1,21 +1,29 @@
-var canChange = function (start, target) {
-    let x = 0, y = 0;
+// JavaScript
 
-    while (x < start.length || y < target.length) {
-        while (x < start.length && start[x] === '_') {
-            x++;
+var canChange = function(start, target) {
+    if (start === target) return true;
+    let waitL = 0, waitR = 0;
+    
+    for (let i = 0; i < start.length; i++) {
+        const curr = start[i];
+        const goal = target[i];
+        
+        if (curr === 'R') {
+            if (waitL > 0) return false;
+            waitR++;
         }
-        while (y < target.length && target[y] === '_') {
-            y++;
+        if (goal === 'L') {
+            if (waitR > 0) return false;
+            waitL++;
         }
-        if (start[x] !== target[y]) return false;
-
-        if (start[x] === 'L' && x < y) return false;
-
-        if (start[x] === 'R' && y < x) return false;
-
-        x++;
-        y++;
+        if (goal === 'R') {
+            if (waitR === 0) return false;
+            waitR--;
+        }
+        if (curr === 'L') {
+            if (waitL === 0) return false;
+            waitL--;
+        }
     }
-    return true;
+    return waitL === 0 && waitR === 0;
 };
