@@ -1,20 +1,19 @@
 class Solution:
     def canMakeSubsequence(self, source: str, target: str) -> bool:
-        source_len, target_len = len(source), len(target)
-        curr_target = target[0]
+        src_len, tgt_len = len(source), len(target)
+        target_char = target[0]
         
-        source_pos = target_pos = 0
-        
-        while source_pos < source_len and target_pos < target_len:
-            curr_char = source[source_pos]
+        src_idx = tgt_idx = 0
+        while src_idx < src_len and tgt_idx < tgt_len:
+            src_char = source[src_idx]
             
-            if (curr_char == curr_target or 
-                chr(ord(curr_char) + 1) == curr_target or 
-                (curr_char == 'z' and curr_target == 'a')):
-                target_pos += 1
-                if target_pos < target_len:
-                    curr_target = target[target_pos]
+            if (src_char == target_char or 
+                chr(ord(src_char) + 1) == target_char or 
+                (src_char == 'z' and target_char == 'a')):
+                tgt_idx += 1
+                if tgt_idx < tgt_len:
+                    target_char = target[tgt_idx]
             
-            source_pos += 1
+            src_idx += 1
             
-        return target_pos == target_len
+        return tgt_idx == tgt_len
