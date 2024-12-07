@@ -1,7 +1,7 @@
 class Solution {
 public:
     int minimumSize(vector<int>& nums, int maxOperations) {
-        int left = 1, right = 1e9;
+        int left = 1, right = 1000000000;
         while(left < right){
             int mid = (left + right) / 2, count = 0;
             
