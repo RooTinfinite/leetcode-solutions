@@ -1,11 +1,13 @@
-function minimumSize(nums: number[], maxOps: number): number {
+function minimumSize(n: number[], maxOps: number): number {
     let low = 1;
-    let high = Math.max(...nums);
-    
+    let high = Math.max(...n);
     while (low < high) {
-        const mid = Math.floor((low + high) / 2);
-        const ops = nums.reduce((sum, n) => sum + Math.floor((n - 1) / mid), 0);
-        if (ops <= maxOps) {
+        const mid = (low + high) >> 1;
+        let cnt = 0;
+        for (const x of n) {
+            cnt += ~~((x - 1) / mid);
+        }
+        if (cnt <= maxOps) {
             high = mid;
         } else {
             low = mid + 1;
