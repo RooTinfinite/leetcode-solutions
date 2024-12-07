@@ -1,8 +1,17 @@
 class Solution:
-    def minimumSize(self, nums: List[int], maxOps: int) -> int:
-        low, high = 1, max(nums)
-        while low < high:
-            mid = (low + high) // 2
-            if sum((n - 1) // mid for n in nums) <= maxOps: high = mid
-            else: low = mid + 1
-        return high
+    def minimumSize(self, nums: List[int], maxOperations: int) -> int:
+        def can_divide(penalty):
+            operations = sum((x - 1) // penalty for x in nums)
+            return operations <= maxOperations
+        
+        left = 1
+        right = max(nums)
+        
+        while left < right:
+            mid = (left + right) // 2
+            if can_divide(mid):
+                right = mid
+            else:
+                left = mid + 1
+                
+        return left
