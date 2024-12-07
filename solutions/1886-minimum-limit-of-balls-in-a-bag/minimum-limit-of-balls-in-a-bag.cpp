@@ -1,17 +1,16 @@
 class Solution {
 public:
-    int minimumSize(vector<int>& nums, int maxOperations) {
-        int left = 1, right = 1000000000;
-        while(left < right){
-            int mid = (left + right) / 2, count = 0;
-            
-            for(int& i: nums){
-                count += (i-1)/mid;
+    int minimumSize(vector<int>& nums, int k) {
+        int l = 1, r = *max_element(nums.begin(), nums.end());
+        while (l < r) {
+            int m = l + (r - l) / 2;
+            int cnt = 0;
+            for (int x : nums) {
+                cnt += (x - 1) / m;
+                if (cnt > k) break;
             }
-            if(count > maxOperations){
-                left = mid+1;
-            } else right = mid;
+            cnt <= k ? r = m : l = m + 1;
         }
-        return left;
+        return r;
     }
 };
