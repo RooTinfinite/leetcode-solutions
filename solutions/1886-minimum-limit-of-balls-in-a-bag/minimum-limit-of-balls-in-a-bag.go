@@ -1,22 +1,31 @@
-func minimumSize(nums []int, maxOps int) int {
-    low, high := 1, 0
+func canDivide(nums []int, maxBalls int, maxOperations int) bool {
+    ops := 0
     for _, n := range nums {
-        if n > high {
-            high = n
+        ops += (n + maxBalls - 1) / maxBalls - 1
+        if ops > maxOperations {
+            return false
         }
     }
+    return true
+}
+
+func minimumSize(nums []int, maxOperations int) int {
+    left, right := 1, 0
+    for _, n := range nums {
+        if n > right {
+            right = n
+        }
+    }
+    res := right
     
-    for low < high {
-        mid := (low + high) / 2
-        ops := 0
-        for _, n := range nums {
-            ops += (n - 1) / mid
-        }
-        if ops <= maxOps {
-            high = mid
+    for left < right {
+        mid := left + (right - left) / 2
+        if canDivide(nums, mid, maxOperations) {
+            right = mid
+            res = right
         } else {
-            low = mid + 1
+            left = mid + 1
         }
     }
-    return high
+    return res
 }
