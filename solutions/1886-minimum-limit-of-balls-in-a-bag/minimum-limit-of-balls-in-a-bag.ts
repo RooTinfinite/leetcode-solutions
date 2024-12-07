@@ -13,5 +13,5 @@ function minimumSize(n: number[], maxOps: number): number {
             low = mid + 1;
         }
     }
-    return high;
-}
+    return high
+};
