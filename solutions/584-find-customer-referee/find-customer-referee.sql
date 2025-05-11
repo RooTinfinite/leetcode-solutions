@@ -1,4 +1,10 @@
-SELECT name
+SELEcT name
 FROM Customer
-WHERE COALESCE(referee_id,0) != 2
-;
+WHERE COALESCE(referee_id,0) !=2
+
+
+
+
+
+
+
