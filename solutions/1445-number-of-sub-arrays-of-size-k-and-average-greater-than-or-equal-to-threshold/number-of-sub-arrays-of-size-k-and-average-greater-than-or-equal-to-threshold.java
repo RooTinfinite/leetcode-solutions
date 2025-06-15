@@ -1,15 +1,12 @@
 class Solution {
-        public int numOfSubarrays(int[] a, int k, int threshold) {
-        int count = 0;
-        for (int lo = -1, hi = 0, sumOfWin = 0, target = k * threshold; hi < a.length; ++hi) {
-            sumOfWin += a[hi];
-            if (hi - lo == k) { // Has the width of the window  reached k?
-                if (sumOfWin >= target) {
-                    ++count;
-                }
-                sumOfWin -= a[++lo];
-            }
+    public int numOfSubarrays(int[] arr, int k, int threshold) {
+        int n = arr.length, ans = 0, s = 0;
+        for(int i = 0; i < k - 1; i++) s += arr[i];
+        for(int i = k - 1; i < n; i++) {
+            s += arr[i];
+            if(s / k >= threshold) ans++;
+            s -= arr[i - k + 1];
         }
-        return count;        
+        return ans;
     }
 }
