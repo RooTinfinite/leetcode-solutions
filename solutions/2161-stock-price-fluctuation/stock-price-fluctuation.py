@@ -1,24 +1,43 @@
-from sortedcontainers import SortedSet
+import heapq
+
+
 class StockPrice:
 
+    # SC: O(n), where n is num of records sent including duplicates
     def __init__(self):
-        self.time_to_price = {}
-        self.price_time = SortedSet()        
-        self.current_timestamp = 0
-        
+        self.record = {}
+        self.max_heap = []  # (price, timestamp)
+        self.min_heap = []  # (price, timestamp)
+        self.latest_stamp = -float("inf")
+
+    # TC: O(log n)
     def update(self, timestamp: int, price: int) -> None:
-        if timestamp in self.time_to_price:
-            self.price_time.remove((self.time_to_price[timestamp], timestamp))
-			
-        self.price_time.add((price, timestamp))            
-        self.time_to_price[timestamp] = price        
-        self.current_timestamp = max(self.current_timestamp, timestamp)
+        if self.latest_stamp < timestamp:
+            self.latest_stamp = timestamp
+
+        self.record[timestamp] = price
+        
+        heapq.heappush(self.max_heap, (-price, timestamp))
+        heapq.heappush(self.min_heap, (price, timestamp))
 
     def current(self) -> int:
-        return self.time_to_price[self.current_timestamp]
+        return self.record[self.latest_stamp]
 
+    # TC: O(n log n)
     def maximum(self) -> int:
-        return self.price_time[-1][0]   
+        while self.max_heap:
+            price, ts = self.max_heap[0]
+            if -price == self.record[ts]:
+                return -price
+            heapq.heappop(self.max_heap)
+        return -1
 
+    # TC: O(n log n)
     def minimum(self) -> int:
-        return self.price_time[0][0]
+        while self.min_heap:
+            price, ts = self.min_heap[0]
+            if price == self.record[ts]:
+                return price
+            heapq.heappop(self.min_heap)
+        return -1
+
