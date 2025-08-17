@@ -1,86 +1,42 @@
-from threading import RLock
-from typing import List
-
 class Bank:
-    
-    class Account:
-        def __init__(self, balance: int):
-            self.balance = balance
-            self.lock = RLock()
-            
-        def deposit(self, amount: int):
-            self.lock.acquire()
-            try:
-                self.balance += amount
-            finally:
-                self.lock.release()
-                
-        def withdraw(self, amount: int):
-            self.lock.acquire()
-            try:
-                if self.balance < amount:
-                    return False
-                
-                self.balance -= amount
-            finally:
-                self.lock.release()
-            return True
-    
-    # Initializes the object with the 0-indexed integer array balance.
-    def __init__(self, balance: List[int]):
-        self.lock: RLock = RLock()
-        self.accounts: List[self.Account] = []
-        for b in balance:
-            self.accounts.append(self.Account(b))
-        
 
-    # Transfers money dollars from the account numbered account1 to the account numbered account2.
-    # Return true if the transaction was successful, false otherwise.
+    def __init__(self, balance: List[int]):
+        self.balance = balance
+        self.account_count = len(balance)
+
     def transfer(self, account1: int, account2: int, money: int) -> bool:
-        acc1: self.Account = self.get_account(account1)
-        acc2: self.Account = self.get_account(account2)
-        
-        if not acc1 or not acc2 or money < 0:
+        if not self.account_validation(account1):
             return False
+        if not self.account_validation(account2):
+            return False
+        if self.balance[account1 - 1] < money:
+            return False
+        self.balance[account1 - 1] -= money
+        self.balance[account2 - 1] += money
+
+        return True
+
+    def deposit(self, account: int, money: int) -> bool:
+        if not self.account_validation(account):
+            return False
+        self.balance[account - 1] += money
         
-        try:
-            acc1.lock.acquire()
-            acc2.lock.acquire()
-            if acc1.withdraw(money):
-                acc2.deposit(money)
-            else:
-                return False
-        finally:
-            acc1.lock.release()
-            acc2.lock.release()
-            
         return True
         
-        
-    # Deposit money dollars into the account numbered account.
-    # Return true if the transaction was successful, false otherwise.
-    def deposit(self, account: int, money: int) -> bool:
-        if self.check_is_valid_account(account):
-            self.get_account(account).deposit(money)
+
+    def withdraw(self, account: int, money: int) -> bool:
+        if not self.account_validation(account):
+            return False
+        if self.balance[account - 1] < money:
+            return False
+        self.balance[account - 1] -= money
+
+        return True
+
+    def account_validation(self, account):
+        if 1 <= account <= self.account_count:
             return True
         return False
-        
-        
-    # Withdraw money dollars from the account numbered account.
-    # Return true if the transaction was successful, false otherwise.
-    def withdraw(self, account: int, money: int) -> bool:
-        if self.check_is_valid_account(account):
-            return self.get_account(account).withdraw(money)
-        return False
-        
-    def check_is_valid_account(self, account: int) -> bool:
-        return account > 0 and account <= len(self.accounts)
-        
-    def get_account(self, account: int) -> Account:
-        if not self.check_is_valid_account(account):
-            return None
-        
-        return self.accounts[account-1]
         
 
 
