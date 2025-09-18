@@ -1,0 +1,1 @@
+const maximumGroups=r=>{let t=1,e=r.length;for(;e-t>t;)e-=t++;return t};
