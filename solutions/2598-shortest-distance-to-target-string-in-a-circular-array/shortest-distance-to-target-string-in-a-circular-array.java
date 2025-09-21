@@ -1,5 +1,4 @@
 class Solution {
-    // FIX: Corrected the method name from "closetTarget" to "closestTarget"
     public int closestTarget(String[] W, String T, int s) {
         int a=Integer.MAX_VALUE,n=W.length;
        for(int i=0;i<n;i++){
