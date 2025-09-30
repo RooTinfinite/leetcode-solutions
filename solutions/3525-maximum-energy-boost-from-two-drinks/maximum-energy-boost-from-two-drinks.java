@@ -1,0 +1,12 @@
+class Solution{
+    public long maxEnergyBoost(int[] A , int[] B){
+        long A1 = 0 , B1 = 0 , A2 = 0 , B2 = 0;
+        for (int i = 0 ; i < A.length ; i++){
+            long currA = A[i] + Math.max(A1 , B2);
+            long currB = B[i] + Math.max(B1 , A2);
+            A2 = A1 ; A1 = currA;
+            B2 = B1 ; B1 = currB;
+        }
+        return Math.max(A1 , B1);
+    }
+}
