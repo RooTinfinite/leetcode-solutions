@@ -1,90 +1,74 @@
+from typing import List
+from collections import defaultdict
+
+MOD = 10**9 + 7
+RM = (MOD + 1) // 2
+
+def mul(x, y):
+    return x * y % MOD
+
+def sqr(x):
+    return mul(x, x)
+
+def add(x, y):
+    x += y
+    if x >= MOD:
+        x -= MOD
+    return x
+
+def sub(x, y):
+    x -= y
+    if x < 0:
+        x += MOD
+    return x
+
+def C2(n):
+    return mul(mul(n, n - 1), RM)
+
+def count(v: List[int], c: List[int], countIfEqual: bool) -> int:
+    n, m = len(v), len(c)
+    t = [0] * m
+    r = R2 = 0
+    for i in range(m):
+        R2 = add(R2, sqr(c[i]))
+    RT = R2T = 0
+    for i in range(n):
+        x = v[i]
+        rx = c[x] - t[x]
+        r2 = sub(R2, sqr(rx))
+        rt = sub(RT, mul(rx, t[x]))
+        r2t = sub(R2T, mul(sqr(rx), t[x]))
+        p = n - i - rx
+        sumt = i - t[x]
+        temp = mul(sub(sqr(p), r2), sumt)
+        temp = sub(temp, mul(mul(2, p), rt))
+        temp = add(temp, mul(2, r2t))
+        temp = mul(temp, mul(t[x], RM))
+        r = add(r, temp)
+        r = add(r, mul(C2(t[x]), C2(p)))
+        rx -= 1
+        r = add(r, mul(C2(t[x]), mul(rx, p)))
+        if countIfEqual:
+            r = add(r, mul(mul(t[x], sumt), mul(rx, p)))
+            r = add(r, mul(C2(t[x]), C2(rx)))
+        t[x] += 1
+        R2 = add(r2, sqr(rx))
+        RT = add(rt, mul(rx, t[x]))
+        R2T = add(r2t, mul(sqr(rx), t[x]))
+    return r
+
 class Solution:
     def subsequencesWithMiddleMode(self, nums: List[int]) -> int:
-        p = 10 ** 9 + 7
-        n = len(nums)
-
-        # Variable meanings:
-        # > leftCounter, rightCounter are Counters for numbers to the
-        #       left and right of current index
-        # > leftPairs, rightPairs store the number of non-equal pairs
-        #       of numbers to the left and right of current index
-        # > numSubsequences will store the final result
-        leftCounter, rightCounter = Counter(), Counter(nums)
-        leftPairs, rightPairs = 0, comb(n, 2) - sum([comb(val, 2) for val in rightCounter.values()])
-        numSubsequences = 0
-
-        for i, num in enumerate(nums): 
-            # In this iteration, will consider subsequences  
-            # whose unique mode is nums[i], or num
-
-            # *** Part 1: bookkeeping rightCounter, rightPairs ***
-            rightPairs -= (n - i - rightCounter[num])
-            rightCounter[num] -= 1
-
-            # The variable auxCount stores the number of subsequences
-            # in which i is the middle index and num is a unique mode
-            auxCount = 0 
-
-            # *** Part 2: computing number of subsequences with exactly two instances of ***
-            # ***         num, and no more than one instance of other numbers            ***
-
-            # If num appears to the left of i:
-            if leftCounter[num]: 
-                for num2 in leftCounter:
-                    # Consider values that appear to the left of i which are not equal to num
-                    if num != num2 and leftCounter[num2] > 0:
-                        # Start with the number of pairs of unequal numbers to the right of i
-                        auxVal = rightPairs
-
-                        # Subtract count of pairs to the right of i in which num appears
-                        auxVal -= rightCounter[num] * (n - 1 - i - rightCounter[num])
-
-                        # Subtract count of pairs to the right of i in which num2 appears
-                        auxVal -= rightCounter[num2] * (n - 1 - i - rightCounter[num2])
-
-                        # Add back count of pairs to the right of i in which both num and num2 appear
-                        auxVal += rightCounter[num] * rightCounter[num2]
-
-                        # Multiply by number of pairs to the left of i in which both num and num2 appear,
-                        # and add to the total count of subsequences                    
-                        auxCount += auxVal * leftCounter[num] * leftCounter[num2]
-
-            # If num appears to the right of i:
-            if rightCounter[num]: 
-                for num2 in rightCounter:
-                    # Consider values that appear to the right of i which are not equal to num 
-                    if num != num2 and rightCounter[num2] > 0:
-                        # Start with the number of pairs of unequal numbers to the left of i
-                        auxVal = leftPairs
-
-                        # Subtract count of pairs to the left of i in which num appears
-                        auxVal -= leftCounter[num] * (i - leftCounter[num])
-                        
-                        # Subtract count of pairs to the left of i in which num2 appears 
-                        auxVal -= leftCounter[num2] * (i - leftCounter[num2])
-                        
-                        # Add back count of pairs to the left of i in which both num and num2 appear
-                        auxVal += leftCounter[num] * leftCounter[num2]
-                        
-                        # Multiply by number of pairs to the right of i in which both num and num2 appear,
-                        # and add to the total count of subsequences
-                        auxCount += auxVal * rightCounter[num] * rightCounter[num2]
-
-            # *** Part 3: Computing number of subsequences with three or more occurrence of num ***
-            # Sequences with two occurrences of num to the left of i and any number of occurrences of num to the right of i
-            auxCount += comb(leftCounter[num], 2) * comb(n - 1 - i, 2)
-
-            # Sequences with one occurrence of num to the left of i and at least one occurrence of num to the right of i
-            auxCount += leftCounter[num] * (i - leftCounter[num]) * (comb(n - i - 1, 2) - comb(n - i - 1 - rightCounter[num], 2))
-
-            # Sequences with no occurrences of num to the left of i and two occurrences of num to the right of i
-            auxCount += comb(i - leftCounter[num], 2) * comb(rightCounter[num], 2)
-            
-            # *** Part 3: Add current count to overall result ***
-            numSubsequences += auxCount
-            
-            # *** Part 4: bookkeeping leftCounter, leftPairs ***
-            leftPairs += i - leftCounter[num]
-            leftCounter[num] += 1
-        
-        return numSubsequences % p
+        mp = {}
+        m = 0
+        for i in range(len(nums)):
+            if nums[i] not in mp:
+                mp[nums[i]] = m
+                m += 1
+            nums[i] = mp[nums[i]]
+        c = [0] * m
+        for x in nums:
+            c[x] += 1
+        r = count(nums, c, True)
+        nums.reverse()
+        return add(r, count(nums, c, False))
