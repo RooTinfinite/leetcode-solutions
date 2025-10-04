@@ -11,7 +11,6 @@ WITH tagged AS (
   JOIN Teams tt ON tt.player_id = p.pass_to
 ),
 per_team AS (
-  -- patrzymy tylko na podania wykonywane przez daną drużynę, w porządku chronologicznym
   SELECT
     team_from AS team_name,
     time_stamp,
@@ -21,7 +20,6 @@ per_team AS (
   FROM tagged
 ),
 streaks AS (
-  -- długości serii udanych podań między nieudanymi podaniami tej samej drużyny
   SELECT
     team_name,
     fail_block,
