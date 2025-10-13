@@ -1,8 +1,8 @@
--- Write your MySQL query statement below
+-- Write your PostgreSQL query statement below
 WITH process_1 AS (
 SELECT employee_id, SUM(duration_hours) duration_total
 FROM meetings
-GROUP BY employee_id, WEEKOFYEAR(meeting_date), YEAR(meeting_date)
+GROUP BY employee_id, date_part('week', meeting_date), date_part('year',meeting_date)
 )
 SELECT p.employee_id, e.employee_name, e.department, COUNT(p.employee_id) meeting_heavy_weeks 
 FROM process_1 p INNER JOIN employees e ON p.employee_id = e.employee_id
