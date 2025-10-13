@@ -1,10 +1,10 @@
 WITH stat AS (
     SELECT 
         driver_id, 
-        SUM(CASE WHEN EXTRACT(MONTH FROM trip_date) <= 6 THEN distance_km / fuel_consumed ELSE 0 END) AS frst_tot_fuel_ef,
-        SUM(CASE WHEN EXTRACT(MONTH FROM trip_date) <= 6 THEN 1 ELSE 0 END) AS frst_tot_trips,
-        SUM(CASE WHEN EXTRACT(MONTH FROM trip_date) > 6 THEN distance_km / fuel_consumed ELSE 0 END) AS sec_tot_fuel_ef,
-        SUM(CASE WHEN EXTRACT(MONTH FROM trip_date) > 6 THEN 1 ELSE 0 END) AS sec_tot_trips
+        SUM(CASE WHEN MONTH(trip_date) <= 6 THEN distance_km / fuel_consumed ELSE 0 END) AS frst_tot_fuel_ef,
+        SUM(CASE WHEN MONTH(trip_date) <= 6 THEN 1 ELSE 0 END) AS frst_tot_trips,
+        SUM(CASE WHEN MONTH(trip_date) > 6 THEN distance_km / fuel_consumed ELSE 0 END) AS sec_tot_fuel_ef,
+        SUM(CASE WHEN MONTH(trip_date) > 6 THEN 1 ELSE 0 END) AS sec_tot_trips
     FROM trips
     GROUP BY driver_id
 ), summary AS (
