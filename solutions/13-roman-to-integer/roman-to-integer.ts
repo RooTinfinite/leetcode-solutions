@@ -1,21 +1,27 @@
-// TypeScript
-
 function romanToInt(s: string): number {
-    const roman: { [key: string]: number } = {
-        'I': 1, 'V': 5, 'X': 10,
-        'L': 50, 'C': 100, 'D': 500, 'M': 1000
+    const values: Record<string, number> = {
+        I: 1,
+        V: 5,
+        X: 10,
+        L: 50,
+        C: 100,
+        D: 500,
+        M: 1000,
     };
-    
-    const n: number = s.length;
-    let result: number = roman[s[n-1]];
-    
-    for(let i = n-2; i >= 0; i--) {
-        if(roman[s[i]] < roman[s[i+1]]) {
-            result -= roman[s[i]];
+
+    let lastSymbol = s[s.length - 1];
+    let lastValue = values[lastSymbol];
+    let total = lastValue;
+
+    for (let i = s.length - 2; i >= 0; i--) {
+        let currentSymbol = s[i];
+        let currentValue = values[currentSymbol];
+        if (currentValue < lastValue) {
+            total -= currentValue;
         } else {
-            result += roman[s[i]];
+            total += currentValue;
         }
+        lastValue = currentValue;
     }
-    
-    return result;
+    return total;
 }
