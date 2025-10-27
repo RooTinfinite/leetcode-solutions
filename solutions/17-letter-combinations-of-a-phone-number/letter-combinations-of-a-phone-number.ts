@@ -1,31 +1,30 @@
 function letterCombinations(digits: string): string[] {
-    if (!digits) {
+    if (digits.length === 0) {
         return [];
     }
-
-    const phoneMap: Record<string, string> = {
-        '2': 'abc',
-        '3': 'def',
-        '4': 'ghi',
-        '5': 'jkl',
-        '6': 'mno',
-        '7': 'pqrs',
-        '8': 'tuv',
-        '9': 'wxyz'
+    let combinations: string[] = [];
+    let letters: { [key: string]: string } = {
+        "2": "abc",
+        "3": "def",
+        "4": "ghi",
+        "5": "jkl",
+        "6": "mno",
+        "7": "pqrs",
+        "8": "tuv",
+        "9": "wxyz",
     };
-
-    const output: string[] = [];
-
-    function backtrack(combination: string, nextDigits: string): void {
-        if (nextDigits.length === 0) {
-            output.push(combination);
-        } else {
-            for (const letter of phoneMap[nextDigits[0]]) {
-                backtrack(combination + letter, nextDigits.slice(1));
-            }
+    let backtrack = function (index: number, path: string[]): void {
+        if (path.length === digits.length) {
+            combinations.push(path.join(""));
+            return;
         }
-    }
-
-    backtrack("", digits);
-    return output;
+        let possibleLetters: string = letters[digits[index]];
+        for (let letter of possibleLetters) {
+            path.push(letter);
+            backtrack(index + 1, path);
+            path.pop();
+        }
+    };
+    backtrack(0, []);
+    return combinations;
 }
