@@ -1,32 +1,33 @@
 class Solution {
     public int minEatingSpeed(int[] piles, int h) {
-        long left = 1;
-        long right = 0;
-        
-        // Find maximum pile as upper bound
+        // Initalize the left and right boundaries 
+        int left = 1, right = 1;
         for (int pile : piles) {
             right = Math.max(right, pile);
         }
-        
+
         while (left < right) {
-            long mid = left + (right - left) / 2;
-            
-            if (canEatAll(piles, h, mid)) {
-                right = mid;
+            // Get the middle index between left and right boundary indexes.
+            // hourSpent stands for the total hour Koko spends.
+            int middle = (left + right) / 2;
+            int hourSpent = 0;
+
+            // Iterate over the piles and calculate hourSpent.
+            // We increase the hourSpent by ceil(pile / middle)
+            for (int pile : piles) {
+                hourSpent += Math.ceil((double) pile / middle);
+            }
+
+            // Check if middle is a workable speed, and cut the search space by half.
+            if (hourSpent <= h) {
+                right = middle;
             } else {
-                left = mid + 1;
+                left = middle + 1;
             }
         }
-        
-        return (int) left;
-    }
-    
-    private boolean canEatAll(int[] piles, int h, long k) {
-        long hours = 0;
-        for (int pile : piles) {
-            hours += (pile + k - 1) / k;
-            if (hours > h) return false;
-        }
-        return true;
+
+        // Once the left and right boundaries coincide, we find the target value,
+        // that is, the minimum workable eating speed.
+        return right;
     }
 }
