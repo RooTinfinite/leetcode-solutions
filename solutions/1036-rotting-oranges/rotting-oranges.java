@@ -1,48 +1,40 @@
 class Solution {
-    public int orangesRotting(int[][] grid) {
-        int m = grid.length;
-        int n = grid[0].length;
-        int[][] visited = grid;
-        Queue<int[]> q = new LinkedList<>();
-        int countFreshOrange = 0;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                if (visited[i][j] == 2) {
-                    q.offer(new int[] {i, j});
-                }
-                if (visited[i][j] == 1) {
-                    countFreshOrange++;
-                }
-            }
-        }
-        if (countFreshOrange == 0)
-            return 0;
-        if (q.isEmpty())
-            return -1;
-        
-        int minutes = -1;
-        int[][] dirs = {{1, 0},{-1, 0},{0, -1},{0, 1}};
-        while (!q.isEmpty()) {
-            int size = q.size();
-            while (size-- > 0) {
-                int[] cell = q.poll();
-                int x = cell[0];
-                int y = cell[1];
-                for (int[] dir : dirs) {
-                    int i = x + dir[0];
-                    int j = y + dir[1];
-                    if (i >= 0 && i < m && j >= 0 && j < n && visited[i][j] == 1) {
-                        visited[i][j] = 2;
-                        countFreshOrange--;
-                        q.offer(new int[] {i, j});
+    // run the rotting process, by marking the rotten oranges with the timestamp
+    public boolean runRottingProcess(int timestamp, int[][] grid, int ROWS, int COLS) {
+        int[][] directions = { {-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+        // flag to indicate if the rotting process should be continued
+        boolean toBeContinued = false;
+        for (int row = 0; row < ROWS; ++row)
+            for (int col = 0; col < COLS; ++col)
+                if (grid[row][col] == timestamp)
+                    // current contaminated cell
+                    for (int[] d : directions) {
+                        int nRow = row + d[0], nCol = col + d[1];
+                        if (nRow >= 0 && nRow < ROWS && nCol >= 0 && nCol < COLS)
+                            if (grid[nRow][nCol] == 1) {
+                                // this fresh orange would be contaminated next
+                                grid[nRow][nCol] = timestamp + 1;
+                                toBeContinued = true;
+                            }
                     }
-                }
-            }
-            minutes++;
-        }
-        
-        if (countFreshOrange == 0)
-            return minutes;
-        return -1;
+        return toBeContinued;
+    }
+
+    public int orangesRotting(int[][] grid) {
+        int ROWS = grid.length, COLS = grid[0].length;
+        int timestamp = 2;
+        while (runRottingProcess(timestamp, grid, ROWS, COLS))
+            timestamp++;
+
+        // end of process, to check if there are still fresh oranges left
+        for (int[] row : grid)
+            for (int cell : row)
+                // still got a fresh orange left
+                if (cell == 1)
+                    return -1;
+
+
+        // return elapsed minutes if no fresh orange left
+        return timestamp - 2;
     }
 }
