@@ -1,30 +1,50 @@
 public class Solution {
-    private static final int[] DIRECTIONS_ROW = {-1, 1, 0, 0};
-    private static final int[] DIRECTIONS_COL = {0, 0, -1, 1};
-
     public int countUnguarded(int m, int n, int[][] guards, int[][] walls) {
         char[][] grid = new char[m][n];
-        int unguarded = m * n - guards.length - walls.length;
+        int unguarded = m * n;
 
         for (int[] guard : guards) {
             grid[guard[0]][guard[1]] = 'G';
+            unguarded--;
         }
+
         for (int[] wall : walls) {
             grid[wall[0]][wall[1]] = 'W';
+            unguarded--;
         }
 
         for (int[] guard : guards) {
-            for (int dir = 0; dir < 4; dir++) {
-                int row = guard[0] + DIRECTIONS_ROW[dir];
-                int col = guard[1] + DIRECTIONS_COL[dir];
+            int row = guard[0], col = guard[1];
 
-                while (row >= 0 && row < m && col >= 0 && col < n && grid[row][col] != 'W' && grid[row][col] != 'G') {
-                    if (grid[row][col] != 'S') {
-                        grid[row][col] = 'S';
-                        unguarded--;
-                    }
-                    row += DIRECTIONS_ROW[dir];
-                    col += DIRECTIONS_COL[dir];
+            for (int c = col + 1; c < n; c++) {
+                if (grid[row][c] == 'G' || grid[row][c] == 'W') break;
+                if (grid[row][c] != 'S') {
+                    grid[row][c] = 'S';
+                    unguarded--;
+                }
+            }
+
+            for (int c = col - 1; c >= 0; c--) {
+                if (grid[row][c] == 'G' || grid[row][c] == 'W') break;
+                if (grid[row][c] != 'S') {
+                    grid[row][c] = 'S';
+                    unguarded--;
+                }
+            }
+
+            for (int r = row + 1; r < m; r++) {
+                if (grid[r][col] == 'G' || grid[r][col] == 'W') break;
+                if (grid[r][col] != 'S') {
+                    grid[r][col] = 'S';
+                    unguarded--;
+                }
+            }
+
+            for (int r = row - 1; r >= 0; r--) {
+                if (grid[r][col] == 'G' || grid[r][col] == 'W') break;
+                if (grid[r][col] != 'S') {
+                    grid[r][col] = 'S';
+                    unguarded--;
                 }
             }
         }
