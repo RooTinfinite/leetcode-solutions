@@ -1,23 +1,21 @@
-class Solution:
-    def search(self, nums: List[int], target: int) -> int:
-        low = 0
-        high = len(nums) - 1
-
-        while low <= high:
-            # Finding the mid using floor division
-            mid = low + ((high - low) // 2)
-
-            # Target value is present at the middle of the array
+class Solution(object):
+    def search(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: int
+        """
+        left = 0
+        right = len(nums) - 1
+        
+        while left <= right:
+            mid = (left + right) // 2
+            
             if nums[mid] == target:
                 return mid
-
-            # Target value is present in the low subarray
-            elif target < nums[mid]:
-                high = mid - 1
-
-            # Target value is present in the high subarray
-            elif target > nums[mid]:
-                low = mid + 1
-
-        # Target value is not present in the array
+            elif nums[mid] < target:
+                left = mid + 1
+            else:
+                right = mid - 1
+        
         return -1
