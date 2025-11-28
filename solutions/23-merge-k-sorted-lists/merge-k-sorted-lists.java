@@ -1,43 +1,54 @@
-// Definition for singly-linked list.
-// class ListNode {
-//     int val;
-//     ListNode next;
-//     ListNode() {}
-//     ListNode(int val) { this.val = val; }
-//     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
-// }
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ * int val;
+ * ListNode next;
+ * ListNode() {}
+ * ListNode(int val) { this.val = val; }
+ * ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+import java.util.PriorityQueue;
+
 class Solution {
     public ListNode mergeKLists(ListNode[] lists) {
-        int amount = lists.length;
-        int interval = 1;
-        while (interval < amount) {
-            for (int i = 0; i < amount - interval; i += interval * 2) {
-                lists[i] = merge2Lists(lists[i], lists[i + interval]);
-            }
-            interval *= 2;
+        if (lists == null || lists.length == 0) {
+            return null;
         }
-        return amount > 0 ? lists[0] : null;
-    }
 
-    public ListNode merge2Lists(ListNode l1, ListNode l2) {
-        ListNode head = new ListNode(0);
-        ListNode point = head;
-        while (l1 != null && l2 != null) {
-            if (l1.val <= l2.val) {
-                point.next = l1;
-                l1 = l1.next;
-            } else {
-                point.next = l2;
-                l2 = l1;
-                l1 = point.next.next;
+        // Initialize Min-Heap: stores ListNodes, prioritized by their 'val'
+        // The heap size is at most k.
+        PriorityQueue<ListNode> pq = new PriorityQueue<>(
+            lists.length, 
+            (a, b) -> a.val - b.val
+        );
+
+        // 1. Populate the heap with the head of every non-empty list
+        for (ListNode listHead : lists) {
+            if (listHead != null) {
+                pq.add(listHead);
             }
-            point = point.next;
         }
-        if (l1 == null) {
-            point.next = l2;
-        } else {
-            point.next = l1;
+
+        // Setup the merged list structure
+        ListNode dummy = new ListNode(-1);
+        ListNode current = dummy;
+
+        // 2. Merge Loop
+        while (!pq.isEmpty()) {
+            // Extract the smallest node available
+            ListNode minNode = pq.poll();
+            
+            // Append it to the merged list
+            current.next = minNode;
+            current = current.next;
+
+            // If the extracted node has a next, add that to the heap
+            if (minNode.next != null) {
+                pq.add(minNode.next);
+            }
         }
-        return head.next;
+
+        return dummy.next;
     }
 }
