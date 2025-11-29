@@ -1,54 +1,55 @@
-// TypeScript
-
 function solveNQueens(n: number): string[][] {
-    // Initialize board with n rows of n dots
-    const board: string[] = Array(n).fill('.'.repeat(n));
-    // Store all valid solutions
-    const result: string[][] = [];
-    
-    // Check if placing a queen at [row,col] is valid
-    function isSafe(row: number, col: number): boolean {
-        // Check all rows above in the same column
-        for (let i = 0; i < row; i++) {
-            if (board[i][col] === 'Q') return false;
+    const solutions: string[][] = [];
+    const emptyBoard: string[][] = Array.from({ length: n }, () =>
+        Array(n).fill("."),
+    );
+    // Making use of a helper function to get the
+    // solutions in the correct output format
+    const createBoard = (state: string[][]): string[] => {
+        const board: string[] = [];
+        for (let row = 0; row < n; row++) {
+            board.push(state[row].join(""));
         }
-        
-        // Check upper-left diagonal path
-        for (let i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
-            if (board[i][j] === 'Q') return false;
-        }
-        
-        // Check upper-right diagonal path
-        for (let i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++) {
-            if (board[i][j] === 'Q') return false;
-        }
-        
-        // Position is safe if no conflicts found
-        return true;
-    }
-    
-    // Recursive backtracking function
-    function backtrack(row: number): void {
-        // Base case: valid solution found when all rows are filled
+        return board;
+    };
+    const backtrack = (
+        row: number,
+        diagonals: Set<number>,
+        antiDiagonals: Set<number>,
+        cols: Set<number>,
+        state: string[][],
+    ) => {
+        // Base case - N queens have been placed
         if (row === n) {
-            result.push([...board]); // Create deep copy of solution
+            solutions.push(createBoard(state));
             return;
         }
-        
-        // Try each column in current row
         for (let col = 0; col < n; col++) {
-            if (isSafe(row, col)) {
-                // Place queen at current position
-                board[row] = board[row].substring(0, col) + 'Q' + board[row].substring(col + 1);
-                // Move to next row
-                backtrack(row + 1);
-                // Remove queen (backtrack) to try next position
-                board[row] = board[row].substring(0, col) + '.' + board[row].substring(col + 1);
+            const currDiagonal: number = row - col;
+            const currAntiDiagonal: number = row + col;
+            // If the queen is not placeable
+            if (
+                cols.has(col) ||
+                diagonals.has(currDiagonal) ||
+                antiDiagonals.has(currAntiDiagonal)
+            ) {
+                continue;
             }
+            // "Add" the queen to the board
+            cols.add(col);
+            diagonals.add(currDiagonal);
+            antiDiagonals.add(currAntiDiagonal);
+            state[row][col] = "Q";
+            // Move on to the next row with the updated board state
+            backtrack(row + 1, diagonals, antiDiagonals, cols, state);
+            // "Remove" the queen from the board since we have already
+            // explored all valid paths using the above function call
+            cols.delete(col);
+            diagonals.delete(currDiagonal);
+            antiDiagonals.delete(currAntiDiagonal);
+            state[row][col] = ".";
         }
-    }
-    
-    // Start backtracking from first row
-    backtrack(0);
-    return result;
+    };
+    backtrack(0, new Set(), new Set(), new Set(), emptyBoard);
+    return solutions;
 }
