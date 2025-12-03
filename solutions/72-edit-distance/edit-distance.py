@@ -1,21 +1,31 @@
 class Solution:
-  def minDistance(self, word1: str, word2: str) -> int:
-    m = len(word1)
-    n = len(word2)
-    # dp[i][j] := min # Of operations to convert word1[0..i) to word2[0..j)
-    dp = [[0] * (n + 1) for _ in range(m + 1)]
-
-    for i in range(1, m + 1):
-      dp[i][0] = i
-
-    for j in range(1, n + 1):
-      dp[0][j] = j
-
-    for i in range(1, m + 1):
-      for j in range(1, n + 1):
-        if word1[i - 1] == word2[j - 1]:
-          dp[i][j] = dp[i - 1][j - 1]
-        else:
-          dp[i][j] = min(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]) + 1
-
-    return dp[m][n]
+    def minDistance(self, word1: str, word2: str) -> int:
+        word1Length = len(word1)
+        word2Length = len(word2)
+        if word1Length == 0:
+            return word2Length
+        if word2Length == 0:
+            return word1Length
+        dp = [
+            [0 for _ in range(word2Length + 1)] for _ in range(word1Length + 1)
+        ]
+        for word1Index in range(1, word1Length + 1):
+            dp[word1Index][0] = word1Index
+        for word2Index in range(1, word2Length + 1):
+            dp[0][word2Index] = word2Index
+        for word1Index in range(1, word1Length + 1):
+            for word2Index in range(1, word2Length + 1):
+                if word2[word2Index - 1] == word1[word1Index - 1]:
+                    dp[word1Index][word2Index] = dp[word1Index - 1][
+                        word2Index - 1
+                    ]
+                else:
+                    dp[word1Index][word2Index] = (
+                        min(
+                            dp[word1Index - 1][word2Index],
+                            dp[word1Index][word2Index - 1],
+                            dp[word1Index - 1][word2Index - 1],
+                        )
+                        + 1
+                    )
+        return dp[word1Length][word2Length]
