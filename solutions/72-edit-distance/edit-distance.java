@@ -1,23 +1,45 @@
 class Solution {
-  public int minDistance(String word1, String word2) {
-    final int m = word1.length();//first word length
-    final int n = word2.length();///second word length
-    // dp[i][j] := min # of operations to convert word1[0..i) to word2[0..j)
-    int[][] dp = new int[m + 1][n + 1];
+    public int minDistance(String word1, String word2) {
+        int word1Length = word1.length();
+        int word2Length = word2.length();
 
-    for (int i = 1; i <= m; ++i)
-      dp[i][0] = i;
+        if (word1Length == 0) {
+            return word2Length;
+        }
+        if (word2Length == 0) {
+            return word1Length;
+        }
 
-    for (int j = 1; j <= n; ++j)
-      dp[0][j] = j;
+        int dp[][] = new int[word1Length + 1][word2Length + 1];
 
-    for (int i = 1; i <= m; ++i)
-      for (int j = 1; j <= n; ++j)
-        if (word1.charAt(i - 1) == word2.charAt(j - 1))//same characters
-          dp[i][j] = dp[i - 1][j - 1];//no operation
-        else
-          dp[i][j] = Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1])) + 1;                      //replace               //delete        //insert
+        for (int word1Index = 1; word1Index <= word1Length; word1Index++) {
+            dp[word1Index][0] = word1Index;
+        }
 
-    return dp[m][n];
-  }
+        for (int word2Index = 1; word2Index <= word2Length; word2Index++) {
+            dp[0][word2Index] = word2Index;
+        }
+
+        for (int word1Index = 1; word1Index <= word1Length; word1Index++) {
+            for (int word2Index = 1; word2Index <= word2Length; word2Index++) {
+                if (
+                    word2.charAt(word2Index - 1) == word1.charAt(word1Index - 1)
+                ) {
+                    dp[word1Index][word2Index] = dp[word1Index - 1][word2Index -
+                        1];
+                } else {
+                    dp[word1Index][word2Index] = Math.min(
+                        dp[word1Index - 1][word2Index],
+                        Math.min(
+                            dp[word1Index][word2Index - 1],
+                            dp[word1Index - 1][word2Index - 1]
+                        )
+                    ) +
+                    1;
+                }
+            }
+        }
+
+        return dp[word1Length][word2Length];
+    }
 }
