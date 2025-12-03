@@ -1,129 +1,76 @@
 class Solution {
 
-    // Calculates the greatest common divisor (GCD) of two non-negative integers.
-    private int gcd(int a, int b) {
-        return b == 0 ? a : gcd(b, a % b);
-    }
-
-    // Counts the number of unique trapezoids that can be formed from a given set of points.
     public int countTrapezoids(int[][] points) {
         int n = points.length;
-        if (n < 4) {
-            return 0; // Not enough points to form a quadrilateral.
-        }
-
-        // --- Step 1: Count pairs of parallel segments efficiently ---
-        long countPairs = 0;
-        // Map from a slope to a map of lines with that slope.
-        // Inner map: line identifier -> number of segments on that line.
-        Map<String, Map<Long, Integer>> slopeToLinesMap = new HashMap<>();
+        double inf = 1e9 + 7;
+        Map<Double, List<Double>> slopeToIntercept = new HashMap<>();
+        Map<Integer, List<Double>> midToSlope = new HashMap<>();
+        int ans = 0;
 
         for (int i = 0; i < n; i++) {
+            int x1 = points[i][0];
+            int y1 = points[i][1];
             for (int j = i + 1; j < n; j++) {
-                long x1 = points[i][0], y1 = points[i][1];
-                long x2 = points[j][0], y2 = points[j][1];
-                long dx_long = x2 - x1, dy_long = y2 - y1;
+                int x2 = points[j][0];
+                int y2 = points[j][1];
+                int dx = x1 - x2;
+                int dy = y1 - y2;
+                double k;
+                double b;
 
-                String slopeKey;
-                long lineId;
-
-                if (dx_long == 0) {
-                    slopeKey = "inf"; // Vertical line
-                    lineId = x1; // Line is identified by its x-coordinate
+                if (x2 == x1) {
+                    k = inf;
+                    b = x1;
                 } else {
-                    int commonDivisor = gcd((int)Math.abs(dx_long), (int)Math.abs(dy_long));
-                    long dx = dx_long / commonDivisor;
-                    long dy = dy_long / commonDivisor;
-                    if (dx < 0) {
-                        dx = -dx;
-                        dy = -dy;
-                    }
-                    slopeKey = dy + "/" + dx;
-                    // Line identifier: from y = (dy/dx)x + c => c*dx = y*dx - x*dy
-                    lineId = y1 * dx - x1 * dy;
+                    k = (1.0 * (y2 - y1)) / (x2 - x1);
+                    b = (1.0 * (y1 * dx - x1 * dy)) / dx;
                 }
-
-                // Get the map of lines for the current slope.
-                Map<Long, Integer> linesMap = slopeToLinesMap.get(slopeKey);
-                // If no map exists for this slope, create one.
-                if (linesMap == null) {
-                    linesMap = new HashMap<>();
-                    slopeToLinesMap.put(slopeKey, linesMap);
+                if (k == -0.0) {
+                    k = 0.0;
                 }
-                // Increment the count for the specific line.
-                linesMap.put(lineId, linesMap.getOrDefault(lineId, 0) + 1);
+                if (b == -0.0) {
+                    b = 0.0;
+                }
+                int mid = (x1 + x2) * 10000 + (y1 + y2);
+                slopeToIntercept
+                    .computeIfAbsent(k, key -> new ArrayList<>())
+                    .add(b);
+                midToSlope
+                    .computeIfAbsent(mid, key -> new ArrayList<>())
+                    .add(k);
             }
         }
 
-        // Calculate valid pairs using combinatorics
-        for (Map<Long, Integer> lines : slopeToLinesMap.values()) {
-            long totalSegmentsForSlope = 0;
-            long collinearPairs = 0;
-            for (int segmentsOnLine : lines.values()) {
-                totalSegmentsForSlope += segmentsOnLine;
-                collinearPairs += (long)segmentsOnLine * (segmentsOnLine - 1) / 2;
+        for (List<Double> sti : slopeToIntercept.values()) {
+            if (sti.size() == 1) {
+                continue;
             }
-            long totalPairs = totalSegmentsForSlope * (totalSegmentsForSlope - 1) / 2;
-            countPairs += totalPairs - collinearPairs;
-        }
-
-        // --- Step 2: Count non-degenerate parallelograms efficiently ---
-        long parallelogramCount = 0;
-        Map<String, List<int[]>> midPointMap = new HashMap<>();
-
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                String key = ((long)points[i][0] + points[j][0]) + "," + ((long)points[i][1] + points[j][1]);
-                
-                // Get the list of diagonals for the current midpoint.
-                List<int[]> diagonalList = midPointMap.get(key);
-                // If no list exists for this midpoint, create one.
-                if (diagonalList == null) {
-                    diagonalList = new ArrayList<>();
-                    midPointMap.put(key, diagonalList);
-                }
-                // Add the current diagonal to the list.
-                diagonalList.add(new int[]{i, j});
+            Map<Double, Integer> cnt = new TreeMap<>();
+            for (double b : sti) {
+                cnt.put(b, cnt.getOrDefault(b, 0) + 1);
+            }
+            int sum = 0;
+            for (int count : cnt.values()) {
+                ans += sum * count;
+                sum += count;
             }
         }
 
-        for (List<int[]> diagonals : midPointMap.values()) {
-            int k = diagonals.size();
-            if (k < 2) continue;
-
-            Map<String, Integer> diagonalSlopeCount = new HashMap<>();
-            for (int[] diagonal : diagonals) {
-                int p1_idx = diagonal[0];
-                int p2_idx = diagonal[1];
-                long dx = (long)points[p1_idx][0] - points[p2_idx][0];
-                long dy = (long)points[p1_idx][1] - points[p2_idx][1];
-
-                String slopeKey;
-                 if (dx == 0) {
-                    slopeKey = "inf";
-                } else {
-                    int commonDivisor = gcd((int)Math.abs(dx), (int)Math.abs(dy));
-                    long norm_dx = dx / commonDivisor;
-                    long norm_dy = dy / commonDivisor;
-                    if (norm_dx < 0) {
-                        norm_dx = -norm_dx;
-                        norm_dy = -norm_dy;
-                    }
-                    slopeKey = norm_dy + "/" + norm_dx;
-                }
-                diagonalSlopeCount.put(slopeKey, diagonalSlopeCount.getOrDefault(slopeKey, 0) + 1);
+        for (List<Double> mts : midToSlope.values()) {
+            if (mts.size() == 1) {
+                continue;
             }
-            
-            long totalPairs = (long)k * (k - 1) / 2;
-            long degeneratePairs = 0;
-            for (int count : diagonalSlopeCount.values()) {
-                degeneratePairs += (long)count * (count - 1) / 2;
+            Map<Double, Integer> cnt = new TreeMap<>();
+            for (double k : mts) {
+                cnt.put(k, cnt.getOrDefault(k, 0) + 1);
             }
-            parallelogramCount += totalPairs - degeneratePairs;
+            int sum = 0;
+            for (int count : cnt.values()) {
+                ans -= sum * count;
+                sum += count;
+            }
         }
 
-        // --- Step 3: Calculate the final result ---
-        long uniqueTrapezoids = countPairs - parallelogramCount;
-        return (int)uniqueTrapezoids;
+        return ans;
     }
 }
