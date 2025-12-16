@@ -1,49 +1,61 @@
 class Solution {
 public:
-    vector<vector<int>> adj;
-    vector<vector<vector<int>>> dp;
+    int maxProfit(int n, vector<int>& present, vector<int>& future,
+                  vector<vector<int>>& hierarchy, int budget) {
+        vector<vector<int>> g(n);
 
-    void dfs(vector<int>& present, vector<int>& future, int node) {
-
-        int maxB = dp[node].size();
-        vector<int> pwb(maxB, 0); // profit with buying
-        vector<int> pwob(maxB, 0); // profit with out buying
-        vector<int> next;
-
-        for(int ch: adj[node]) {
-            dfs(present, future, ch);
-
-            next = vector<int> (maxB,0);
-            for(int budget = 0; budget<maxB; ++budget) {
-                for(int childbudget = budget; childbudget >= 0; --childbudget) {
-                    next[budget] = max(next[budget], pwb[budget - childbudget] +  dp[ch][childbudget][1]);
-                }
-            }
-            pwb = next;
-
-            next = vector<int> (maxB,0);
-            for(int budget = 0; budget<maxB; ++budget) {
-                for(int childbudget = budget; childbudget >= 0; --childbudget) {
-                    next[budget] = max(next[budget], pwob[budget - childbudget] +  dp[ch][childbudget][0]);
-                }
-            }
-            pwob = next;
+        for (auto& e : hierarchy) {
+            g[e[0] - 1].push_back(e[1] - 1);
         }
 
-        // calculate max profit for node with/without buying
-        int p = present[node-1], f = future[node-1], hp = p>>1;
-        for(int budget=0; budget<maxB; budget++) {
-            dp[node][budget][0] = max(pwob[budget], (budget >= p) ? max(0, f - p + pwb[budget - p]): 0);
-            dp[node][budget][1] = max(pwob[budget], (budget >= hp) ? max(0, f - hp + pwb[budget - hp]): 0);
-        }
-    }
-    
-    int maxProfit(int n, vector<int>& present, vector<int>& future, vector<vector<int>>& hierarchy, int budget) {
-        adj = vector<vector<int>> (n+1, vector<int>());
-        for(auto& edge: hierarchy) adj[edge[0]].push_back(edge[1]);
+        auto dfs = [&](auto&& self,
+                       int u) -> tuple<vector<int>, vector<int>, int> {
+            int cost = present[u];
+            int dCost = present[u] / 2;  // discounted cost
 
-        dp = vector<vector<vector<int>>> (n+1, vector<vector<int>>(budget+1, vector<int>(2,-1)));
-        dfs(present, future, 1);
-        return dp[1][budget][0];
+            // dp[u][state][budget]
+            // state = 0: Do not purchase parent node, state = 1: Must purchase
+            // parent node
+            auto dp0 = vector(budget + 1, 0);
+            auto dp1 = vector(budget + 1, 0);
+
+            // subProfit[state][budget]
+            // state = 0: discount not available, state = 1: discount available
+            auto subProfit0 = vector(budget + 1, 0);
+            auto subProfit1 = vector(budget + 1, 0);
+
+            int uSize = cost;
+
+            for (auto v : g[u]) {
+                auto [subDp0, subDp1, vSize] = self(self, v);
+                uSize += vSize;
+                for (int i = budget; i >= 0; i--) {
+                    for (int sub = 0; sub <= min(vSize, i); sub++) {
+                        subProfit0[i] = max(subProfit0[i],
+                                            subProfit0[i - sub] + subDp0[sub]);
+                        subProfit1[i] = max(subProfit1[i],
+                                            subProfit1[i - sub] + subDp1[sub]);
+                    }
+                }
+            }
+
+            for (int i = 0; i <= budget; i++) {
+                dp0[i] = dp1[i] = subProfit0[i];
+
+                if (i >= dCost) {
+                    dp1[i] = max(subProfit0[i],
+                                 subProfit1[i - dCost] + future[u] - dCost);
+                }
+
+                if (i >= cost) {
+                    dp0[i] = max(subProfit0[i],
+                                 subProfit1[i - cost] + future[u] - cost);
+                }
+            }
+
+            return {dp0, dp1, uSize};
+        };
+
+        return std::get<0>(dfs(dfs, 0))[budget];
     }
 };
