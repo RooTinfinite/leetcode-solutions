@@ -1,21 +1,17 @@
 class Solution:
-    def maxTwoEvents(self, events):
-        times = []
-        for e in events:
-            # 1 denotes start time.
-            times.append([e[0], 1, e[2]])
-            # 0 denotes end time.
-            times.append([e[1] + 1, 0, e[2]])
+    def maxTwoEvents(self, events: List[List[int]]) -> int:
 
-        ans, max_value = 0, 0
-        times.sort()
+        end_sorted = deque(sorted(events, key=itemgetter(1)))
+        start_sorted = sorted(events, key=itemgetter(0))
 
-        for time_value in times:
-            # If current time is a start time, find maximum sum of maximum end
-            # time till now.
-            if time_value[1]:
-                ans = max(ans, time_value[2] + max_value)
-            else:
-                max_value = max(max_value, time_value[2])
+        ans = max(v for _, _, v in events)
+
+        end_max = 0  
+
+        for start, end, value in start_sorted:
+            while end_sorted and end_sorted[0][1] < start:
+                _, _, v = end_sorted.popleft()
+                end_max = max(end_max, v)
+            ans = max(ans, value + end_max)
 
         return ans
