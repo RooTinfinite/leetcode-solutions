@@ -1,30 +1,24 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
 class Solution {
-private:
-    // Return whether or not the tree at root is balanced while also storing
-    // the tree's height in a reference variable.
-    bool isBalancedTreeHelper(TreeNode* root, int& height) {
-        // An empty tree is balanced and has height = -1
-        if (root == NULL) {
-            height = -1;
-            return true;
-        }
-
-        // Check subtrees to see if they are balanced. If they are, check if the
-        // current node is also balanced using the heights obtained from the
-        // recursive calls.
-        int left, right;
-        if (isBalancedTreeHelper(root->left, left) &&
-            isBalancedTreeHelper(root->right, right) && abs(left - right) < 2) {
-            // Store the current tree's height
-            height = max(left, right) + 1;
-            return true;
-        }
-        return false;
-    }
-
 public:
+    using int2=pair<int, bool>;
+    int2 dfs(TreeNode* root){
+        if (!root) return {0, 1};
+        auto [lH, lB]=dfs(root->left);
+        auto [rH, rB]=dfs(root->right);
+        return {1+max(lH, rH), lB & rB & abs(lH-rH)<=1};
+    }
     bool isBalanced(TreeNode* root) {
-        int height;
-        return isBalancedTreeHelper(root, height);
+        return dfs(root).second;
     }
 };
