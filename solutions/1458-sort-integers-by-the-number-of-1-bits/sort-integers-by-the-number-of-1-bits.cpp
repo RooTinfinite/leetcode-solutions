@@ -1,11 +1,27 @@
 class Solution {
 public:
+    static int findWeight(int num) {
+        int mask = 1;
+        int weight = 0;
+        
+        while (num > 0) {
+            if ((num & mask) > 0) {
+                weight++;
+                num ^= mask;
+            }
+            
+            mask <<= 1;
+        }
+        
+        return weight;
+    }
+    
     static bool compare(int a, int b) {
-        if (__builtin_popcount(a) == __builtin_popcount(b)) {
+        if (findWeight(a) == findWeight(b)) {
             return a < b;
         }
         
-        return __builtin_popcount(a) < __builtin_popcount(b);
+        return findWeight(a) < findWeight(b);
     }
     
     vector<int> sortByBits(vector<int>& arr) {
