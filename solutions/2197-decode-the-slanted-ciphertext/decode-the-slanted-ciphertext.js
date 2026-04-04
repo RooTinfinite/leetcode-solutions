@@ -1,0 +1,1 @@
+const decodeCiphertext=(e,t)=>{const o=e.length/t,n=[];for(let r=0;r<o;r++)for(let h=0,l=r;h<t&&l<o;h++,l++)n.push(e[o*h+l]);for(;" "===n[n.length-1];)n.pop();return n.join("")};
