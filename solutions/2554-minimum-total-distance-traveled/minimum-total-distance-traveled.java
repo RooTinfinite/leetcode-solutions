@@ -1,56 +1,41 @@
 class Solution {
-    public long minimumTotalDistance(List<Integer> robot, int[][] factory) {
-        Collections.sort(robot);
-        Arrays.sort(factory, (a, b) -> Integer.compare(a[0], b[0]));
-        
-        int m = robot.size();
-        int n = factory.length;
-        
-        long[][] dp = new long[m + 1][n + 1];
-        
-        for (int i = 0; i < m; i++) {
-            dp[i][n] = Long.MAX_VALUE;
-        }
-        
-        for (int j = n - 1; j >= 0; j--) {
-            long prefix = 0;
-            Deque<Pair<Integer, Long>> qq = new ArrayDeque<>();
-            qq.offer(new Pair<>(m, 0L));
-            
-            for (int i = m - 1; i >= 0; i--) {
-                prefix += Math.abs(robot.get(i) - factory[j][0]);
-                
-                while (!qq.isEmpty() && qq.peekFirst().getKey() > i + factory[j][1]) {
-                    qq.pollFirst();
-                }
-                
-                while (!qq.isEmpty() && qq.peekLast().getValue() >= dp[i][j + 1] - prefix) {
-                    qq.pollLast();
-                }
-                
-                qq.offerLast(new Pair<>(i, dp[i][j + 1] - prefix));
-                dp[i][j] = qq.peekFirst().getValue() + prefix;
+
+    public long minimumTotalDistance(List<Integer> robots, int[][] factories) {
+        // Sort robots and factories by position
+        Collections.sort(robots);
+        Arrays.sort(factories, Comparator.comparingInt(a -> a[0]));
+
+        // Flatten factory positions according to their capacities
+        List<Integer> factoryPositions = new ArrayList<>();
+        for (int[] factory : factories) {
+            for (int i = 0; i < factory[1]; i++) {
+                factoryPositions.add(factory[0]);
             }
         }
-        
-        return dp[0][0];
-    }
-    
-    private static class Pair<K, V> {
-        private K key;
-        private V value;
-        
-        public Pair(K key, V value) {
-            this.key = key;
-            this.value = value;
+
+        int robotCount = robots.size(), factoryCount = factoryPositions.size();
+        long[] next = new long[factoryCount + 1];
+        long[] current = new long[factoryCount + 1];
+
+        current[factoryCount] = (long) 1e12;
+
+        // Fill DP table using two rows for optimization
+        for (int i = robotCount - 1; i >= 0; i--) {
+            for (int j = factoryCount - 1; j >= 0; j--) {
+                // Assign current robot to current factory
+                long assign =
+                    Math.abs((long) robots.get(i) - factoryPositions.get(j)) +
+                    next[j + 1];
+                // Skip current factory for this robot
+                long skip = current[j + 1];
+                // Take the minimum option
+                current[j] = Math.min(assign, skip);
+            }
+            // Move to next robot
+            System.arraycopy(current, 0, next, 0, factoryCount + 1);
         }
-        
-        public K getKey() {
-            return key;
-        }
-        
-        public V getValue() {
-            return value;
-        }
+
+        // Return minimum distance starting from the first robot
+        return current[0];
     }
 }
