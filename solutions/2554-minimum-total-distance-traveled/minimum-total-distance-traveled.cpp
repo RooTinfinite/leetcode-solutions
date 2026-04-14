@@ -1,51 +1,40 @@
 class Solution {
 public:
-    long long minimumTotalDistance(vector<int>& robot, vector<vector<int>>& factory) {
-        // Sort both robots and factories for optimal assignment
-        sort(robot.begin(), robot.end());
-        sort(factory.begin(), factory.end());
-        
-        int m = robot.size(), n = factory.size();
-        // dp[i][j]: minimum total distance for robots[i:] using factories[j:]
-        vector<vector<long long>> dp(m + 1, vector<long long>(n + 1));
-        
-        // Base case: if no factories are available, distance is infinity
-        for (int i = 0; i < m; i++) {
-            dp[i][n] = LLONG_MAX;
-        }
-        
-        // Process each factory from right to left
-        for (int j = n - 1; j >= 0; j--) {
-            // Track cumulative distance from current factory to robots
-            long long prefix = 0;
-            // Deque stores pairs of (robot index, minimum distance)
-            deque<pair<int, long long>> qq;
-            // Initialize with base case
-            qq.push_back({m, 0});
-            
-            // Process each robot from right to left
-            for (int i = m - 1; i >= 0; i--) {
-                // Add distance from current robot to current factory
-                prefix += abs(robot[i] - factory[j][0]);
-                
-                // Remove entries that exceed factory capacity
-                while (!qq.empty() && qq.front().first > i + factory[j][1]) {
-                    qq.pop_front();
-                }
-                
-                // Maintain monotonic property of deque
-                while (!qq.empty() && qq.back().second >= dp[i][j + 1] - prefix) {
-                    qq.pop_back();
-                }
-                
-                // Add current state to deque
-                qq.push_back({i, dp[i][j + 1] - prefix});
-                // Calculate minimum distance for current state
-                dp[i][j] = qq.front().second + prefix;
+    long long minimumTotalDistance(vector<int>& robots,
+                                   vector<vector<int>>& factories) {
+        // Sort robots and factories by position
+        sort(begin(robots), end(robots));
+        sort(begin(factories), end(factories));
+
+        // Flatten factory positions according to their capacities
+        vector<int> factoryPositions;
+        for (auto& factory : factories) {
+            for (int i = 0; i < factory[1]; i++) {
+                factoryPositions.push_back(factory[0]);
             }
         }
-        
-        // Return minimum total distance starting from first robot and first factory
-        return dp[0][0];
+
+        int robotCount = robots.size(), factoryCount = factoryPositions.size();
+        vector<long long> next(factoryCount + 1, 0),
+            current(factoryCount + 1, 0);
+
+        current[factoryCount] = 1e12;
+
+        // Fill DP table using two rows for optimization
+        for (int i = robotCount - 1; i >= 0; i--) {
+            for (int j = factoryCount - 1; j >= 0; j--) {
+                // Assign current robot to current factory
+                long long assign =
+                    abs(robots[i] - factoryPositions[j]) + next[j + 1];
+                // Skip current factory for this robot
+                long long skip = current[j + 1];
+                // Take the minimum option
+                current[j] = min(assign, skip);
+            }
+            // Move to next robot
+            next = current;
+        }
+        // Return minimum distance starting from the first robot
+        return current[0];
     }
 };
