@@ -1,6 +1,6 @@
-SELECT
+SELECT 
     p.product_name
     ,s.year
     ,s.price
-FROM Product P
-JOIN Sales S USING (product_id)
+FROM Sales S
+JOIN Product p USING (product_id)
