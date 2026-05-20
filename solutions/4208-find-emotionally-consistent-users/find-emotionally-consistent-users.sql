@@ -1,25 +1,14 @@
-/* Write your T-SQL query statement below */
-WITH agg AS (
-    SELECT
-        user_id,
-        reaction,
-        COUNT(*) AS reaction_count
-    FROM reactions
-    GROUP BY user_id, reaction
-),
-scored_data AS (SELECT 
-    user_id,
-    reaction,
-    reaction_count,
-    SUM(reaction_count) OVER(PARTITION BY user_id) as total_reaction_count,
-    ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY reaction_count DESC) as reaction_rank
-FROM agg
+with consisitentUsers as (
+    select user_id, count(reaction) as total_reactions
+    from reactions
+    group by user_id
+    having count(content_id) >= 5
 )
-
-SELECT 
-    user_id,
-    reaction as dominant_reaction,
-    ROUND((1.0*reaction_count/total_reaction_count),2) as reaction_ratio
-FROM scored_data
-WHERE total_reaction_count >= 5 AND reaction_rank = 1 AND (1.0*reaction_count/total_reaction_count)>=0.60
-ORDER BY reaction_ratio DESC
+select r.user_id, r.reaction as dominant_reaction, 
+round((count(r.reaction)/max(c.total_reactions)),2) as reaction_ratio 
+from reactions r
+join consisitentUsers c
+on r.user_id = c.user_id
+group by r.user_id, r.reaction
+having (count(r.reaction)/max(c.total_reactions)) >= 0.6
+order by reaction_ratio desc, r.user_id
