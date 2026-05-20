@@ -1,11 +1,25 @@
-WITH CTE AS (
-    SELECT user_id, COUNT(1) total_reaction
+/* Write your T-SQL query statement below */
+WITH agg AS (
+    SELECT
+        user_id,
+        reaction,
+        COUNT(*) AS reaction_count
     FROM reactions
-    GROUP BY user_id
+    GROUP BY user_id, reaction
+),
+scored_data AS (SELECT 
+    user_id,
+    reaction,
+    reaction_count,
+    SUM(reaction_count) OVER(PARTITION BY user_id) as total_reaction_count,
+    ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY reaction_count DESC) as reaction_rank
+FROM agg
 )
-SELECT R.user_id, reaction AS dominant_reaction, ROUND(COUNT(1) / CAST(MAX(total_reaction) AS  DECIMAL(10,2)),2) reaction_ratio
-FROM reactions R
-INNER JOIN CTE C ON R.user_id = C.user_id
-GROUP BY R.user_id, reaction
-HAVING reaction_ratio >= 0.6 AND MAX(total_reaction) > 4
-ORDER BY reaction_ratio DESC, user_id
+
+SELECT 
+    user_id,
+    reaction as dominant_reaction,
+    ROUND((1.0*reaction_count/total_reaction_count),2) as reaction_ratio
+FROM scored_data
+WHERE total_reaction_count >= 5 AND reaction_rank = 1 AND (1.0*reaction_count/total_reaction_count)>=0.60
+ORDER BY reaction_ratio DESC
