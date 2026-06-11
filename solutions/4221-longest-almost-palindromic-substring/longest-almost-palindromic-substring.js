@@ -1,0 +1,1 @@
+const almostPalindromic=t=>{const n=t.length;if(n<=2)return n;const r=(r,o)=>{for(;r>=0&&o<n&&t[r]===t[o];)--r,++o;return[r,o]};let o=1;for(let t=0;t<n;++t)for(let a=0;a<2;++a){const e=t,c=t+a,[s,l]=r(e,c);o=Math.max(o,l-s);const[f,m]=r(s-1,l);o=Math.max(o,m-f-1);const[h,i]=r(s,l+1);if(o=Math.max(o,i-h-1),o>=n)return n}return o};
