@@ -1,0 +1,1 @@
+const minDistinctFreqPair=r=>{r.sort((r,e)=>r-e),freq={};for(let e=0;e<r.length;e++)freq[r[e]]=(freq[r[e]]||0)+1;x=r.at(0),xx=freq[x];for(let e=0;e<r.length;e++)if(r[e]!=x&&xx!=freq[r[e]])return[x,r[e]];return[-1,-1]};
