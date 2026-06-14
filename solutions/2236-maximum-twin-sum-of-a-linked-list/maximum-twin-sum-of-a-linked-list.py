@@ -1,23 +1,22 @@
-class Solution:
+class Solution(object):
     def pairSum(self, head):
-        slow = head
-        fast = head
-        maxVal = 0
+        slow, fast = head, head
+        maximumSum = 0
 
+        # Get middle of the linked list.
         while fast and fast.next:
-            slow = slow.next
             fast = fast.next.next
+            slow = slow.next
 
-        nextNode, prev = None, None
-        while slow:
-            nextNode = slow.next
-            slow.next = prev
-            prev = slow
-            slow = nextNode
-
+        # Reverse second half of the linked list.
+        curr, prev = slow, None
+        while curr:       
+            curr.next, prev, curr = prev, curr, curr.next
+        
+        start = head
         while prev:
-            maxVal = max(maxVal, head.val + prev.val)
+            maximumSum = max(maximumSum, start.val + prev.val)
             prev = prev.next
-            head = head.next
+            start = start.next
 
-        return maxVal
+        return maximumSum
