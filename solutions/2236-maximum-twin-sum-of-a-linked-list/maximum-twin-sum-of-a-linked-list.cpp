@@ -1,16 +1,16 @@
 class Solution {
-    public:
-     int pairSum(ListNode* head) {
+public:
+    int pairSum(ListNode* head) {
         ListNode* slow = head;
         ListNode* fast = head;
-        int maxVal = 0;
 
-        while(fast && fast -> next)
-        {
-            slow = slow -> next;
-            fast = fast -> next -> next;
+        // Get middle of the linked list.
+        while (fast && fast->next) {
+            fast = fast->next->next;
+            slow = slow->next;
         }
 
+        // Reverse second half of the linked list.
         ListNode *nextNode, *prev = NULL;
         while (slow) {
             nextNode = slow->next;
@@ -19,13 +19,14 @@ class Solution {
             slow = nextNode;
         }
 
-        while(prev)
-        {
-            maxVal = max(maxVal, head -> val + prev -> val);
-            prev = prev -> next;
-            head = head -> next;
+        int maximumSum = 0;
+        ListNode* start = head;
+        while (prev) {
+            maximumSum = max(maximumSum, start->val + prev->val);
+            prev = prev->next;
+            start = start->next;
         }
 
-        return maxVal;
+        return maximumSum;
     }
 };
