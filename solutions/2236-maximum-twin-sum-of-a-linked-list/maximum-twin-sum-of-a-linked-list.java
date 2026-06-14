@@ -2,13 +2,14 @@ class Solution {
     public int pairSum(ListNode head) {
         ListNode slow = head;
         ListNode fast = head;
-        int maxVal = 0;
 
+        // Get middle of the linked list.
         while (fast != null && fast.next != null) {
-            slow = slow.next;
             fast = fast.next.next;
+            slow = slow.next;
         }
 
+        // Reverse second half of the linked list.
         ListNode nextNode, prev = null;
         while (slow != null) {
             nextNode = slow.next;
@@ -17,12 +18,14 @@ class Solution {
             slow = nextNode;
         }
 
+        ListNode start = head;
+        int maximumSum = 0;
         while (prev != null) {
-            maxVal = Math.max(maxVal, head.val + prev.val);
+            maximumSum = Math.max(maximumSum, start.val + prev.val);
             prev = prev.next;
-            head = head.next;
+            start = start.next;
         }
 
-        return maxVal;
+        return maximumSum;
     }
 }
