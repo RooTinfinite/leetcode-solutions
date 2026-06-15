@@ -1,15 +1,19 @@
-# Time complexity: O(n)
-# Space complexity: O(1)
-class Solution(object):
-    def deleteMiddle(self, head):
-        # Initialize dummy, slow and fast pointers to reach middle of linked list...
-        dummy = ListNode(0, head)
-        slow = dummy
-        fast = dummy
-        # Find the middle of the linked list...
-        while fast.next and fast.next.next:
+class Solution:
+    def deleteMiddle(self, head: Optional[ListNode]) -> Optional[ListNode]:   
+        # Edge case: return None if there is only one node.
+        if head.next == None:
+            return None
+        
+        # Initialize two pointers, 'slow' and 'fast'.
+        slow, fast = head, head.next.next
+        
+        # Let 'fast' move forward by 2 nodes, 'slow' move forward by 1 node each step.
+        while fast and fast.next:
             slow = slow.next
             fast = fast.next.next
-        # Delete the middle node...
+        
+        # When 'fast' reaches the end, remove the next node of 'slow' and return 'head'.
         slow.next = slow.next.next
-        return dummy.next
+        
+        # The job is done, return 'head'.
+        return head
