@@ -1,18 +1,21 @@
-// Time complexity: O(n)
-// Space complexity: O(1)
 class Solution {
 public:
     ListNode* deleteMiddle(ListNode* head) {
-        // Initialize dummy, slow and fast pointers to reach middle of linked list...
-        ListNode dummy, *fast = &dummy, *slow = &dummy;
-        dummy.next = head;
-        // Find the middle of the linked list...
-        while (fast->next && fast->next->next) {
-            slow = slow->next;
-            fast = fast->next->next;
+        // Edge case: return nullptr if there is only one node.
+        if (head -> next == nullptr)
+            return nullptr;
+        
+        // Initialize two pointers, 'slow' and 'fast'.
+        ListNode *slow = head, *fast = head -> next -> next;
+        
+        // Let 'fast' move forward by 2 nodes, 'slow' move forward by 1 node each step.
+        while (fast != nullptr && fast -> next != nullptr) {
+            slow = slow -> next;
+            fast = fast -> next -> next;
         }
-        // Delete the middle node...
-        slow->next = slow->next->next;
-        return dummy.next;
+        
+        // When 'fast' reaches the end, remove the next node of 'slow' and return 'head'.
+        slow -> next = slow -> next -> next;
+        return head;
     }
 };
