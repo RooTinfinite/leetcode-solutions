@@ -1,18 +1,18 @@
-// Time complexity: O(n)
-// Space complexity: O(1)
 var deleteMiddle = function(head) {
-    // Initialize slow and fast pointers to reach middle of linked list...
-    let slow = fast = head;
-    // Find the middle and previous of middle...
-    let prev = null;
-    // To store previous of slow pointer...
-    while (fast && fast.next) {
-        prev = slow;
+    // Edge case: return nullptr if there is only one node.
+    if (head.next == null)
+        return null;
+    
+    // Initialize two pointers, 'slow' and 'fast'.
+    let slow = head, fast = head.next.next;
+    
+    // Let 'fast' move forward by 2 nodes, 'slow' move forward by 1 node each step.
+    while (fast != null && fast.next != null) {
         slow = slow.next;
         fast = fast.next.next;
     }
-    // Delete the middle node...
-    if (!prev) return null;
-    prev.next = slow.next;
+    
+    // When 'fast' reaches the end, remove the next node of 'slow' and return 'head'.
+    slow.next = slow.next.next;
     return head;
 };
