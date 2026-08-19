@@ -1,28 +1,19 @@
 class Solution:
-    def maxNumberOfFamilies(self, n: int, reservedSeats: List[List[int]]) -> int:
-        row_seats = defaultdict(set)
+    def maxNumberOfFamilies(
+        self, n: int, reservedSeats: List[List[int]]
+    ) -> int:
+        left, middle, right = 0b11110000, 0b11000011, 0b00001111
+        occupied = collections.defaultdict(int)
+        for seat in reservedSeats:
+            if 2 <= seat[1] <= 9:
+                occupied[seat[0]] |= 1 << (seat[1] - 2)
 
-        for row, seat in reservedSeats:
-            row_seats[row].add(seat)
-        
-        # all the empty rows are available so start your answer with those
-        ans = (n - len(row_seats)) * 2
-
-        # iterate over the row_seats that were allocated
-        for row, seats in row_seats.items():
-            available = 0
-            # chech non overlapping two seats first
-            option1 = {2, 3, 4, 5}
-            option2 = {6, 7, 8, 9}
-            if option1.isdisjoint(seats):
-                available += 1
-            if option2.isdisjoint(seats):
-                available += 1
-            
-            option3 = {4, 5, 6, 7} # if in the middle
-            if option3.isdisjoint(seats):
-                available = max(available, 1)
-            
-            ans += available
-        
+        ans = (n - len(occupied)) * 2
+        for row, bitmask in occupied.items():
+            if (
+                (bitmask | left) == left
+                or (bitmask | middle) == middle
+                or (bitmask | right) == right
+            ):
+                ans += 1
         return ans
