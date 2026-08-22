@@ -1,9 +1,18 @@
 class Solution {
 public:
     bool checkDivisibility(int n) {
-        return n % ([&](string s) {
-            return accumulate(s.begin(), s.end(), 0, [](int a, char c) { return a + (c - '0'); })
-                 + accumulate(s.begin(), s.end(), 1, [](int a, char c) { return a * (c - '0'); });
-        })(to_string(n)) == 0;
+        int digitSum = 0;
+        int digitProduct = 1;
+        int original = n;
+
+        while (n > 0) {
+            int digit = n % 10;
+            n /= 10;
+
+            digitSum += digit;
+            digitProduct *= digit;
+        }
+
+        return original % (digitSum + digitProduct) == 0;
     }
 };
