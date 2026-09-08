@@ -1,3 +1,3 @@
 class Solution:
     def countCommas(self, n: int) -> int:
-        return max(0, n - 999)
+        return max(n - 999, 0)
