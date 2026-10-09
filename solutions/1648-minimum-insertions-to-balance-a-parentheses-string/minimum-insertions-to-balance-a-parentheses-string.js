@@ -1,23 +1,30 @@
-var minInsertions = function(s) {
-    let openCounts = 0; // Tracks unmatched '('
-    let insertions = 0; // Tracks required insertions
+var minInsertions = function (s) {
+    let insertions = 0;
+    let leftCount = 0;
+    const length = s.length;
+    let index = 0;
 
-    for (let i = 0; i < s.length; i++) {
-        if (s[i] === '(') {
-            openCounts++;
-        } else if (i + 1 < s.length && s[i + 1] === ')') {
-            if (openCounts > 0) openCounts--;
-            else insertions++;
-            i++; // Skip the next ')'
+    while (index < length) {
+        const c = s[index];
+        if (c === "(") {
+            leftCount++;
+            index++;
         } else {
-            if (openCounts > 0) {
-                openCounts--;
-                insertions++;
+            if (leftCount > 0) {
+                leftCount--;
             } else {
-                insertions += 2;
+                insertions++;
+            }
+
+            if (index < length - 1 && s[index + 1] === ")") {
+                index += 2;
+            } else {
+                insertions++;
+                index++;
             }
         }
     }
 
-    return insertions + 2 * openCounts;
+    insertions += leftCount * 2;
+    return insertions;
 };
